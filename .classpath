@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/ibxm.jar"/>
+	<classpathentry kind="lib" path="lib/jinput.jar"/>
+	<classpathentry kind="lib" path="lib/jogg-0.0.7.jar"/>
+	<classpathentry kind="lib" path="lib/jorbis-0.0.15.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl.jar"/>
+	<classpathentry kind="lib" path="lib/slick.jar" sourcepath="libsrc/slick_src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Saboteur/libdoc/slick.zip!/"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Saboteur/natives"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/tinylinepp.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
