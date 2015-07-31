@@ -1,4 +1,4 @@
-package org.javajumper.saboteur;
+package org.javajumper.saboteur.player.inventory;
 
 import java.awt.Image;
 

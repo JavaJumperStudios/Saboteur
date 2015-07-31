@@ -2,6 +2,8 @@ package org.javajumper.saboteur;
 
 import java.awt.Image;
 
+import org.javajumper.saboteur.player.Player;
+
 import javafx.scene.control.ToggleButton;
 
 public class SaboteurLobby {

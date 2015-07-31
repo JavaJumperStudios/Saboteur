@@ -1,4 +1,5 @@
-package org.javajumper.saboteur;
+package org.javajumper.saboteur.player.inventory;
+
 
 public class Gun extends Item {
 	

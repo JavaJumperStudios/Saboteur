@@ -1,4 +1,4 @@
-package org.javajumper.saboteur;
+package org.javajumper.saboteur.packet;
 
 public class Packet09PlayerUpdate extends Packet {
 	

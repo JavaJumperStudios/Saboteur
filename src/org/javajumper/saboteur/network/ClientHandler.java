@@ -1,6 +1,10 @@
-package org.javajumper.saboteur;
+package org.javajumper.saboteur.network;
 
 import java.net.Socket;
+
+import org.javajumper.saboteur.Saboteur;
+import org.javajumper.saboteur.packet.Packet;
+import org.javajumper.saboteur.player.Player;
 
 public class ClientHandler implements Runnable {
 	

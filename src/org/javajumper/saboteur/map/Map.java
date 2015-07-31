@@ -1,4 +1,7 @@
-package org.javajumper.saboteur;
+package org.javajumper.saboteur.map;
+
+import org.javajumper.saboteur.player.DeadPlayer;
+import org.javajumper.saboteur.player.SPPlayer;
 
 public class Map {
 	

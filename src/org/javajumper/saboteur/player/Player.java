@@ -1,5 +1,6 @@
-package org.javajumper.saboteur;
+package org.javajumper.saboteur.player;
 
+import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.geom.Vector2f;
 
 public class Player {

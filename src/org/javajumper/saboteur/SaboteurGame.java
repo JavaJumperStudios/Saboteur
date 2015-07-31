@@ -2,6 +2,9 @@ package org.javajumper.saboteur;
 
 import java.awt.Image;
 
+import org.javajumper.saboteur.map.Map;
+import org.javajumper.saboteur.player.SPPlayer;
+
 public class SaboteurGame {
 	
 	private boolean paused;

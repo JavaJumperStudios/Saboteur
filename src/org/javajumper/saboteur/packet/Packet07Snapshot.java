@@ -1,4 +1,5 @@
-package org.javajumper.saboteur;
+package org.javajumper.saboteur.packet;
+
 
 public class Packet07Snapshot extends Packet {
 	

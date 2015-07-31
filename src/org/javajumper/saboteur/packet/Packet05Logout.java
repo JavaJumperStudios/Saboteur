@@ -1,4 +1,4 @@
-package org.javajumper.saboteur;
+package org.javajumper.saboteur.packet;
 
 public class Packet05Logout extends Packet {
 	

@@ -1,4 +1,4 @@
-package org.javajumper.saboteur;
+package org.javajumper.saboteur.network;
 
 public class ClientAcceptor implements Runnable {
 

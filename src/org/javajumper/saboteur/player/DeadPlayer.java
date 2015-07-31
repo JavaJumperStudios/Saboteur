@@ -1,4 +1,4 @@
-package org.javajumper.saboteur;
+package org.javajumper.saboteur.player;
 
 import org.newdawn.slick.geom.Vector2f;
 

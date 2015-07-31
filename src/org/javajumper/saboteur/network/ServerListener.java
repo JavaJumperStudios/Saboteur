@@ -1,6 +1,8 @@
-package org.javajumper.saboteur;
+package org.javajumper.saboteur.network;
 
 import java.net.Socket;
+
+import org.javajumper.saboteur.packet.Packet;
 
 public class ServerListener implements Runnable {
 	
