@@ -4,16 +4,16 @@ import org.newdawn.slick.geom.Vector2f;
 
 public class DeadPlayer {
 
-	private int id;
-	private String name;
-	private Role role;
-	private int timeOfDeath;
-	private int playerOfImpact;
-	private int itemOfImplact;
-	private Vector2f pos;
+    private int id;
+    private String name;
+    private Role role;
+    private int timeOfDeath;
+    private int playerOfImpact;
+    private int itemOfImplact;
+    private Vector2f pos;
 
-	public DeadPlayer() {
+    public DeadPlayer() {
 
-	}
+    }
 
 }

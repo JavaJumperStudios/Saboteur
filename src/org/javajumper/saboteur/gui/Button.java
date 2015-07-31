@@ -9,37 +9,37 @@ import org.newdawn.slick.state.GameState;
 
 public class Button extends MouseOverArea {
 
-	private String text = "";
-	private GameState instance;
-	private boolean active = true;
+    private String text = "";
+    private GameState instance;
+    private boolean active = true;
 
-	public Button(GameState instance, GUIContext container, Image image, int x,
-			int y) {
-		super(container, image, x, y);
-		this.instance = instance;
-	}
+    public Button(GameState instance, GUIContext container, Image image, int x,
+	    int y) {
+	super(container, image, x, y);
+	this.instance = instance;
+    }
 
-	@Override
-	public void render(GUIContext gameContainer, Graphics g) {
-		super.render(gameContainer, g);
-		g.setColor(Color.black);
-		g.drawString(text, getX() + 20, getY() + 20);
-	}
+    @Override
+    public void render(GUIContext gameContainer, Graphics g) {
+	super.render(gameContainer, g);
+	g.setColor(Color.black);
+	g.drawString(text, getX() + 20, getY() + 20);
+    }
 
-	public void setText(String string) {
-		this.text = string;
-	}
+    public void setText(String string) {
+	this.text = string;
+    }
 
-	@Override
-	public void mouseClicked(int button, int x, int y, int clickCount) {
-		if (active && isMouseOver()) {
-			disable();
-			// Was passieren soll, wenn man den Button drückt
-		}
+    @Override
+    public void mouseClicked(int button, int x, int y, int clickCount) {
+	if (active && isMouseOver()) {
+	    disable();
+	    // Was passieren soll, wenn man den Button drückt
 	}
+    }
 
-	public void disable() {
-		active = false;
-	}
+    public void disable() {
+	active = false;
+    }
 
 }
