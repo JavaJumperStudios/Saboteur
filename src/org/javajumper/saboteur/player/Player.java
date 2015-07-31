@@ -4,7 +4,7 @@ import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.geom.Vector2f;
 
 public class Player {
-	
+
 	private int id;
 	private Role role;
 	private String name;
@@ -16,107 +16,81 @@ public class Player {
 	private Float lookAngle;
 	private boolean sprinting;
 	private boolean dead;
-	
-	
-	
-	
+
 	public Player() {
-		
+
 	}
-	
-	public void update() { 
-		
+
+	public void update() {
+
 	}
-	
+
 	public void setName() {
-		
+
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setRole() {
-		
+
 	}
-	
+
 	public Role getRole() {
 		return role;
 	}
-	
+
 	public void setLivepoints() {
-		
+
 	}
-	
+
 	public int getLivepoints() {
 		return livepoints;
 	}
-	
+
 	public void setCurrentWeapon() {
-		
+
 	}
-	
+
 	public int getCurrentWeapon() {
 		return currentWeapon;
 	}
-	
+
 	public void addItem() {
-		
+
 	}
-	
+
 	public void removeItem() {
-		
+
 	}
-	
+
 	public void setPos() {
-		
+
 	}
-	
+
 	public Vector2f getPos() {
 		return pos;
 	}
-	
+
 	public void setMove() {
-		
+
 	}
-	
+
 	public Vector2f getMove() {
 		return move;
 	}
-	
+
 	public void setSprint() {
-		
+
 	}
-	
+
 	public Float getAngle() {
 		return lookAngle;
 	}
-	
+
 	public void setAngle() {
-		
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 }
