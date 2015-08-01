@@ -14,7 +14,9 @@ public class Tile {
 
     }
 
-    public void draw() {
+    public void draw(int x, int y) {
+	
+	image.draw(x, y);
 
     }
 

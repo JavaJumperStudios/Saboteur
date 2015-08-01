@@ -35,6 +35,10 @@ public class Player {
     public void update() {
 
     }
+    
+    public int getId() {
+	return id;
+    }
 
     public void setName(String name) {
 	this.name = name;
@@ -109,6 +113,14 @@ public class Player {
 
     public void setAngle(Float angle) {
 	this.lookAngle = angle;
+    }
+
+    public Item[] getInventory() {
+	return inventory;
+    }
+    
+    public Boolean getDead() {
+	return dead;
     }
 
 }

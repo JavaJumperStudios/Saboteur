@@ -1,6 +1,6 @@
 package org.javajumper.saboteur.player.inventory;
 
-import java.awt.Image;
+import org.newdawn.slick.Image;
 
 public class Knife extends Item {
 
