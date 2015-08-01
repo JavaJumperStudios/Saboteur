@@ -12,8 +12,16 @@ public class DeadPlayer {
     private int itemOfImplact;
     private Vector2f pos;
 
-    public DeadPlayer() {
+    public DeadPlayer(int id, String name, Role role, int timeOfDeath, int playerOfImpact, int itemOfImpact, Vector2f pos) {
 
+	this.id = id;
+	this.name = name;
+	this.role = role;
+	this.timeOfDeath = timeOfDeath;
+	this.playerOfImpact = playerOfImpact;
+	this.itemOfImplact = itemOfImpact;
+	this.pos = pos;
+	
     }
 
 }
