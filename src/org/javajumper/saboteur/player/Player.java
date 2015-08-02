@@ -33,6 +33,9 @@ public class Player {
     }
 
     public void update() {
+	
+	pos.x = pos.x + move.x;
+	pos.y = pos.y + move.y;
 
     }
     

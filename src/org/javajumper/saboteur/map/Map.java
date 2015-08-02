@@ -13,6 +13,18 @@ public class Map {
     private ArrayList<DeadPlayer> deadplayers = new ArrayList<DeadPlayer>();
     private int width;
     private int hight;
+    
+    public void update() {
+	
+	for (SPPlayer p : players) {
+	    p.update();
+	}
+	
+	for (DeadPlayer p : deadplayers) {
+	    p.update();
+	}
+	
+    }
 
     public void loadMap() {
 
