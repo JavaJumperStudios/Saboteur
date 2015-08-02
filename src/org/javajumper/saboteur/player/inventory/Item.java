@@ -1,6 +1,6 @@
 package org.javajumper.saboteur.player.inventory;
 
-import java.awt.Image;
+import org.newdawn.slick.Image;
 
 public class Item {
 
@@ -9,12 +9,25 @@ public class Item {
     private int id;
     private int typeId;
 
+    public Item(Image image, String name, int id, int typeId) {
+
+	this.image = image;
+	this.name = name;
+	this.id = id;
+	this.typeId = typeId;
+
+    }
+
     public void use() {
 
     }
 
     public int getTypeId() {
 	return typeId;
+    }
+
+    public void draw(float x, float y) {
+	image.draw(x, y);
     }
 
 }
