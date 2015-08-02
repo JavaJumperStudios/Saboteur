@@ -32,7 +32,6 @@ public class SaboteurGame extends BasicGameState {
     public void render(GameContainer container, StateBasedGame game, Graphics g)
 	    throws SlickException {
 	map.draw();
-	thePlayer.draw();
 	gui.draw();
     }
 

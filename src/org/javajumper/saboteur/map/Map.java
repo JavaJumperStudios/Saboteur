@@ -67,7 +67,7 @@ public class Map {
 	tiles[x][y] = tile;
     }
 
-    private void draw() {
+    public void draw() {
 
 	for (int i = 0; i <= hight; i++) {
 	    for (int j = 0; j <= width; j++) {
