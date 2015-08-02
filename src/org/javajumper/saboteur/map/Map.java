@@ -19,12 +19,8 @@ public class Map {
 	for (int i = 0; i <= hight; i++) {
 	    for (int j = 0; j <= width; j++) {
 
-		tiles[i][j] = new Tile(
-			RessourceManager.loadImage("Tile-sheet.png", 0, 0, 32, 32), false); // muss
-									      // mehr
-									      // argumente
-									      // enthalten
-
+		tiles[i][j] = new Tile(RessourceManager.loadImage(
+			"Tile-sheet.png", 0, 0, 32, 32), false);
 	    }
 
 	}
