@@ -1,16 +1,16 @@
 package org.javajumper.saboteur.map;
 
+import java.util.ArrayList;
+
 import org.javajumper.saboteur.RessourceManager;
 import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.SPPlayer;
 
-import com.sun.beans.WeakCache;
-
 public class Map {
 
     private Tile[][] tiles;
-    private SPPlayer[] players;
-    private DeadPlayer[] deadplayers;
+    private ArrayList<SPPlayer> players = new ArrayList<SPPlayer>();
+    private ArrayList<DeadPlayer> deadplayers = new ArrayList<DeadPlayer>();
     private int width;
     private int hight;
 
@@ -20,8 +20,10 @@ public class Map {
 	    for (int j = 0; j <= width; j++) {
 
 		tiles[i][j] = new Tile(
-			RessourceManager.loadImage("Tile-sheet.png"), false);
-		tiles[i][j].draw(i, j);
+			RessourceManager.loadImage("Tile-sheet.png", 0, 0, 32, 32), false); // muss
+									      // mehr
+									      // argumente
+									      // enthalten
 
 	    }
 
@@ -29,27 +31,15 @@ public class Map {
 
     }
 
-    public void spawn(int id, float x, float y) {
+    public void spawn(SPPlayer p) {
 
-	for (int i = 0; i <= players.length; i++) {
-	    if (players[i].getId() == id) {
-		if (players[i].getDead() == false) {
-		    players[i].draw(x, y);
-		} else {
-		    spawnDeadPlayer(id, x, y);
-		}
-	    }
-	}
+	players.add(p);
 
     }
 
-    private void spawnDeadPlayer(int id, float x, float y) {
+    public void spawnDeadPlayer(DeadPlayer p) {
 
-	for (int i = 0; i <= deadplayers.length; i++) {
-	    if (deadplayers[i].getId() == id) {
-		deadplayers[i].draw(x, y);
-	    }
-	}
+	deadplayers.add(p);
 
     }
 
@@ -71,15 +61,18 @@ public class Map {
 
     private void draw() {
 
-	for (int i = 0; i <= players.length; i++) {
-	    if (players[i].getDead() == false) {
-		players[i].draw(players[i].getPos().x, players[i].getPos().y);
+	for (int i = 0; i <= hight; i++) {
+	    for (int j = 0; j <= width; j++) {
+		tiles[i][j].draw(i, j);
 	    }
 	}
 
-	for (int i = 0; i <= deadplayers.length; i++) {
-	    deadplayers[i].draw(deadplayers[i].getPos().x,
-		    deadplayers[i].getPos().y);
+	for (SPPlayer p : players) {
+	    p.draw(p.getPos().x, p.getPos().y);
+	}
+
+	for (DeadPlayer p : deadplayers) {
+	    p.draw(p.getPos().x, p.getPos().y);
 	}
 
     }
