@@ -106,6 +106,10 @@ public class Player {
     public void setSprint(boolean sprint) {
 	this.sprinting = sprint;
     }
+    
+    public boolean getSprint() {
+	return sprinting;
+    }
 
     public Float getAngle() {
 	return lookAngle;
