@@ -14,12 +14,12 @@ public class Map {
 
     private Tile[][] tiles = new Tile[40][30];
     private int width;
-    private int hight;
+    private int height;
     
     public Map() {
 	
-	width = 1280;
-	hight = 1024;
+	width = 40;
+	height = 30;
 	
     }
     
@@ -30,8 +30,8 @@ public class Map {
 
     public void loadMap() {
 
-	for (int i = 0; i <= hight; i++) {
-	    for (int j = 0; j <= width; j++) {
+	for (int i = 0; i < width; i++) {
+	    for (int j = 0; j < height; j++) {
 
 		tiles[i][j] = new Tile(1, false);
 	    }
@@ -45,7 +45,7 @@ public class Map {
     }
 
     public int getHight() {
-	return hight;
+	return height;
     }
 
     public Tile getTile(int x, int y) {
@@ -58,9 +58,9 @@ public class Map {
 
     public void draw() {
 
-	for (int i = 0; i <= hight; i++) {
-	    for (int j = 0; j <= width; j++) {
-		tiles[i][j].draw(i, j);
+	for (int i = 0; i < width; i++) {
+	    for (int j = 0; j < height; j++) {
+		tiles[i][j].draw(i*32, j*32);
 	    }
 	}
 
