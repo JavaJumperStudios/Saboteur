@@ -42,7 +42,7 @@ public class ServerListener implements Runnable {
 
 	sendToServer(packet);
 
-	byte[] buffer = new byte[512];
+	byte[] buffer = new byte[2048];
 	int size;
 
 	System.out.println("Request sent, waiting for Login Packet...");
