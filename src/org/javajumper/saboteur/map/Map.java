@@ -16,7 +16,15 @@ public class Map {
     private int width;
     private int hight;
     
+    public Map() {
+	
+	width = 1280;
+	hight = 1024;
+	
+    }
+    
     public void update(int delta) {
+
 
     }
 

@@ -41,8 +41,5 @@ public class DeadPlayer {
 	return pos;
     }
 
-    public void update(int delta) {
-	
-    }
 
 }

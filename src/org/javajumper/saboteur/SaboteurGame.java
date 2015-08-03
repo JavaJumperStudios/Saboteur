@@ -101,10 +101,6 @@ public class SaboteurGame extends BasicGameState {
 	    p.update(delta);
 	}
 
-	for (DeadPlayer p : deadplayers) {
-	    p.update(delta);
-	}
-
     }
 
     public void start() {

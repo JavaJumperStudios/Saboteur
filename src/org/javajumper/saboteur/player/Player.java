@@ -38,8 +38,8 @@ public class Player {
 
     public void update(int delta) {
 	
-	pos.x = pos.x + move.x;
-	pos.y = pos.y + move.y;
+	pos.x = pos.x + move.x * delta;
+	pos.y = pos.y + move.y * delta;
 
     }
     
