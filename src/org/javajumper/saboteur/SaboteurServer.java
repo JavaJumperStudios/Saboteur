@@ -30,7 +30,7 @@ public class SaboteurServer {
 	Map map = new Map();
 	map.loadMap();
 
-	acceptor = new Thread(new ClientAcceptor());
+	acceptor = new Thread(new ClientAcceptor(this));
 	acceptor.start();
 
 	int delta;
@@ -61,6 +61,10 @@ public class SaboteurServer {
 		clientHandler.remove(c);
 	    }
 	}
+    }
+
+    public void addClientHandler(ClientHandler client) {
+	clientHandler.add(client);
     }
 
 }
