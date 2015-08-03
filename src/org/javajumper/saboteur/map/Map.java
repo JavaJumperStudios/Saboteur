@@ -89,7 +89,9 @@ public class Map {
 
     public Snapshot generateSnapshot() {
 	Snapshot snapshot = new Snapshot();
-	Player[] pl = (Player[]) players.toArray();
+	Player[] pl = new Player[players.size()];
+	players.toArray(pl);
+	
 	PlayerSnapshot[] ps = new PlayerSnapshot[pl.length];
 
 	for (int i = 0; i < pl.length; i++) {
