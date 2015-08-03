@@ -1,5 +1,6 @@
 package org.javajumper.saboteur.player;
 
+import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.geom.Vector2f;
 
@@ -8,25 +9,25 @@ public class Player {
     private int id;
     private Role role;
     private String name;
-    private int livepoints;
+    private int lifepoints;
     private int currentWeapon;
     private Item[] inventory;
     protected Vector2f pos;
     private Vector2f move;
-    private Float lookAngle;
+    private float lookAngle;
     private boolean sprinting;
     private boolean dead;
 
-    public Player(int id, Role role, String name, int livepoints, Vector2f pos) {
+    public Player(int id, Role role, String name, int lifepoints, Vector2f pos) {
 
 	this.id = id;
 	this.role = role;
 	this.name = name;
-	this.livepoints = livepoints;
+	this.lifepoints = lifepoints;
 	this.currentWeapon = 0;
 	this.pos = pos;
 	this.move = new Vector2f(0, 0);
-	this.lookAngle = 0F;
+	this.lookAngle = 0f;
 	this.sprinting = false;
 	this.dead = false;
 
@@ -59,12 +60,12 @@ public class Player {
 	return role;
     }
 
-    public void setLivepoints(int livepoints) {
-	this.livepoints = livepoints;
+    public void setLivepoints(int lifepoints) {
+	this.lifepoints = lifepoints;
     }
 
     public int getLivepoints() {
-	return livepoints;
+	return lifepoints;
     }
 
     public void setCurrentWeapon(int currentWeapon) {
@@ -128,6 +129,17 @@ public class Player {
     
     public Boolean getDead() {
 	return dead;
+    }
+
+    public PlayerSnapshot generateSnapshot() {
+	PlayerSnapshot ps = new PlayerSnapshot();
+	ps.currentWeapon = currentWeapon;
+	ps.lifepoints = lifepoints;
+	ps.lookAngle = lookAngle;
+	ps.x = pos.x;
+	ps.y = pos.y;
+	
+	return ps;
     }
 
 }

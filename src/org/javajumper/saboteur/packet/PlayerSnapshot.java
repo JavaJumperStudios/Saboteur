@@ -2,10 +2,10 @@ package org.javajumper.saboteur.packet;
 
 public class PlayerSnapshot {
 
-    private float x;
-    private float y;
-    private float lookAngle;
-    private int currentWeapon;
-    private int lifepoints;
+    public float x;
+    public float y;
+    public float lookAngle;
+    public int currentWeapon;
+    public int lifepoints;
 
 }

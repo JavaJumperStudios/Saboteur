@@ -3,7 +3,10 @@ package org.javajumper.saboteur.map;
 import java.util.ArrayList;
 
 import org.javajumper.saboteur.RessourceManager;
+import org.javajumper.saboteur.packet.PlayerSnapshot;
+import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.DeadPlayer;
+import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.SPPlayer;
 
 public class Map {
@@ -13,17 +16,17 @@ public class Map {
     private ArrayList<DeadPlayer> deadplayers = new ArrayList<DeadPlayer>();
     private int width;
     private int hight;
-    
+
     public void update() {
-	
+
 	for (SPPlayer p : players) {
 	    p.update();
 	}
-	
+
 	for (DeadPlayer p : deadplayers) {
 	    p.update();
 	}
-	
+
     }
 
     public void loadMap() {
@@ -83,6 +86,20 @@ public class Map {
 	    p.draw(p.getPos().x, p.getPos().y);
 	}
 
+    }
+
+    public Snapshot generateSnapshot() {
+	Snapshot snapshot = new Snapshot();
+	Player[] pl = (Player[]) players.toArray();
+	PlayerSnapshot[] ps = new PlayerSnapshot[pl.length];
+
+	for (int i = 0; i < pl.length; i++) {
+	    ps[i] = pl[i].generateSnapshot();
+	}
+	
+	snapshot.player = ps;
+
+	return snapshot;
     }
 
 }
