@@ -46,7 +46,7 @@ public class SaboteurServer {
     }
 
     private void update(int delta) {
-	map.update();
+	map.update(delta);
 	Packet07Snapshot packet = new Packet07Snapshot();
 	packet.snapshot = map.generateSnapshot();
 

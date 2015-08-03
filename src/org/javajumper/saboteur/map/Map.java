@@ -2,7 +2,6 @@ package org.javajumper.saboteur.map;
 
 import java.util.ArrayList;
 
-import org.javajumper.saboteur.RessourceManager;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.DeadPlayer;
@@ -17,14 +16,17 @@ public class Map {
     private int width;
     private int hight;
     
-    public void update() {
+    public Map() {
+	
+	width = 1280;
+	hight = 1024;
+	
+    }
+    
+    public void update(int delta) {
 
 	for (SPPlayer p : players) {
-	    p.update();
-	}
-
-	for (DeadPlayer p : deadplayers) {
-	    p.update();
+	    p.update(delta);
 	}
 
     }
