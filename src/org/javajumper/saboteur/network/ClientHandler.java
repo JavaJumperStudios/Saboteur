@@ -6,6 +6,7 @@ import java.net.Socket;
 import org.javajumper.saboteur.SaboteurServer;
 import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet01LoginRequest;
+import org.javajumper.saboteur.packet.Packet02Login;
 import org.javajumper.saboteur.player.Player;
 
 public class ClientHandler implements Runnable {
@@ -35,8 +36,20 @@ public class ClientHandler implements Runnable {
 	        if (!login) {
 	            if(data[0] == 1) {
 	        	System.out.println("Login Request received.");
-	        	Packet01LoginRequest packet = new Packet01LoginRequest();
-	        	packet.readFromByteArray(data);
+	        	Packet01LoginRequest packetLoginRequest = new Packet01LoginRequest();
+	        	packetLoginRequest.readFromByteArray(data);
+	        	
+	        	player = server.addNewPlayer(packetLoginRequest.name);
+	        	
+	        	login = true;
+	        	
+	        	System.out.println("Sending Login Packet.");
+	        	
+	        	Packet02Login packetLogin = new Packet02Login();
+	        	packetLogin.name = packetLoginRequest.name;
+	        	packetLogin.playerId = player.getId();
+	        	
+	        	sendToClient(packetLogin);
 	            }
 	        }
 	        
@@ -44,10 +57,16 @@ public class ClientHandler implements Runnable {
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
-    }
+    }	
 
-    public void sendToClient(Packet p) {
-
+    public void sendToClient(Packet packet) {
+	try {
+		byte[] data = packet.writeToByteArray();
+		clientSocket.getOutputStream().write(data);
+	} catch (IOException e) {
+		System.out.println("Could not send packet to Client. Closing Connection.");
+		close();
+	}
     }
 
     public void close() {

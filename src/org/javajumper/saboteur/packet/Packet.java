@@ -7,12 +7,8 @@ public abstract class Packet {
     public byte id;
     public int length;
 
-    public Packet() {
-	length = getLength();
-    }
-
     protected int getLength() {
-	return length;
+	return Byte.BYTES + Integer.BYTES;
     }
 
     public void readFromByteArray(byte[] data) {
@@ -30,8 +26,8 @@ public abstract class Packet {
 	return bb.array();
     }
 
-    protected abstract void readFromByteBuffer(ByteBuffer bb);
+    public abstract void readFromByteBuffer(ByteBuffer bb);
 
-    protected abstract ByteBuffer writeToByteBuffer();
+    public abstract ByteBuffer writeToByteBuffer();
 
 }

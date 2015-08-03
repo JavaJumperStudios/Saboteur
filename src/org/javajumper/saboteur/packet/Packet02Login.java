@@ -7,17 +7,24 @@ public class Packet02Login extends Packet {
     public int playerId;
     public String name;
 
+    public Packet02Login() {
+	id = 2;
+	length = getLength();
+    }
+    
     @Override
-    protected void readFromByteBuffer(ByteBuffer bb) {
+    public void readFromByteBuffer(ByteBuffer bb) {
 	playerId = bb.getInt();
 	
+	name = "";
+	
 	for (int i = 0; i < 16; i++) {
-	    bb.putChar(name.charAt(i));
+	    name = name + bb.getChar();
 	}
     }
 
     @Override
-    protected ByteBuffer writeToByteBuffer() {
+    public ByteBuffer writeToByteBuffer() {
 	ByteBuffer bb = ByteBuffer.allocate(getLength());
 
 	bb.put(id);

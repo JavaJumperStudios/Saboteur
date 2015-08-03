@@ -4,18 +4,38 @@ import java.nio.ByteBuffer;
 
 public class Packet07Snapshot extends Packet {
 
+    public int snapshotsize;
     public Snapshot snapshot;
 
+    public Packet07Snapshot() {
+	id = 7;
+    }
+    
     @Override
-    protected void readFromByteBuffer(ByteBuffer bb) {
-	// TODO Auto-generated method stub
+    public void readFromByteBuffer(ByteBuffer bb) {
+	
+	snapshotsize = bb.getInt();
+	
+	snapshot = new Snapshot();
+	snapshot.readFromByteBuffer(bb, snapshotsize);
 	
     }
 
     @Override
-    protected ByteBuffer writeToByteBuffer() {
-	// TODO Auto-generated method stub
-	return null;
+    public ByteBuffer writeToByteBuffer() {
+	ByteBuffer bb = ByteBuffer.allocate(getLength());
+	
+	bb.put(id);
+	bb.putInt(getLength());
+	bb.putInt(snapshot.getSnapshotSize());
+	snapshot.writeToByteBuffer(bb);
+	
+	return bb;
+    }
+    
+    @Override
+    public int getLength() {
+	return super.getLength() + snapshot.getLength() + Integer.BYTES;
     }
 
 }

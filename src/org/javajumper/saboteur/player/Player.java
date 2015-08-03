@@ -6,6 +6,8 @@ import org.newdawn.slick.geom.Vector2f;
 
 public class Player {
 
+    private static int currentId = 0;
+    
     private int id;
     private Role role;
     private String name;
@@ -25,6 +27,7 @@ public class Player {
 	this.name = name;
 	this.lifepoints = lifepoints;
 	this.currentWeapon = 0;
+	this.inventory = new Item[3];
 	this.pos = pos;
 	this.move = new Vector2f(0, 0);
 	this.lookAngle = 0f;
@@ -33,7 +36,7 @@ public class Player {
 
     }
 
-    public void update() {
+    public void update(int delta) {
 	
 	pos.x = pos.x + move.x;
 	pos.y = pos.y + move.y;
@@ -140,6 +143,10 @@ public class Player {
 	ps.y = pos.y;
 	
 	return ps;
+    }
+
+    public static int getNextId() {
+	return currentId++;
     }
 
 }

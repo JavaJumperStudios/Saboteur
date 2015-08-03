@@ -6,7 +6,11 @@ import org.javajumper.saboteur.map.Map;
 import org.javajumper.saboteur.network.ClientAcceptor;
 import org.javajumper.saboteur.network.ClientHandler;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
+import org.javajumper.saboteur.packet.PlayerSnapshot;
+import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.Player;
+import org.javajumper.saboteur.player.Role;
+import org.newdawn.slick.geom.Vector2f;
 
 public class SaboteurServer {
 
@@ -17,6 +21,7 @@ public class SaboteurServer {
     }
 
     private boolean stop;
+    private boolean pause = true;
     private ArrayList<ClientHandler> clientHandler = new ArrayList<>();
     private ArrayList<ClientHandler> removeList = new ArrayList<>();
 
@@ -46,26 +51,52 @@ public class SaboteurServer {
     }
 
     private void update(int delta) {
-	map.update();
-	Packet07Snapshot packet = new Packet07Snapshot();
-	packet.snapshot = map.generateSnapshot();
+	if (!pause) {
+	    map.update(delta);
 
-	for (ClientHandler c : clientHandler) {
-	    if (c != null) {
-		c.sendToClient(packet);
+	    Packet07Snapshot packet = new Packet07Snapshot();
+	    packet.snapshot = generateSnapshot();
+
+	    for (ClientHandler c : clientHandler) {
+		if (c != null) {
+		    c.sendToClient(packet);
+		}
 	    }
-	}
-	
-	if (!removeList.isEmpty()) {
-	    for (ClientHandler c : removeList) {
-		clientHandler.remove(c);
+
+	    if (!removeList.isEmpty()) {
+		for (ClientHandler c : removeList) {
+		    clientHandler.remove(c);
+		}
+		removeList.clear();
 	    }
-	    removeList.clear();
 	}
     }
 
     public void addClientHandler(ClientHandler client) {
 	clientHandler.add(client);
+    }
+
+    public Snapshot generateSnapshot() {
+	Snapshot snapshot = new Snapshot();
+	Player[] pl = new Player[players.size()];
+	players.toArray(pl);
+
+	PlayerSnapshot[] ps = new PlayerSnapshot[pl.length];
+
+	for (int i = 0; i < pl.length; i++) {
+	    ps[i] = pl[i].generateSnapshot();
+	}
+
+	snapshot.player = ps;
+
+	return snapshot;
+    }
+
+    public Player addNewPlayer(String name) {
+	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100,
+		new Vector2f(0, 0));
+	players.add(p);
+	return p;
     }
 
 }

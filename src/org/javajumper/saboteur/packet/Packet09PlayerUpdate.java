@@ -11,13 +11,13 @@ public class Packet09PlayerUpdate extends Packet {
     public boolean sprinting;
 
     @Override
-    protected void readFromByteBuffer(ByteBuffer bb) {
+    public void readFromByteBuffer(ByteBuffer bb) {
 	// TODO Auto-generated method stub
 
     }
 
     @Override
-    protected ByteBuffer writeToByteBuffer() {
+    public ByteBuffer writeToByteBuffer() {
 	// TODO Auto-generated method stub
 	return null;
     }

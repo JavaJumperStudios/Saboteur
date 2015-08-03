@@ -31,7 +31,7 @@ public class RessourceManager {
 	Image newImage;
 	try {
 	    newImage = new Image("res/" + name);
-	} catch (Exception e) {
+	} catch (SlickException e) {
 	    e.printStackTrace();
 	    if (!"missingTexture.png".equals(name))
 		return loadImage("missingTexture.png");

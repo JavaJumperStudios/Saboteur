@@ -40,8 +40,8 @@ public class DeadPlayer {
     public Vector2f getPos() {
 	return pos;
     }
-    
-    public void update() {
+
+    public void update(int delta) {
 	
     }
 

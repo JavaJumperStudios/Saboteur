@@ -6,11 +6,11 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class Saboteur extends StateBasedGame {
-
+    
     public Saboteur() {
 	super("Saboteur");
     }
-    
+
     public static void main(String[] args) {
 	try {
 	    AppGameContainer container = new AppGameContainer(new Saboteur());

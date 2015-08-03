@@ -4,46 +4,46 @@ import java.nio.ByteBuffer;
 
 public class Packet01LoginRequest extends Packet {
 
-    public char[] name;
-    public char[] password;
+    public String name;
+    public String password;
     
     @Override
-    protected void readFromByteBuffer(ByteBuffer bb) {
-	int leftBytes = length - super.getLength();
+    public void readFromByteBuffer(ByteBuffer bb) {
 	String rname = "";
 	String rpassword = "";
 	char c;
 	
-	while ((c = bb.getChar()) != '#') {
-	    rname = rname + c;
-	    leftBytes -= Character.BYTES;
+	for (int i = 0; i<16;i++) {
+	    rname = rname + bb.getChar();
 	}
 	
-	while (leftBytes != 0) {
-	    c = bb.getChar();
-	    rpassword = rpassword + c;
-	    leftBytes -= Character.BYTES;
+	for (int i = 0; i<16;i++) {
+	    rpassword = rpassword + bb.getChar();
 	}
 	
-	this.name = rname.toCharArray();
-	this.password = rpassword.toCharArray();
+	this.name = rname;
+	this.password = rpassword;
     }
     
     @Override
-    protected ByteBuffer writeToByteBuffer() {
+    public ByteBuffer writeToByteBuffer() {
 	ByteBuffer bb = ByteBuffer.allocate(getLength());
 	
 	bb.put(id);
 	bb.putInt(getLength());
 	
-	for (char c : name) {
-	    bb.putChar(c);
+	for (int i = 0; i<16;i++) {
+	    if (i<name.length())
+		bb.putChar(name.charAt(i));
+	    else
+		bb.putChar('_');
 	}
 	
-	bb.putChar('#');
-	
-	for (char c : password) {
-	    bb.putChar(c);
+	for (int i = 0; i<16;i++) {
+	    if (i<password.length())
+		bb.putChar(password.charAt(i));
+	    else
+		bb.putChar('_');
 	}
 	
 	return bb;
@@ -51,7 +51,7 @@ public class Packet01LoginRequest extends Packet {
     
     @Override
     public int getLength() {
-	return super.getLength() + Character.BYTES * (name.length + 1) + Character.BYTES * password.length;
+	return super.getLength() + Character.BYTES * (16) + Character.BYTES * 16;
     }
 
 }

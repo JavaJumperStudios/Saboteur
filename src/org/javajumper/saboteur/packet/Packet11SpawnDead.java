@@ -10,13 +10,13 @@ public class Packet11SpawnDead extends Packet {
     public int itemId;
 
     @Override
-    protected void readFromByteBuffer(ByteBuffer bb) {
+    public void readFromByteBuffer(ByteBuffer bb) {
 	// TODO Auto-generated method stub
 
     }
 
     @Override
-    protected ByteBuffer writeToByteBuffer() {
+    public ByteBuffer writeToByteBuffer() {
 	// TODO Auto-generated method stub
 	return null;
     }

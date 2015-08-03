@@ -28,8 +28,7 @@ public class Tile {
     // Static Methods
 
     public static void initTileRendering() {
-	typeIdTextures.put(1,
-		RessourceManager.loadImage("Tile-sheet.png", 0, 0, 32, 32));
+	typeIdTextures.put(1, RessourceManager.loadImage("Tile-sheet.png", 0, 0, 32, 32));
     }
 
 }
