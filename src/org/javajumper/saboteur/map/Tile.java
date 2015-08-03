@@ -1,23 +1,35 @@
 package org.javajumper.saboteur.map;
 
+import java.util.HashMap;
+
+import org.javajumper.saboteur.RessourceManager;
 import org.newdawn.slick.Image;
 
 public class Tile {
 
-    private Image image;
+    public static HashMap<Integer, Image> typeIdTextures = new HashMap<>();
+
+    private int typeId;
     private boolean solid;
 
-    public Tile(Image image, boolean solid) {
-
-	this.image = image;
+    public Tile(int typeId, boolean solid) {
+	this.typeId = typeId;
 	this.solid = solid;
-
     }
 
     public void draw(int x, int y) {
-	
-	image.draw(x, y);
+	getTexture().draw(x, y);
+    }
 
+    private Image getTexture() {
+	return Tile.typeIdTextures.get(typeId);
+    }
+
+    // Static Methods
+
+    public static void initTileRendering() {
+	typeIdTextures.put(1,
+		RessourceManager.loadImage("Tile-sheet.png", 0, 0, 32, 32));
     }
 
 }

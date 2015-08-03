@@ -18,7 +18,7 @@ public class SaboteurServer {
 
     private boolean stop;
     private ArrayList<ClientHandler> clientHandler = new ArrayList<>();
-    private ArrayList<ClientHandler> removeList = new ArrayList<ClientHandler>();
+    private ArrayList<ClientHandler> removeList = new ArrayList<>();
 
     ArrayList<Player> players = new ArrayList<>();
     private Map map;
@@ -27,7 +27,7 @@ public class SaboteurServer {
 
     private void start() {
 
-	Map map = new Map();
+	map = new Map();
 	map.loadMap();
 
 	acceptor = new Thread(new ClientAcceptor(this));
@@ -60,6 +60,7 @@ public class SaboteurServer {
 	    for (ClientHandler c : removeList) {
 		clientHandler.remove(c);
 	    }
+	    removeList.clear();
 	}
     }
 

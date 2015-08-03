@@ -11,12 +11,12 @@ import org.javajumper.saboteur.player.SPPlayer;
 
 public class Map {
 
-    private Tile[][] tiles;
+    private Tile[][] tiles = new Tile[40][30];
     private ArrayList<SPPlayer> players = new ArrayList<SPPlayer>();
     private ArrayList<DeadPlayer> deadplayers = new ArrayList<DeadPlayer>();
     private int width;
     private int hight;
-
+    
     public void update() {
 
 	for (SPPlayer p : players) {
@@ -34,8 +34,7 @@ public class Map {
 	for (int i = 0; i <= hight; i++) {
 	    for (int j = 0; j <= width; j++) {
 
-		tiles[i][j] = new Tile(RessourceManager.loadImage(
-			"Tile-sheet.png", 0, 0, 32, 32), false);
+		tiles[i][j] = new Tile(1, false);
 	    }
 
 	}
