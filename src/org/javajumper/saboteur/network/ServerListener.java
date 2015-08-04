@@ -55,7 +55,7 @@ public class ServerListener implements Runnable {
 		System.arraycopy(buffer, 0, data, 0, size);
 
 		if (size == buffer.length)
-		    System.out.println("SERVER OVERLOADED");
+		    System.out.println("CLIENT OVERLOADED");
 
 		ByteBuffer bb = ByteBuffer.wrap(data);
 

@@ -51,7 +51,7 @@ public class Packet01LoginRequest extends Packet {
     
     @Override
     public int getLength() {
-	return super.getLength() + Character.BYTES * (16) + Character.BYTES * 16;
+	return super.getLength() + Character.BYTES * 32;
     }
 
 }

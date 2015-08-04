@@ -7,6 +7,7 @@ import org.javajumper.saboteur.map.Map;
 import org.javajumper.saboteur.map.Tile;
 import org.javajumper.saboteur.network.ServerListener;
 import org.javajumper.saboteur.packet.Packet02Login;
+import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
@@ -30,8 +31,10 @@ public class SaboteurGame extends BasicGameState {
     private ArrayList<SPPlayer> players = new ArrayList<SPPlayer>();
     private ArrayList<DeadPlayer> deadplayers = new ArrayList<DeadPlayer>();
 
+    private boolean ready = false;
+    
     private boolean[] readyPlayers;
-    private ToggleButton ready;
+    private ToggleButton readyButton;
     private Image background;
     private ServerListener serverListener;
 
@@ -89,6 +92,15 @@ public class SaboteurGame extends BasicGameState {
 
 	if (input.isKeyDown(Input.MOUSE_LEFT_BUTTON)) {
 	    // TODO Waffe benutzen
+	}
+	
+	if (input.isKeyPressed(Input.KEY_F9)) {
+	    Packet10Ready packet10 = new Packet10Ready();
+	    packet10.playerId = thePlayer.getId();
+	    packet10.ready = (byte) (ready ? 1 : 0);
+	    ready = !ready;
+	    serverListener.sendToServer(packet10);
+	    System.out.println("I changed ready state to: " + ready);
 	}
 
 	move = move.normalise();

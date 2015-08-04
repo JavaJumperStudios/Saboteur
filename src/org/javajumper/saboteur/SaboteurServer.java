@@ -98,5 +98,13 @@ public class SaboteurServer {
 	players.add(p);
 	return p;
     }
+    
+    public void pause() {
+	pause = true;
+    }
+    
+    public void unpause() {
+	pause = false;
+    }
 
 }
