@@ -43,8 +43,7 @@ public class SaboteurGame extends BasicGameState {
     private ServerListener serverListener;
 
     @Override
-    public void init(GameContainer container, StateBasedGame game)
-	    throws SlickException {
+    public void init(GameContainer container, StateBasedGame game) throws SlickException {
 	map = new Map();
 	map.loadMap();
 
@@ -56,8 +55,7 @@ public class SaboteurGame extends BasicGameState {
     }
 
     @Override
-    public void render(GameContainer container, StateBasedGame game, Graphics g)
-	    throws SlickException {
+    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 	map.draw();
 
 	for (SPPlayer p : players) {
@@ -72,8 +70,7 @@ public class SaboteurGame extends BasicGameState {
     }
 
     @Override
-    public void update(GameContainer container, StateBasedGame game, int delta)
-	    throws SlickException {
+    public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 
 	if (thePlayer == null)
 	    return;
@@ -175,8 +172,7 @@ public class SaboteurGame extends BasicGameState {
     }
 
     public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
-	SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY,
-		loginPacket.name, 100, new Vector2f(0, 0), "missingTexture.png");
+	SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY, loginPacket.name, 100, new Vector2f(0, 0), "missingTexture.png");
 	return p;
     }
 
@@ -185,10 +181,11 @@ public class SaboteurGame extends BasicGameState {
 	    for (Player p : players) {
 		if (ps.playerId == p.getId()) {
 		    p.getPos().set(ps.x, ps.y);
-		    if (p != thePlayer) p.setAngle(ps.lookAngle);
+		    if (p != thePlayer)
+			p.setAngle(ps.lookAngle);
 		    p.setLivepoints(ps.lifepoints);
 		    p.setCurrentWeapon(ps.currentWeapon);
-		    
+
 		    continue snapshots;
 		}
 	    }

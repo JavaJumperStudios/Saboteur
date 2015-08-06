@@ -66,12 +66,6 @@ public class SaboteurServer {
 	    Packet07Snapshot packet = new Packet07Snapshot();
 	    packet.snapshot = generateSnapshot();
 
-	    for (ClientHandler c : clientHandler) {
-		if (c != null) {
-		    c.sendToClient(packet);
-		}
-	    }
-
 	    if (!removeList.isEmpty()) {
 		for (ClientHandler c : removeList) {
 		    clientHandler.remove(c);
@@ -79,9 +73,13 @@ public class SaboteurServer {
 		removeList.clear();
 	    }
 
-	    System.out.println("1");
+	    for (ClientHandler c : clientHandler) {
+		if (c != null) {
+		    c.sendToClient(packet);
+		}
+	    }
+
 	    for (Player p : players) {
-		System.out.println("2");
 		p.update(delta);
 	    }
 	}
@@ -109,8 +107,7 @@ public class SaboteurServer {
 
     public Player addNewPlayer(String name) {
 	System.out.println("New Player added: " + name);
-	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100,
-		new Vector2f(0, 0));
+	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
 	players.add(p);
 	return p;
     }
@@ -123,6 +120,21 @@ public class SaboteurServer {
     public void unpause() {
 	pause = false;
 	System.out.println("Unpaused!");
+    }
+
+    public void removeClientHandler(ClientHandler ch) {
+	removeList.add(ch);
+    }
+
+    /**
+     * Wird aufgerufen, wenn ein Player ausgeloggt wird.
+     * 
+     * @param player
+     *            der ausloggende Spieler
+     */
+    public void handlePlayerLogout(Player player) {
+	System.out.println("Player " + player.getName() + " logged out.");
+	players.remove(player);
     }
 
 }
