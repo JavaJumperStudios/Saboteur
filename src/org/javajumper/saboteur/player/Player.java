@@ -39,6 +39,11 @@ public class Player {
     public void update(int delta) {
 	pos.x = pos.x + move.x * delta / 5f;
 	pos.y = pos.y + move.y * delta / 5f;
+	
+	if(pos.x < 0) pos.x = 0;
+	if(pos.x > 1248) pos.x = 1248;
+	if(pos.y < 0) pos.y = 0;
+	if(pos.y > 928) pos.y = 928;
 
     }
     
