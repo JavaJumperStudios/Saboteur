@@ -1,39 +1,39 @@
 package org.javajumper.saboteur.map;
 
-import java.util.ArrayList;
+import java.util.Random;
 
-import org.javajumper.saboteur.RessourceManager;
-import org.javajumper.saboteur.packet.Packet07Snapshot;
-import org.javajumper.saboteur.packet.PlayerSnapshot;
-import org.javajumper.saboteur.packet.Snapshot;
-import org.javajumper.saboteur.player.DeadPlayer;
-import org.javajumper.saboteur.player.Player;
-import org.javajumper.saboteur.player.SPPlayer;
+import org.newdawn.slick.geom.Rectangle;
 
 public class Map {
 
-    private Tile[][] tiles = new Tile[40][30];
-    private int width;
-    private int height;
-    
+    protected Tile[][] tiles = new Tile[40][30];
+    protected int width;
+    protected int height;
+
     public Map() {
-	
+
 	width = 40;
 	height = 30;
-	
-    }
-    
-    public void update(int delta) {
 
+    }
+
+    public void update(int delta) {
 
     }
 
     public void loadMap() {
 
+	boolean r = false;
+
 	for (int i = 0; i < width; i++) {
 	    for (int j = 0; j < height; j++) {
+		if (Math.random() < 0.2) {
+		    r = true;
+		} else
+		    r = false;
 
-		tiles[i][j] = new Tile(1, false);
+		tiles[i][j] = new Tile(1, true);
+
 	    }
 
 	}
@@ -60,7 +60,7 @@ public class Map {
 
 	for (int i = 0; i < width; i++) {
 	    for (int j = 0; j < height; j++) {
-		tiles[i][j].draw(i*32, j*32);
+		tiles[i][j].draw(i * 32, j * 32);
 	    }
 	}
 
