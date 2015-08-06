@@ -14,127 +14,127 @@ import org.newdawn.slick.geom.Vector2f;
 
 public class SaboteurServer {
 
-	public static void main(String[] args) {
-		System.out.println("Server wird gestartet.");
-		SaboteurServer server = new SaboteurServer();
-		server.start();
-	}
+    public static void main(String[] args) {
+	System.out.println("Server wird gestartet.");
+	SaboteurServer server = new SaboteurServer();
+	server.start();
+    }
 
-	private boolean stop = false;
-	private boolean pause = true;
-	private ArrayList<ClientHandler> clientHandler = new ArrayList<>();
-	private ArrayList<ClientHandler> removeList = new ArrayList<>();
+    private boolean stop = false;
+    private boolean pause = true;
+    private ArrayList<ClientHandler> clientHandler = new ArrayList<>();
+    private ArrayList<ClientHandler> removeList = new ArrayList<>();
 
-	ArrayList<Player> players = new ArrayList<>();
-	private Map map;
+    ArrayList<Player> players = new ArrayList<>();
+    private Map map;
 
-	Thread acceptor;
+    Thread acceptor;
 
-	private void start() {
+    private void start() {
 
-		map = new Map();
-		map.loadMap();
+	map = new Map();
+	map.loadMap();
 
-		acceptor = new Thread(new ClientAcceptor(this));
-		acceptor.start();
+	acceptor = new Thread(new ClientAcceptor(this));
+	acceptor.start();
 
-		int delta;
-		long lastTimeMillis = System.currentTimeMillis();
-		while (!stop) {
-			delta = (int) (System.currentTimeMillis() - lastTimeMillis);
-			lastTimeMillis = System.currentTimeMillis();
+	int delta;
+	long lastTimeMillis = System.currentTimeMillis();
+	while (!stop) {
+	    delta = (int) (System.currentTimeMillis() - lastTimeMillis);
+	    lastTimeMillis = System.currentTimeMillis();
 
-			if (delta < 20) {
-				try {
-					Thread.sleep(20 - delta);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				delta = 20;
-			}
-
-			update(delta);
+	    if (delta < 20) {
+		try {
+		    Thread.sleep(20 - delta);
+		} catch (InterruptedException e) {
+		    e.printStackTrace();
 		}
+		delta = 20;
+	    }
 
+	    update(delta);
 	}
 
-	private void update(int delta) {
-		if (!pause) {
+    }
 
-			map.update(delta);
+    private void update(int delta) {
+	if (!pause) {
 
-			Packet07Snapshot packet = new Packet07Snapshot();
-			packet.snapshot = generateSnapshot();
+	    map.update(delta);
 
-			if (!removeList.isEmpty()) {
-				for (ClientHandler c : removeList) {
-					clientHandler.remove(c);
-				}
-				removeList.clear();
-			}
+	    Packet07Snapshot packet = new Packet07Snapshot();
+	    packet.snapshot = generateSnapshot();
 
-			for (ClientHandler c : clientHandler) {
-				if (c != null) {
-					c.sendToClient(packet);
-				}
-			}
-
-			for (Player p : players) {
-				p.update(delta);
-			}
+	    if (!removeList.isEmpty()) {
+		for (ClientHandler c : removeList) {
+		    clientHandler.remove(c);
 		}
-	}
+		removeList.clear();
+	    }
 
-	public void addClientHandler(ClientHandler client) {
-		clientHandler.add(client);
-	}
-
-	public Snapshot generateSnapshot() {
-		Snapshot snapshot = new Snapshot();
-		Player[] pl = new Player[players.size()];
-		players.toArray(pl);
-
-		PlayerSnapshot[] ps = new PlayerSnapshot[pl.length];
-
-		for (int i = 0; i < pl.length; i++) {
-			ps[i] = pl[i].generateSnapshot();
+	    for (ClientHandler c : clientHandler) {
+		if (c != null) {
+		    c.sendToClient(packet);
 		}
+	    }
 
-		snapshot.player = ps;
+	    for (Player p : players) {
+		p.update(delta);
+	    }
+	}
+    }
 
-		return snapshot;
+    public void addClientHandler(ClientHandler client) {
+	clientHandler.add(client);
+    }
+
+    public Snapshot generateSnapshot() {
+	Snapshot snapshot = new Snapshot();
+	Player[] pl = new Player[players.size()];
+	players.toArray(pl);
+
+	PlayerSnapshot[] ps = new PlayerSnapshot[pl.length];
+
+	for (int i = 0; i < pl.length; i++) {
+	    ps[i] = pl[i].generateSnapshot();
 	}
 
-	public Player addNewPlayer(String name) {
-		System.out.println("New Player added: " + name);
-		Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
-		players.add(p);
-		return p;
-	}
+	snapshot.player = ps;
 
-	public void pause() {
-		pause = true;
-		System.out.println("Paused.");
-	}
+	return snapshot;
+    }
 
-	public void unpause() {
-		pause = false;
-		System.out.println("Unpaused!");
-	}
+    public Player addNewPlayer(String name) {
+	System.out.println("New Player added: " + name);
+	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
+	players.add(p);
+	return p;
+    }
 
-	public void removeClientHandler(ClientHandler ch) {
-		removeList.add(ch);
-	}
+    public void pause() {
+	pause = true;
+	System.out.println("Paused.");
+    }
 
-	/**
-	 * Wird aufgerufen, wenn ein Player ausgeloggt wird.
-	 * 
-	 * @param player
-	 *            der ausloggende Spieler
-	 */
-	public void handlePlayerLogout(Player player) {
-		System.out.println("Player " + player.getName() + " logged out.");
-		players.remove(player);
-	}
+    public void unpause() {
+	pause = false;
+	System.out.println("Unpaused!");
+    }
+
+    public void removeClientHandler(ClientHandler ch) {
+	removeList.add(ch);
+    }
+
+    /**
+     * Wird aufgerufen, wenn ein Player ausgeloggt wird.
+     * 
+     * @param player
+     *            der ausloggende Spieler
+     */
+    public void handlePlayerLogout(Player player) {
+	System.out.println("Player " + player.getName() + " logged out.");
+	players.remove(player);
+    }
 
 }
