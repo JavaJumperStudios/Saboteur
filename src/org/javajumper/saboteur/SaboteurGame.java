@@ -176,7 +176,7 @@ public class SaboteurGame extends BasicGameState {
 
     public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
 	SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY,
-		loginPacket.name, 100, new Vector2f(0, 0), "missingTexture.png");
+		loginPacket.name, 100, new Vector2f(0, 0), "Fuzzi.png");
 	return p;
     }
 
