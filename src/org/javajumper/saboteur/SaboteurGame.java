@@ -97,6 +97,17 @@ public class SaboteurGame extends BasicGameState {
 	if (input.isKeyDown(Input.MOUSE_LEFT_BUTTON)) {
 	    // TODO Waffe benutzen
 	}
+	
+	
+	Vector2f mouse = new Vector2f(input.getMouseX(), input.getMouseY());
+	mouse = mouse.negate();
+	mouse.add(new Vector2f(16, 16).add(thePlayer.getPos()));
+	mouse = mouse.negate();
+	thePlayer.setAngle((float) mouse.getTheta());
+
+	
+	
+	
 
 	if (input.isKeyPressed(Input.KEY_F9)) {
 	    Packet10Ready packet10 = new Packet10Ready();

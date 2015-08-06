@@ -21,7 +21,7 @@ public class Player {
     private Item[] inventory;
     protected Vector2f pos;
     private Vector2f move;
-    private float lookAngle;
+    protected float lookAngle;
     private boolean sprinting;
     private boolean dead;
     private Rectangle collisionBox;
@@ -56,7 +56,6 @@ public class Player {
 	for (Rectangle r : t) {
 
 	    if (collision(r)) {
-		System.out.println("Kollision festgestellt");
 		pos.x = pos.x - move.x * delta / 5f;
 		collisionBox.setLocation(pos);
 		break;
@@ -70,7 +69,6 @@ public class Player {
 	for (Rectangle r : t) {
 
 	    if (collision(r)) {
-		System.out.println("Kollision festgestellt");
 		pos.y = pos.y - move.y * delta / 5f;
 		collisionBox.setLocation(pos);
 		break;

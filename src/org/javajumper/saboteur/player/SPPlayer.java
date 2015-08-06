@@ -25,6 +25,7 @@ public class SPPlayer extends Player {
 	if (image == null)
 	    image = RessourceManager.loadImage(texture);
 
+	image.rotate(lookAngle - image.getRotation() + 90);
 	image.draw(x, y);
 
 	if (this.getInventory()[this.getCurrentWeapon()] != null)
