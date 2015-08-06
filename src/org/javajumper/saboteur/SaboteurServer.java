@@ -20,7 +20,7 @@ public class SaboteurServer {
 	server.start();
     }
 
-    private boolean stop;
+    private boolean stop = false;
     private boolean pause = true;
     private ArrayList<ClientHandler> clientHandler = new ArrayList<>();
     private ArrayList<ClientHandler> removeList = new ArrayList<>();
@@ -40,10 +40,18 @@ public class SaboteurServer {
 
 	int delta;
 	long lastTimeMillis = System.currentTimeMillis();
-
 	while (!stop) {
 	    delta = (int) (System.currentTimeMillis() - lastTimeMillis);
 	    lastTimeMillis = System.currentTimeMillis();
+
+	    if (delta < 20) {
+		try {
+		    Thread.sleep(20 - delta);
+		} catch (InterruptedException e) {
+		    e.printStackTrace();
+		}
+		delta = 20;
+	    }
 
 	    update(delta);
 	}
@@ -52,6 +60,7 @@ public class SaboteurServer {
 
     private void update(int delta) {
 	if (!pause) {
+
 	    map.update(delta);
 
 	    Packet07Snapshot packet = new Packet07Snapshot();
@@ -68,6 +77,12 @@ public class SaboteurServer {
 		    clientHandler.remove(c);
 		}
 		removeList.clear();
+	    }
+
+	    System.out.println("1");
+	    for (Player p : players) {
+		System.out.println("2");
+		p.update(delta);
 	    }
 	}
     }
@@ -93,18 +108,21 @@ public class SaboteurServer {
     }
 
     public Player addNewPlayer(String name) {
+	System.out.println("New Player added: " + name);
 	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100,
 		new Vector2f(0, 0));
 	players.add(p);
 	return p;
     }
-    
+
     public void pause() {
 	pause = true;
+	System.out.println("Paused.");
     }
-    
+
     public void unpause() {
 	pause = false;
+	System.out.println("Unpaused!");
     }
 
 }

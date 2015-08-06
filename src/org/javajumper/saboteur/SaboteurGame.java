@@ -9,7 +9,10 @@ import org.javajumper.saboteur.network.ServerListener;
 import org.javajumper.saboteur.packet.Packet02Login;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
+import org.javajumper.saboteur.packet.PlayerSnapshot;
+import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.DeadPlayer;
+import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
 import org.newdawn.slick.GameContainer;
@@ -29,11 +32,11 @@ public class SaboteurGame extends BasicGameState {
     private SPPlayer thePlayer;
     private Image gui;
 
-    private ArrayList<SPPlayer> players = new ArrayList<SPPlayer>();
-    private ArrayList<DeadPlayer> deadplayers = new ArrayList<DeadPlayer>();
+    private ArrayList<SPPlayer> players = new ArrayList<>();
+    private ArrayList<DeadPlayer> deadplayers = new ArrayList<>();
 
     private boolean ready = false;
-    
+
     private boolean[] readyPlayers;
     private ToggleButton readyButton;
     private Image background;
@@ -80,21 +83,21 @@ public class SaboteurGame extends BasicGameState {
 	Vector2f move = new Vector2f();
 
 	if (input.isKeyDown(Input.KEY_UP)) {
-	    move.x = 1;
+	    move.y = -1;
 	} else if (input.isKeyDown(Input.KEY_DOWN)) {
-	    move.x = -1;
+	    move.y = 1;
 	}
 
 	if (input.isKeyDown(Input.KEY_LEFT)) {
-	    move.y = 1;
+	    move.x = -1;
 	} else if (input.isKeyDown(Input.KEY_RIGHT)) {
-	    move.y = -1;
+	    move.x = 1;
 	}
 
 	if (input.isKeyDown(Input.MOUSE_LEFT_BUTTON)) {
 	    // TODO Waffe benutzen
 	}
-	
+
 	if (input.isKeyPressed(Input.KEY_F9)) {
 	    Packet10Ready packet10 = new Packet10Ready();
 	    packet10.playerId = thePlayer.getId();
@@ -113,14 +116,14 @@ public class SaboteurGame extends BasicGameState {
 	for (SPPlayer p : players) {
 	    p.update(delta);
 	}
-	
+
 	Packet09PlayerUpdate packet09 = new Packet09PlayerUpdate();
 	packet09.currentItem = thePlayer.getCurrentWeapon();
 	packet09.lookAngle = thePlayer.getAngle();
 	packet09.moveX = thePlayer.getMove().x;
 	packet09.moveY = thePlayer.getMove().y;
 	packet09.sprinting = (byte) (thePlayer.getSprint() ? 1 : 0);
-	
+
 	serverListener.sendToServer(packet09);
     }
 
@@ -171,10 +174,25 @@ public class SaboteurGame extends BasicGameState {
 
     }
 
-    public SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
+    public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
 	SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY,
 		loginPacket.name, 100, new Vector2f(0, 0), "missingTexture.png");
 	return p;
     }
-    
+
+    public void setSnapshot(Snapshot snapshot) {
+	snapshots: for (PlayerSnapshot ps : snapshot.player) {
+	    for (Player p : players) {
+		if (ps.playerId == p.getId()) {
+		    p.getPos().set(ps.x, ps.y);
+		    if (p != thePlayer) p.setAngle(ps.lookAngle);
+		    p.setLivepoints(ps.lifepoints);
+		    p.setCurrentWeapon(ps.currentWeapon);
+		    
+		    continue snapshots;
+		}
+	    }
+	}
+    }
+
 }

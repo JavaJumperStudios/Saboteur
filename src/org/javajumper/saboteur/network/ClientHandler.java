@@ -8,7 +8,9 @@ import org.javajumper.saboteur.SaboteurServer;
 import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
+import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
+import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.player.Player;
 
 public class ClientHandler implements Runnable {
@@ -47,8 +49,6 @@ public class ClientHandler implements Runnable {
 		    int packetId = bb.get();
 		    int length = bb.getInt();
 
-		    System.out.println("Received Packet, ID: " + packetId + ", length: " + length);
-		    
 		    switch (packetId) {
 		    case 1:
 			System.out.println("Login Request received.");
@@ -68,7 +68,6 @@ public class ClientHandler implements Runnable {
 			sendToClient(packetLogin);
 			break;
 		    case 10:
-			System.out.println("Player");
 			Packet10Ready packet10 = new Packet10Ready();
 			packet10.readFromByteBuffer(bb);
 
@@ -80,6 +79,16 @@ public class ClientHandler implements Runnable {
 				.println("Received one Player ready, Game starts!");
 			server.unpause();
 
+			break;
+		    case 9:
+			Packet09PlayerUpdate packet09 = new Packet09PlayerUpdate();
+			packet09.readFromByteBuffer(bb);
+			
+			player.getMove().x = packet09.moveX;
+			player.getMove().y = packet09.moveY;
+			player.setCurrentWeapon(packet09.currentItem);
+			player.setSprint(packet09.sprinting != 0);
+			player.setAngle(packet09.lookAngle);
 			break;
 		    default:
 			System.out.println("Unknown Package");

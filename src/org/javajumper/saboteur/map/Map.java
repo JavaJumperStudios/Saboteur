@@ -66,8 +66,4 @@ public class Map {
 
     }
 
-    public void setSnapshot(Snapshot snapshot) {
-	
-    }
-
 }

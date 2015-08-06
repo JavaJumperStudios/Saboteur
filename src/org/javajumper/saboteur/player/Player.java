@@ -37,9 +37,8 @@ public class Player {
     }
 
     public void update(int delta) {
-	
-	pos.x = pos.x + move.x * delta;
-	pos.y = pos.y + move.y * delta;
+	pos.x = pos.x + move.x * delta / 5f;
+	pos.y = pos.y + move.y * delta / 5f;
 
     }
     
@@ -122,7 +121,7 @@ public class Player {
 	return lookAngle;
     }
 
-    public void setAngle(Float angle) {
+    public void setAngle(float angle) {
 	this.lookAngle = angle;
     }
 

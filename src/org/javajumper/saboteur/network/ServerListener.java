@@ -88,11 +88,10 @@ public class ServerListener implements Runnable {
 			if (!active) {
 			    System.out.println("Ignoring early Snapshot");
 			}
-			
+
 			Packet07Snapshot packet07Snapshot = new Packet07Snapshot();
 			packet07Snapshot.readFromByteBuffer(bb);
-			instance.getMap()
-				.setSnapshot(packet07Snapshot.snapshot);
+			instance.setSnapshot(packet07Snapshot.snapshot);
 			break;
 		    /*
 		     * case 3: Packet03NewPlayer newPlayerPacket = new
