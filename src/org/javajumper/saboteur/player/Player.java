@@ -1,13 +1,18 @@
 package org.javajumper.saboteur.player;
 
+import java.util.ArrayList;
+
+import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.player.inventory.Item;
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
 public class Player {
 
     private static int currentId = 0;
-    
+
     private int id;
     private Role role;
     private String name;
@@ -19,6 +24,7 @@ public class Player {
     private float lookAngle;
     private boolean sprinting;
     private boolean dead;
+    private Rectangle collisionBox;
 
     public Player(int id, Role role, String name, int lifepoints, Vector2f pos) {
 
@@ -34,19 +40,55 @@ public class Player {
 	this.sprinting = false;
 	this.dead = false;
 
+	collisionBox = new Rectangle(pos.x, pos.y, 32, 32);
+
     }
 
     public void update(int delta) {
+
+	boolean c = false;
+
+	ArrayList<Rectangle> t = MapServer.getTileCollision();
+
 	pos.x = pos.x + move.x * delta / 5f;
+	collisionBox.setLocation(pos);
+
+	for (Rectangle r : t) {
+
+	    if (collision(r)) {
+		System.out.println("Kollision festgestellt");
+		pos.x = pos.x - move.x * delta / 5f;
+		collisionBox.setLocation(pos);
+		break;
+	    }
+
+	}
+
 	pos.y = pos.y + move.y * delta / 5f;
-	
-	if(pos.x < 0) pos.x = 0;
-	if(pos.x > 1248) pos.x = 1248;
-	if(pos.y < 0) pos.y = 0;
-	if(pos.y > 928) pos.y = 928;
+	collisionBox.setLocation(pos);
+
+	for (Rectangle r : t) {
+
+	    if (collision(r)) {
+		System.out.println("Kollision festgestellt");
+		pos.y = pos.y - move.y * delta / 5f;
+		collisionBox.setLocation(pos);
+		break;
+	    }
+
+	}
+
+	if (pos.x < 0)
+	    pos.x = 0;
+	if (pos.x > 1248)
+	    pos.x = 1248;
+	if (pos.y < 0)
+	    pos.y = 0;
+	if (pos.y > 928)
+	    pos.y = 928;
 
     }
-    
+
     public int getId() {
 	return id;
     }
@@ -117,7 +159,7 @@ public class Player {
     public void setSprint(boolean sprint) {
 	this.sprinting = sprint;
     }
-    
+
     public boolean getSprint() {
 	return sprinting;
     }
@@ -133,9 +175,13 @@ public class Player {
     public Item[] getInventory() {
 	return inventory;
     }
-    
+
     public Boolean getDead() {
 	return dead;
+    }
+
+    public boolean collision(Shape shape) {
+	return collisionBox.intersects(shape);
     }
 
     public PlayerSnapshot generateSnapshot() {
@@ -145,7 +191,7 @@ public class Player {
 	ps.lookAngle = lookAngle;
 	ps.x = pos.x;
 	ps.y = pos.y;
-	
+
 	return ps;
     }
 

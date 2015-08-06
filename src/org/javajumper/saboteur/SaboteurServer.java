@@ -2,7 +2,7 @@ package org.javajumper.saboteur;
 
 import java.util.ArrayList;
 
-import org.javajumper.saboteur.map.Map;
+import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.network.ClientAcceptor;
 import org.javajumper.saboteur.network.ClientHandler;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
@@ -26,13 +26,13 @@ public class SaboteurServer {
     private ArrayList<ClientHandler> removeList = new ArrayList<>();
 
     ArrayList<Player> players = new ArrayList<>();
-    private Map map;
+    private MapServer map;
 
     Thread acceptor;
 
     private void start() {
 
-	map = new Map();
+	map = new MapServer();
 	map.loadMap();
 
 	acceptor = new Thread(new ClientAcceptor(this));
@@ -79,9 +79,7 @@ public class SaboteurServer {
 		removeList.clear();
 	    }
 
-	    System.out.println("1");
 	    for (Player p : players) {
-		System.out.println("2");
 		p.update(delta);
 	    }
 	}
