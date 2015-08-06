@@ -37,7 +37,7 @@ public class Player {
     }
 
     public void update(int delta) {
-	
+	System.out.println(move.x);
 	pos.x = pos.x + move.x * delta;
 	pos.y = pos.y + move.y * delta;
 
