@@ -135,6 +135,7 @@ public class Player {
 
     public PlayerSnapshot generateSnapshot() {
 	PlayerSnapshot ps = new PlayerSnapshot();
+	ps.playerId = id;
 	ps.currentWeapon = currentWeapon;
 	ps.lifepoints = lifepoints;
 	ps.lookAngle = lookAngle;
