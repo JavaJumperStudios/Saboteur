@@ -4,6 +4,10 @@ import java.nio.ByteBuffer;
 
 public class Packet01LoginRequest extends Packet {
 
+    public Packet01LoginRequest() {
+	super((byte) 1);
+    }
+
     public String name;
     public String password;
     

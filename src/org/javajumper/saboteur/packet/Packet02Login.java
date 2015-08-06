@@ -8,8 +8,7 @@ public class Packet02Login extends Packet {
     public String name;
 
     public Packet02Login() {
-	id = 2;
-	length = getLength();
+	super((byte) 2);
     }
     
     @Override

@@ -4,6 +4,10 @@ import java.nio.ByteBuffer;
 
 public class Packet08Death extends Packet {
 
+    Packet08Death() {
+	super((byte) 8);
+    }
+
     public int playerId;
 
     @Override

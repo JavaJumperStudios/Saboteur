@@ -8,7 +8,7 @@ public class Packet07Snapshot extends Packet {
     public Snapshot snapshot;
 
     public Packet07Snapshot() {
-	id = 7;
+	super((byte) 7);
     }
     
     @Override

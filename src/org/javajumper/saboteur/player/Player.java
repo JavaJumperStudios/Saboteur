@@ -118,7 +118,7 @@ public class Player {
 	return sprinting;
     }
 
-    public Float getAngle() {
+    public float getAngle() {
 	return lookAngle;
     }
 

@@ -12,8 +12,7 @@ public class Packet10Ready extends Packet {
     public byte ready;
 
     public Packet10Ready() {
-	id = 10;
-	length = getLength();
+	super((byte) 10);
     }
     
     @Override

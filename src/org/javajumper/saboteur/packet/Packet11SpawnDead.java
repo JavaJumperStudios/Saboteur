@@ -4,6 +4,10 @@ import java.nio.ByteBuffer;
 
 public class Packet11SpawnDead extends Packet {
 
+    Packet11SpawnDead() {
+	super((byte) 11);
+    }
+
     public int playerId;
     public int timeOfDeath;
     public int killerId;

@@ -7,6 +7,11 @@ public abstract class Packet {
     public byte id;
     public int length;
 
+    Packet(byte id) {
+	this.id = id;
+	this.length = getLength();
+    }
+    
     protected int getLength() {
 	return Byte.BYTES + Integer.BYTES;
     }

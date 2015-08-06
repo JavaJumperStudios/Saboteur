@@ -4,6 +4,10 @@ import java.nio.ByteBuffer;
 
 public class Packet05Logout extends Packet {
 
+    Packet05Logout() {
+	super((byte) 5);
+    }
+
     public int playerId;
 
     @Override

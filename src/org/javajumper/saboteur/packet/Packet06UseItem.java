@@ -4,6 +4,10 @@ import java.nio.ByteBuffer;
 
 public class Packet06UseItem extends Packet {
 
+    Packet06UseItem() {
+	super((byte) 6);
+    }
+
     public int itemId;
 
     @Override

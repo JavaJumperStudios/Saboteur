@@ -7,6 +7,7 @@ import org.javajumper.saboteur.map.Map;
 import org.javajumper.saboteur.map.Tile;
 import org.javajumper.saboteur.network.ServerListener;
 import org.javajumper.saboteur.packet.Packet02Login;
+import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Role;
@@ -112,7 +113,15 @@ public class SaboteurGame extends BasicGameState {
 	for (SPPlayer p : players) {
 	    p.update(delta);
 	}
-
+	
+	Packet09PlayerUpdate packet09 = new Packet09PlayerUpdate();
+	packet09.currentItem = thePlayer.getCurrentWeapon();
+	packet09.lookAngle = thePlayer.getAngle();
+	packet09.moveX = thePlayer.getMove().x;
+	packet09.moveY = thePlayer.getMove().y;
+	packet09.sprinting = (byte) (thePlayer.getSprint() ? 1 : 0);
+	
+	serverListener.sendToServer(packet09);
     }
 
     public void start() {
