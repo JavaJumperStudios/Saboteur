@@ -23,10 +23,22 @@ public class ServerListener implements Runnable {
     public ServerListener(SaboteurGame instance, String server, int port) {
 	this.instance = instance;
 
-	try {
-	    socket = new Socket(server, port);
-	} catch (IOException e) {
-	    e.printStackTrace();
+	boolean connected = false;
+
+	while (!connected) {
+
+	    try {
+		socket = new Socket(server, port);
+		connected = true;
+	    } catch (IOException e) {
+		System.out.println("Es konnte keine Verbindung zum Server hergestellt werden.");
+		System.out.println("Es wird in 0.1 Sekunden erneut versucht.");
+		try {
+		    Thread.sleep(100);
+		} catch (InterruptedException e1) {
+		    e1.printStackTrace();
+		}
+	    }
 	}
     }
 
@@ -40,7 +52,12 @@ public class ServerListener implements Runnable {
 	packet.name = "Jakob";
 	packet.password = "";
 
-	sendToServer(packet);
+	try {
+	    sendToServer(packet);
+	} catch (Exception e) {
+	    System.out.println("Programm wird beendet.");
+	    System.exit(0);
+	}
 
 	byte[] buffer = new byte[2048];
 	int size;
@@ -68,19 +85,16 @@ public class ServerListener implements Runnable {
 		    switch (id) {
 		    case 2:
 			if (active)
-			    System.out
-				    .println("Ignoring redundant login Package.");
+			    System.out.println("Ignoring redundant login Package.");
 			else {
 			    Packet02Login loginPacket = new Packet02Login();
 			    loginPacket.readFromByteBuffer(bb);
 
-			    SPPlayer p = instance
-				    .createPlayerFromLoginPacket(loginPacket);
+			    SPPlayer p = instance.createPlayerFromLoginPacket(loginPacket);
 
 			    instance.setMainPlayer(p);
 			    instance.addPlayer(p);
-			    System.out.println("Login complete. ID:"
-				    + p.getId());
+			    System.out.println("Login complete. ID:" + p.getId());
 			    active = true;
 			}
 			break;
@@ -120,9 +134,7 @@ public class ServerListener implements Runnable {
 			break;
 		    }
 		    if (length != bb.position() - oldPos)
-			System.out.println("Malformed Package, ID: " + id
-				+ ", Discrepancy: "
-				+ (bb.position() - oldPos - length));
+			System.out.println("Malformed Package, ID: " + id + ", Discrepancy: " + (bb.position() - oldPos - length));
 		}
 	    }
 	} catch (IOException e) {
