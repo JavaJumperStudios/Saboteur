@@ -8,9 +8,12 @@ import org.javajumper.saboteur.SaboteurServer;
 import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
+import org.javajumper.saboteur.packet.Packet06UseItem;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.player.Player;
+import org.newdawn.slick.geom.Line;
+import org.newdawn.slick.geom.Point;
 
 public class ClientHandler implements Runnable {
 
@@ -65,6 +68,20 @@ public class ClientHandler implements Runnable {
 
 						sendToClient(packetLogin);
 						break;
+						
+					case 6: 
+					    	Packet06UseItem packet06 = new Packet06UseItem();
+					    	packet06.readFromByteBuffer(bb);
+					    	
+					    	if(player.getInventory()[player.getCurrentWeapon()].getId() == packet06.itemId) {
+					    	    
+					    	    player.getInventory()[player.getCurrentWeapon()].use(player, server);
+					    	    
+					    	} else {
+					    	    System.out.println("Der Spieler schießt mit einer anderen Waffe als er eigendlich ausgerüstet hat");
+					    	}
+					    	break;
+						
 					case 10:
 						Packet10Ready packet10 = new Packet10Ready();
 						packet10.readFromByteBuffer(bb);

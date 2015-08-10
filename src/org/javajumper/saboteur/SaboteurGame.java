@@ -7,6 +7,7 @@ import org.javajumper.saboteur.map.Map;
 import org.javajumper.saboteur.map.Tile;
 import org.javajumper.saboteur.network.ServerListener;
 import org.javajumper.saboteur.packet.Packet02Login;
+import org.javajumper.saboteur.packet.Packet06UseItem;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
@@ -15,6 +16,7 @@ import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
+import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -91,8 +93,16 @@ public class SaboteurGame extends BasicGameState {
 	    move.x = 1;
 	}
 
-	if (input.isKeyDown(Input.MOUSE_LEFT_BUTTON)) {
-	    // TODO Waffe benutzen
+	if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+	    
+	    System.out.println("Linksklick");
+	    System.out.println("Aktuelle Waffe:  " + thePlayer.getCurrentWeapon());
+	    	    
+	    Item i = thePlayer.getInventory()[thePlayer.getCurrentWeapon()];
+	    System.out.println("Item id:  " + i.getTypeId());
+	    Packet06UseItem packet06 = new Packet06UseItem();
+	    packet06.itemId = i.getId();
+	 
 	}
 	
 	

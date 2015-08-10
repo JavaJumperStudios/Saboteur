@@ -10,6 +10,8 @@ import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
+import org.javajumper.saboteur.player.inventory.Gun;
+import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.geom.Vector2f;
 
 public class SaboteurServer {
@@ -108,6 +110,8 @@ public class SaboteurServer {
     public Player addNewPlayer(String name) {
 	System.out.println("New Player added: " + name);
 	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
+	p.addItem(new Gun("TestGun", Item.nextId(), 1));
+	p.setCurrentWeapon(2);
 	players.add(p);
 	return p;
     }
@@ -120,6 +124,10 @@ public class SaboteurServer {
     public void unpause() {
 	pause = false;
 	System.out.println("Unpaused!");
+    }
+    
+    public ArrayList<Player> getPlayers() {
+	return players;
     }
 
     public void removeClientHandler(ClientHandler ch) {

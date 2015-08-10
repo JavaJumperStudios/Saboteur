@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 public class Packet06UseItem extends Packet {
 
-    Packet06UseItem() {
+    public Packet06UseItem() {
 	super((byte) 6);
     }
 
@@ -12,14 +12,22 @@ public class Packet06UseItem extends Packet {
 
     @Override
     public void readFromByteBuffer(ByteBuffer bb) {
-	// TODO Auto-generated method stub
+	itemId = bb.getInt();
 	
     }
 
     @Override
     public ByteBuffer writeToByteBuffer() {
-	// TODO Auto-generated method stub
-	return null;
+	ByteBuffer bb = ByteBuffer.allocate(getLength());
+	bb.put(id);
+	bb.putInt(getLength());
+	bb.putInt(itemId);	
+	return bb;
+    }
+    
+    @Override
+    public int getLength() {
+	return super.getLength() + Integer.BYTES;
     }
 
 }

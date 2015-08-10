@@ -2,6 +2,7 @@ package org.javajumper.saboteur.player;
 
 import java.util.ArrayList;
 
+import org.javajumper.saboteur.SaboteurServer;
 import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.player.inventory.Item;
@@ -14,6 +15,7 @@ public class Player {
     private static int currentId = 0;
 
     private int id;
+    private SaboteurServer server;
     private Role role;
     private String name;
     private int lifepoints;
@@ -49,13 +51,13 @@ public class Player {
 	boolean c = false;
 
 	ArrayList<Rectangle> t = MapServer.getTileCollision();
+	ArrayList<Player> players = server.getPlayers();
 
 	pos.x = pos.x + move.x * delta / 5f;
 	collisionBox.setLocation(pos);
 
 	for (Rectangle r : t) {
-
-	    if (collision(r)) {
+	    if (collisionBox.intersects(r)) {
 		pos.x = pos.x - move.x * delta / 5f;
 		collisionBox.setLocation(pos);
 		break;
@@ -63,17 +65,33 @@ public class Player {
 
 	}
 
+	for (Player pl : players) {
+	    if (collisionBox.intersects(pl.collision())) {
+		pos.x = pos.x - move.x * delta / 5f;
+		collisionBox.setLocation(pos);
+		break;
+	    }
+	}
+
 	pos.y = pos.y + move.y * delta / 5f;
 	collisionBox.setLocation(pos);
 
 	for (Rectangle r : t) {
 
-	    if (collision(r)) {
+	    if (collisionBox.intersects(r)) {
 		pos.y = pos.y - move.y * delta / 5f;
 		collisionBox.setLocation(pos);
 		break;
 	    }
 
+	}
+
+	for (Player pl : players) {
+	    if (collisionBox.intersects(pl.collision())) {
+		pos.y = pos.y - move.y * delta / 5f;
+		collisionBox.setLocation(pos);
+		break;
+	    }
 	}
 
 	if (pos.x < 0)
@@ -117,6 +135,7 @@ public class Player {
 
     public void setCurrentWeapon(int currentWeapon) {
 	this.currentWeapon = currentWeapon;
+	System.out.println("CurrentWeapon wurde verändert zu " + currentWeapon);
     }
 
     public int getCurrentWeapon() {
@@ -125,11 +144,15 @@ public class Player {
 
     public void addItem(Item item) {
 
+	System.out.println("Item TypeId in Player:   " + item.getTypeId());
+
 	if (item.getTypeId() == 0) {
 	    inventory[1] = item;
 	} else if (item.getTypeId() == 1) {
 	    inventory[2] = item;
 	}
+
+	System.out.println("Inventar:  " + inventory[2].getTypeId());
 
     }
 
@@ -178,8 +201,8 @@ public class Player {
 	return dead;
     }
 
-    public boolean collision(Shape shape) {
-	return collisionBox.intersects(shape);
+    public Rectangle collision() {
+	return collisionBox;
     }
 
     public PlayerSnapshot generateSnapshot() {
@@ -190,6 +213,8 @@ public class Player {
 	ps.lookAngle = lookAngle;
 	ps.x = pos.x;
 	ps.y = pos.y;
+
+	System.out.println("CurrentWeapon: " + currentWeapon);
 
 	return ps;
     }
