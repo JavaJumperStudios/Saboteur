@@ -7,6 +7,7 @@ import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.network.ClientAcceptor;
 import org.javajumper.saboteur.network.ClientHandler;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
+import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.Player;
@@ -114,7 +115,25 @@ public class SaboteurServer {
 	System.out.println("New Player added: " + name);
 	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
 	players.add(p);
+	
+	Packet12PlayerSpawned packet12 = new Packet12PlayerSpawned();
+	
+	packet12.name = name;
+	packet12.playerId = p.getId();
+	packet12.role = Role.LOBBY.ordinal();
+	packet12.x = 0;
+	packet12.y = 0;
+	
+	broadcastPacket(packet12);
+	
 	return p;
+    }
+
+    public void broadcastPacket(Packet12PlayerSpawned packet) {
+	for (ClientHandler c : clientHandler) {
+	    if (c.isLoggedIn())
+		c.sendToClient(packet);
+	}
     }
 
     public void pause() {
@@ -140,6 +159,23 @@ public class SaboteurServer {
     public void handlePlayerLogout(Player player) {
 	System.out.println("Player " + player.getName() + " logged out.");
 	players.remove(player);
+    }
+
+    public Packet12PlayerSpawned[] getPlayerSpawnPackets() {
+	Packet12PlayerSpawned[] packets = new Packet12PlayerSpawned[players.size()];
+	int i = 0;
+	
+	for (Player p : players) {
+	    Packet12PlayerSpawned packet = new Packet12PlayerSpawned();
+	    packet.name = p.getName();
+	    packet.playerId = p.getId();
+	    packet.role = p.getRole().ordinal();
+	    packet.x = p.getPos().x;
+	    packet.y = p.getPos().y;
+	    packets[i++] = packet;
+	}
+	
+	return packets;
     }
 
 }
