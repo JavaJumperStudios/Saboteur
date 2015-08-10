@@ -8,6 +8,7 @@ import org.javajumper.saboteur.map.Map;
 import org.javajumper.saboteur.map.Tile;
 import org.javajumper.saboteur.network.ServerListener;
 import org.javajumper.saboteur.packet.Packet02Login;
+import org.javajumper.saboteur.packet.Packet06UseItem;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
@@ -16,6 +17,7 @@ import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
+import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -97,20 +99,22 @@ public class SaboteurGame extends BasicGameState {
 	    move.x = 1;
 	}
 
-	if (input.isKeyDown(Input.MOUSE_LEFT_BUTTON)) {
-	    // TODO Waffe benutzen
+	if (input.isKeyDown(Input.KEY_2)) {
+	    thePlayer.setCurrentWeapon(2);
 	}
-	
-	
+
+	if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+	    Packet06UseItem packet06 = new Packet06UseItem();
+	    packet06.itemId = 0;
+	    serverListener.sendToServer(packet06);
+
+	}
+
 	Vector2f mouse = new Vector2f(input.getMouseX(), input.getMouseY());
 	mouse = mouse.negate();
 	mouse.add(new Vector2f(16, 16).add(thePlayer.getPos()));
 	mouse = mouse.negate();
 	thePlayer.setAngle((float) mouse.getTheta());
-
-	
-	
-	
 
 	if (input.isKeyPressed(Input.KEY_F9)) {
 	    Packet10Ready packet10 = new Packet10Ready();
@@ -191,7 +195,6 @@ public class SaboteurGame extends BasicGameState {
     public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
 
 	SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY, loginPacket.name, 100, new Vector2f(0, 0), "Fuzzi.png");
-
 
 	return p;
     }
