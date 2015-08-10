@@ -13,9 +13,7 @@ import org.newdawn.slick.geom.Vector2f;
 public class Player {
 
     private static int currentId = 0;
-
     private int id;
-    private SaboteurServer server;
     private Role role;
     private String name;
     private int lifepoints;
@@ -51,7 +49,7 @@ public class Player {
 	boolean c = false;
 
 	ArrayList<Rectangle> t = MapServer.getTileCollision();
-	ArrayList<Player> players = server.getPlayers();
+	ArrayList<Player> players = SaboteurServer.instance.getPlayers();
 
 	pos.x = pos.x + move.x * delta / 5f;
 	collisionBox.setLocation(pos);
@@ -67,9 +65,12 @@ public class Player {
 
 	for (Player pl : players) {
 	    if (collisionBox.intersects(pl.collision())) {
-		pos.x = pos.x - move.x * delta / 5f;
-		collisionBox.setLocation(pos);
-		break;
+		if(pl.getId() != this.getId()) {
+		    pos.x = pos.x - move.x * delta / 5f;
+		    collisionBox.setLocation(pos);
+		    break;
+		}
+		
 	    }
 	}
 
@@ -88,9 +89,11 @@ public class Player {
 
 	for (Player pl : players) {
 	    if (collisionBox.intersects(pl.collision())) {
-		pos.y = pos.y - move.y * delta / 5f;
-		collisionBox.setLocation(pos);
-		break;
+		if(pl.getId() != this.getId()) {
+		    pos.y = pos.y - move.y * delta / 5f;
+		    collisionBox.setLocation(pos);
+		    break;
+		}
 	    }
 	}
 
@@ -135,7 +138,6 @@ public class Player {
 
     public void setCurrentWeapon(int currentWeapon) {
 	this.currentWeapon = currentWeapon;
-	System.out.println("CurrentWeapon wurde verändert zu " + currentWeapon);
     }
 
     public int getCurrentWeapon() {
@@ -213,8 +215,6 @@ public class Player {
 	ps.lookAngle = lookAngle;
 	ps.x = pos.x;
 	ps.y = pos.y;
-
-	System.out.println("CurrentWeapon: " + currentWeapon);
 
 	return ps;
     }

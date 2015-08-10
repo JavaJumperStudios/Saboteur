@@ -19,6 +19,7 @@ public class SaboteurServer {
     public static void main(String[] args) {
 	System.out.println("Server wird gestartet.");
 	SaboteurServer server = new SaboteurServer();
+	instance = server;
 	server.start();
     }
 
@@ -26,6 +27,7 @@ public class SaboteurServer {
     private boolean pause = true;
     private ArrayList<ClientHandler> clientHandler = new ArrayList<>();
     private ArrayList<ClientHandler> removeList = new ArrayList<>();
+    public static SaboteurServer instance;
 
     ArrayList<Player> players = new ArrayList<>();
     private MapServer map;
@@ -111,7 +113,6 @@ public class SaboteurServer {
 	System.out.println("New Player added: " + name);
 	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
 	p.addItem(new Gun("TestGun", Item.nextId(), 1));
-	p.setCurrentWeapon(2);
 	players.add(p);
 	return p;
     }

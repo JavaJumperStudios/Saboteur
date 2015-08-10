@@ -93,28 +93,22 @@ public class SaboteurGame extends BasicGameState {
 	    move.x = 1;
 	}
 
-	if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-	    
-	    System.out.println("Linksklick");
-	    System.out.println("Aktuelle Waffe:  " + thePlayer.getCurrentWeapon());
-	    	    
-	    Item i = thePlayer.getInventory()[thePlayer.getCurrentWeapon()];
-	    System.out.println("Item id:  " + i.getTypeId());
-	    Packet06UseItem packet06 = new Packet06UseItem();
-	    packet06.itemId = i.getId();
-	 
+	if (input.isKeyDown(Input.KEY_2)) {
+	    thePlayer.setCurrentWeapon(2);
 	}
-	
-	
+
+	if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+	    Packet06UseItem packet06 = new Packet06UseItem();
+	    packet06.itemId = 0;
+	    serverListener.sendToServer(packet06);
+
+	}
+
 	Vector2f mouse = new Vector2f(input.getMouseX(), input.getMouseY());
 	mouse = mouse.negate();
 	mouse.add(new Vector2f(16, 16).add(thePlayer.getPos()));
 	mouse = mouse.negate();
 	thePlayer.setAngle((float) mouse.getTheta());
-
-	
-	
-	
 
 	if (input.isKeyPressed(Input.KEY_F9)) {
 	    Packet10Ready packet10 = new Packet10Ready();
@@ -195,7 +189,6 @@ public class SaboteurGame extends BasicGameState {
     public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
 
 	SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY, loginPacket.name, 100, new Vector2f(0, 0), "Fuzzi.png");
-
 
 	return p;
     }

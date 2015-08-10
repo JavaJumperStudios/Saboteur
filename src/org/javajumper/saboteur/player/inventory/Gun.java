@@ -19,8 +19,8 @@ public class Gun extends Item {
     @Override
     public void use(Player p, SaboteurServer server) {
 
-	Point point = new Point(p.getPos().x + 16, p.getPos().y + 16);
-	Vector2f startLocation = p.getPos();
+	Rectangle rec = new Rectangle(p.getPos().x + 16, p.getPos().y + 16, 0.1f, 0.1f);
+	Vector2f startLocation = p.getPos().copy();
 	Vector2f v = new Vector2f(p.getAngle()).normalise();
 
 	boolean t = true;
@@ -30,18 +30,18 @@ public class Gun extends Item {
 
 	while (t) {
 
-	    point.setLocation(startLocation.add(v));
+	    rec.setLocation(startLocation.add(v));
 
 	    for (Rectangle r : a) {
-		if (point.intersects(r)) {
+		if (r.intersects(rec)) {
 		    t = false;
-		    System.out.println("Punkt kollidiert mit Block " + r.getX() + r.getY());
+		    System.out.println("Punkt kollidiert mit Block " + r.getX() + "  " + r.getY());
 		    break;
 		}
 	    }
 
 	    for (Player player : players) {
-		if (point.intersects(player.collision())) {
+		if (rec.intersects(player.collision())) {
 		    if (player.getId() != p.getId()) {
 			t = false;
 			System.out.println("Punkt kollidiert mit Spieler " + player.getId());
@@ -49,6 +49,8 @@ public class Gun extends Item {
 		    }
 		}
 	    }
+	    
+	    if(rec.getX() < 0 || rec.getX() > 1280 || rec.getY() < 0 || rec.getY() > 1024) t = false;
 
 	}
 
