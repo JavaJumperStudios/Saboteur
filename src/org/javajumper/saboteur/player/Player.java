@@ -16,7 +16,7 @@ public class Player {
     private int id;
     private Role role;
     private String name;
-    private int lifepoints;
+    protected int lifepoints;
     private int currentWeapon;
     private Item[] inventory;
     protected Vector2f pos;
