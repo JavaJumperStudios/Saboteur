@@ -7,11 +7,11 @@ import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
 public class Player {
-
+    
+    private static SaboteurServer instance;
     private static int currentId = 0;
     private int id;
     private Role role;
@@ -41,6 +41,8 @@ public class Player {
 	this.dead = false;
 
 	collisionBox = new Rectangle(pos.x, pos.y, 32, 32);
+	
+	instance = new SaboteurServer();
 
     }
 
@@ -130,6 +132,29 @@ public class Player {
 
     public void setLivepoints(int lifepoints) {
 	this.lifepoints = lifepoints;
+	if(lifepoints <= 0) {
+	    lifepoints = 0;
+	}
+    }
+    
+    public void damage(int damage, Player playerOfImpact, int i) {
+	if(!dead) {
+	    lifepoints -= damage;
+		if(lifepoints <= 0) {
+		    lifepoints = 0;
+		    System.out.println("Lebenspunkte < 0");
+		    die(playerOfImpact, i);
+		}
+	
+	}
+    }
+    
+    public void die(Player p, int i) {
+	DeadPlayer dp = new DeadPlayer(id, name, role, SaboteurServer.instance.getTime(), p.getId(), i, pos);
+	dead = true;
+	System.out.println("Neues Packet wird beauftragt");
+	System.out.println(dp.getId() + dp.getName());
+	SaboteurServer.instance.deadPlayer(dp);
     }
 
     public int getLivepoints() {

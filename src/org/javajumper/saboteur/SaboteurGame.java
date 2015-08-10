@@ -29,8 +29,8 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class SaboteurGame extends BasicGameState {
 
+    
     private boolean paused;
-    private int time;
     private Map map;
     private SPPlayer thePlayer;
     private Image gui;
@@ -61,6 +61,7 @@ public class SaboteurGame extends BasicGameState {
 	setUpConnection("localhost", 5000);
 
     }
+    
 
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
@@ -186,10 +187,15 @@ public class SaboteurGame extends BasicGameState {
 
     }
 
-    public void spawnDeadPlayer(DeadPlayer p) {
+    public void spawnDeadPlayer(DeadPlayer dp) {
 
-	deadplayers.add(p);
-
+	deadplayers.add(dp);
+	for(Player p : players) {
+	    if(p.getId() == dp.getId()) {
+		players.remove(p);
+		break;
+	    }
+	}
     }
 
     public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
