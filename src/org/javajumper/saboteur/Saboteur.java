@@ -15,6 +15,7 @@ public class Saboteur extends StateBasedGame {
 	try {
 	    AppGameContainer container = new AppGameContainer(new Saboteur());
 	    container.setDisplayMode(1280, 1024, false);
+	    container.setAlwaysRender(true);
 	    container.setMinimumLogicUpdateInterval(25);
 	    container.start();
 	} catch (SlickException ex) {
