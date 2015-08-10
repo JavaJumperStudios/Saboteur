@@ -29,6 +29,9 @@ public class SPPlayer extends Player {
 
 	image.rotate(lookAngle - image.getRotation() + 90);
 	image.draw(x, y);
+	
+	g.draw(collisionBox);
+	System.out.println(collisionBox.getX() + "  " + collisionBox.getY());
 
 	if (this.getInventory()[this.getCurrentWeapon()] != null)
 	    this.getInventory()[this.getCurrentWeapon()].draw(x, y);

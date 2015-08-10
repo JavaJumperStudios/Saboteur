@@ -24,7 +24,7 @@ public class Player {
     protected float lookAngle;
     private boolean sprinting;
     private boolean dead;
-    private Rectangle collisionBox;
+    protected Rectangle collisionBox;
 
     public Player(int id, Role role, String name, int lifepoints, Vector2f pos) {
 
@@ -107,6 +107,8 @@ public class Player {
 	    pos.y = 0;
 	if (pos.y > 928)
 	    pos.y = 928;
+	
+	System.out.println("Kollisionsbox Update: " + collisionBox.getX() + "  " + collisionBox.getY());
 
     }
 
