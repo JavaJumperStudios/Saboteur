@@ -25,10 +25,15 @@ public class Tile {
 	return Tile.typeIdTextures.get(typeId);
     }
 
+    public boolean isSolid() {
+	return solid;
+    }
+
     // Static Methods
 
     public static void initTileRendering() {
-	typeIdTextures.put(1, RessourceManager.loadImage("Tile-sheet.png", 0, 0, 32, 32));
+	typeIdTextures.put(0, RessourceManager.loadImage("Tile-sheet.png", 0, 0, 32, 32));
+	typeIdTextures.put(1, RessourceManager.loadImage("Tile-sheet.png", 64, 0, 32, 32));
     }
 
 }

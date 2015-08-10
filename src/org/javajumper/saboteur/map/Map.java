@@ -1,8 +1,8 @@
 package org.javajumper.saboteur.map;
 
-import java.util.Random;
-
-import org.newdawn.slick.geom.Rectangle;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Map {
 
@@ -21,23 +21,33 @@ public class Map {
 
     }
 
-    public void loadMap() {
+    /**
+     * Lädt eine Karte aus dem "maps" Verzeichnis
+     * 
+     * @param filename Der Name der Karte
+     */
+    public void loadMap(String filename) throws IOException {
 
-	boolean r = false;
+	try (FileReader fr = new FileReader("maps/" + filename); BufferedReader bf = new BufferedReader(fr);) {
 
-	for (int i = 0; i < width; i++) {
-	    for (int j = 0; j < height; j++) {
-		if (Math.random() < 0.2) {
-		    r = true;
-		} else
-		    r = false;
+	    String line;
 
-		tiles[i][j] = new Tile(1, true);
+	    for (int row = 0; row < 30; row++) {
+		line = bf.readLine();
 
+		String[] tokens = line.split(" ");
+
+		assert tokens.length == width;
+
+		for (int column = 0; column < 40; column++) {
+		    byte type = Byte.parseByte(tokens[column]);
+		    boolean solid = false;
+		    if (type == 1) solid = true;
+		    
+		    setTile(column, row, new Tile(type, solid));
+		}
 	    }
-
 	}
-
     }
 
     public int getWidth() {

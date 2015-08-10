@@ -1,5 +1,6 @@
 package org.javajumper.saboteur;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.javajumper.saboteur.map.MapServer;
@@ -33,7 +34,11 @@ public class SaboteurServer {
     private void start() {
 
 	map = new MapServer();
-	map.loadMap();
+	try {
+	    map.loadMap("room.map");
+	} catch (IOException e1) {
+	    System.out.println("Karte konnte nicht geladen werden");
+	}
 
 	acceptor = new Thread(new ClientAcceptor(this));
 	acceptor.start();

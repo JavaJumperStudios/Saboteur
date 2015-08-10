@@ -6,36 +6,18 @@ import org.newdawn.slick.geom.Rectangle;
 
 public class MapServer extends Map {
 
-    private static ArrayList<Rectangle> TileCollision = new ArrayList();
-
-    @Override
-    public void loadMap() {
-
-	boolean r = false;
-
-	for (int i = 0; i < width; i++) {
-	    for (int j = 0; j < height; j++) {
-		if (Math.random() < 0.01) {
-		    r = true;
-		} else
-		    r = false;
-
-		tiles[i][j] = new Tile(1, r);
-
-		if (r) {
-
-		    TileCollision.add(new Rectangle(i * 32, j * 32, 32, 32));
-
-		}
-
-	    }
-
-	}
-
-    }
+    private static ArrayList<Rectangle> tileCollision = new ArrayList();
 
     public static ArrayList<Rectangle> getTileCollision() {
-	return TileCollision;
+	return tileCollision;
     }
 
+    @Override
+    public void setTile(int x, int y, Tile tile) {
+	super.setTile(x, y, tile);
+	
+	if(tile.isSolid()) {
+	    tileCollision.add(new Rectangle(x * 32, y * 32, 32, 32));
+	}
+    }
 }
