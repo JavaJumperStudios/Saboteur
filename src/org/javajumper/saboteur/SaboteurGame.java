@@ -1,5 +1,6 @@
 package org.javajumper.saboteur;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.javajumper.saboteur.gui.ToggleButton;
@@ -45,7 +46,12 @@ public class SaboteurGame extends BasicGameState {
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
 	map = new Map();
-	map.loadMap();
+	
+	try {
+	    map.loadMap("room.map");
+	} catch (IOException e) {
+	    System.out.println("Karte konnte nicht geladen werden.");
+	}
 
 	gui = RessourceManager.loadImage("gui.png");
 	Tile.initTileRendering();
