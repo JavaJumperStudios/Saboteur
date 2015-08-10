@@ -10,6 +10,7 @@ import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
+import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
 import org.javajumper.saboteur.player.Player;
 
 public class ClientHandler implements Runnable {
@@ -53,6 +54,8 @@ public class ClientHandler implements Runnable {
 						Packet01LoginRequest packetLoginRequest = new Packet01LoginRequest();
 						packetLoginRequest.readFromByteBuffer(bb);
 
+						Packet12PlayerSpawned[] spawnPackets = server.getPlayerSpawnPackets();
+						
 						player = server.addNewPlayer(packetLoginRequest.name);
 
 						login = true;
@@ -64,6 +67,11 @@ public class ClientHandler implements Runnable {
 						packetLogin.playerId = player.getId();
 
 						sendToClient(packetLogin);
+						
+						for (Packet p : spawnPackets) {
+						    sendToClient(p);
+						}
+						
 						break;
 					case 10:
 						Packet10Ready packet10 = new Packet10Ready();
@@ -123,6 +131,10 @@ public class ClientHandler implements Runnable {
 
 		server.removeClientHandler(this);
 		server.handlePlayerLogout(player);
+	}
+
+	public boolean isLoggedIn() {
+	    return login;
 	}
 
 }
