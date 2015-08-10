@@ -21,6 +21,7 @@ public class Gun extends Item {
 
 	Rectangle rec = new Rectangle(p.getPos().x + 16, p.getPos().y + 16, 0.1f, 0.1f);
 	Vector2f startLocation = p.getPos().copy();
+	startLocation.add(new Vector2f(16, 16));
 	Vector2f v = new Vector2f(p.getAngle()).normalise();
 
 	boolean t = true;
