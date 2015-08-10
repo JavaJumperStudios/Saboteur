@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-import org.javajumper.saboteur.RessourceManager;
 import org.javajumper.saboteur.SaboteurGame;
 import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
+import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
+import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
 import org.newdawn.slick.geom.Vector2f;
@@ -106,6 +107,12 @@ public class ServerListener implements Runnable {
 			Packet07Snapshot packet07Snapshot = new Packet07Snapshot();
 			packet07Snapshot.readFromByteBuffer(bb);
 			instance.setSnapshot(packet07Snapshot.snapshot);
+			break;
+		    case 12:
+			
+			Packet12PlayerSpawned packet12 = new Packet12PlayerSpawned();
+			packet12.readFromByteBuffer(bb);
+			instance.addPlayer(new SPPlayer(packet12.playerId, Role.values()[packet12.role], packet12.name, 100, new Vector2f(packet12.x, packet12.y), "Fuzzi.png"));
 			break;
 		    /*
 		     * case 3: Packet03NewPlayer newPlayerPacket = new
