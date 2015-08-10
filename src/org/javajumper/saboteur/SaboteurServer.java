@@ -182,7 +182,7 @@ public class SaboteurServer {
 	for(Player p : players) {
 	    System.out.println("Jeder Spieler...:  " + p.getId());
 	    if(p.getId() == dp.getId()) {
-		players.remove(p);
+		p.setDead(true);
 		break;
 	    }
 	}

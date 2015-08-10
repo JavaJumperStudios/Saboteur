@@ -29,9 +29,6 @@ public class SPPlayer extends Player {
 
 	image.rotate(lookAngle - image.getRotation() + 90);
 	image.draw(x, y);
-	
-	g.draw(collisionBox);
-	System.out.println(collisionBox.getX() + "  " + collisionBox.getY());
 
 	if (this.getInventory()[this.getCurrentWeapon()] != null)
 	    this.getInventory()[this.getCurrentWeapon()].draw(x, y);
@@ -40,11 +37,11 @@ public class SPPlayer extends Player {
 	g.drawRect(x, y - 12, 32, 8);
 	g.setColor(Color.red);
 	g.fillRect(x + 1, y - 11, lifepoints * 0.31f, 7);
-	
+
 	Vector2f v = new Vector2f(x + 16, y + 16);
 	Vector2f v1 = new Vector2f(getAngle()).scale(130f);
 	Vector2f v2 = v.copy().add(v1);
-	
+
 	g.drawLine(v.x, v.y, v2.x, v2.y);
     }
 

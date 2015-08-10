@@ -68,6 +68,7 @@ public class SaboteurGame extends BasicGameState {
 	map.draw();
 
 	for (SPPlayer p : players) {
+	    if(!p.getDead())
 	    p.draw(p.getPos().x, p.getPos().y, g);
 	}
 
@@ -83,6 +84,9 @@ public class SaboteurGame extends BasicGameState {
 
 	if (thePlayer == null)
 	    return;
+	if(thePlayer.getDead()) {
+	    return;
+	}
 
 	Input input = container.getInput();
 
@@ -174,6 +178,10 @@ public class SaboteurGame extends BasicGameState {
     public void addPlayer(SPPlayer p) {
 	players.add(p);
     }
+    
+    public ArrayList<SPPlayer> getPlayers() {
+	return players;
+    }
 
     public void setUpConnection(String server, int port) {
 	serverListener = new ServerListener(this, server, port);
@@ -190,12 +198,6 @@ public class SaboteurGame extends BasicGameState {
     public void spawnDeadPlayer(DeadPlayer dp) {
 
 	deadplayers.add(dp);
-	for(Player p : players) {
-	    if(p.getId() == dp.getId()) {
-		players.remove(p);
-		break;
-	    }
-	}
     }
 
     public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
