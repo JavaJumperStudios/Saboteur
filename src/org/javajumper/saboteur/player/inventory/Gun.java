@@ -46,7 +46,7 @@ public class Gun extends Item {
 		    if (player.getId() != p.getId()) {
 			t = false;
 			System.out.println("Punkt kollidiert mit Spieler " + player.getId());
-			player.setLivepoints(player.getLivepoints() - 10);
+			player.damage(10, player, 0);
 			break;
 		    }
 		}

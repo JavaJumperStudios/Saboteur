@@ -1,5 +1,6 @@
 package org.javajumper.saboteur.player;
 
+import org.javajumper.saboteur.RessourceManager;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 
@@ -30,9 +31,32 @@ public class DeadPlayer {
     public int getId() {
 	return id;
     }
+    
+    public int getTimeOfDeath() {
+	return timeOfDeath;
+    }
+    
+    public String getName() {
+	return name;
+    }
+    
+    public int getItemOfImpact() {
+	return itemOfImplact;
+    }
+    
+    public int getPlayerOfImpact() {
+	return playerOfImpact;
+    }
+    
+    public Role getRole() {
+	return role;
+    }
 
     public void draw(float x, float y) {
 
+	if (image == null)
+	    image = RessourceManager.loadImage("Fuzzitot.png");
+	
 	image.draw(x, y);
 
     }
