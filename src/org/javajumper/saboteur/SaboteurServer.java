@@ -126,7 +126,17 @@ public class SaboteurServer {
 
     public Player addNewPlayer(String name) {
 	System.out.println("New Player added: " + name);
-	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
+	
+	double i = Math.random();
+	Vector2f v = new Vector2f(0, 0);
+	if(i <= 0.2) { v = new Vector2f(0, 0); }
+	else if(i > 0.2 && i <= 0.4) { v = new Vector2f(1248, 0); }
+	else if(i > 0.4 && i <= 0.6) { v = new Vector2f(0, 928); }
+	else if(i > 0.6 && i <= 0.8) { v = new Vector2f(1248, 928); }
+	else if(i > 0.8 && i <= 1.0) { v = new Vector2f(640, 512); }
+	
+	
+	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, v);
 	p.addItem(new Gun("TestGun", Item.nextId(), 1));
 	players.add(p);
 	
