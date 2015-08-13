@@ -88,12 +88,11 @@ public class SaboteurServer {
 	if (start) {
 
 	    if (!pause) {
+	    map.update(delta);
 
 		time -= delta;
 
 		map.update(delta);
-
-		time += delta;
 
 		Packet07Snapshot packet = new Packet07Snapshot();
 		packet.snapshot = generateSnapshot();
@@ -293,7 +292,6 @@ public class SaboteurServer {
 	packet11.name = dp.getName();
 
 	broadcastPacket(packet11);
-
     }
 
     /**
