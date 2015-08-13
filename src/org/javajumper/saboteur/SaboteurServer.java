@@ -35,7 +35,7 @@ public class SaboteurServer {
     private ArrayList<ClientHandler> clientHandler = new ArrayList<>();
     private ArrayList<ClientHandler> removeList = new ArrayList<>();
     public static SaboteurServer instance;
-    private int time; //Zeit in Millisekunden
+    private int time; // Zeit in Millisekunden
 
     private ArrayList<Player> players = new ArrayList<>();
     private ArrayList<DeadPlayer> deadplayers = new ArrayList<>();
@@ -81,8 +81,6 @@ public class SaboteurServer {
 	    time -= delta;
 
 	    map.update(delta);
-	    
-	    time += delta;
 
 	    Packet07Snapshot packet = new Packet07Snapshot();
 	    packet.snapshot = generateSnapshot();
@@ -141,16 +139,21 @@ public class SaboteurServer {
 
     public Player addNewPlayer(String name) {
 	System.out.println("New Player added: " + name);
-	
+
 	double i = Math.random();
 	Vector2f v = new Vector2f(0, 0);
-	if(i <= 0.2) { v = new Vector2f(0, 0); }
-	else if(i > 0.2 && i <= 0.4) { v = new Vector2f(1248, 0); }
-	else if(i > 0.4 && i <= 0.6) { v = new Vector2f(0, 928); }
-	else if(i > 0.6 && i <= 0.8) { v = new Vector2f(1248, 928); }
-	else if(i > 0.8 && i <= 1.0) { v = new Vector2f(640, 512); }
-	
-	
+	if (i <= 0.2) {
+	    v = new Vector2f(0, 0);
+	} else if (i > 0.2 && i <= 0.4) {
+	    v = new Vector2f(1248, 0);
+	} else if (i > 0.4 && i <= 0.6) {
+	    v = new Vector2f(0, 928);
+	} else if (i > 0.6 && i <= 0.8) {
+	    v = new Vector2f(1248, 928);
+	} else if (i > 0.8 && i <= 1.0) {
+	    v = new Vector2f(640, 512);
+	}
+
 	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, v);
 	p.addItem(new Gun("TestGun", Item.nextId(), 1));
 	players.add(p);
@@ -172,7 +175,8 @@ public class SaboteurServer {
 	    if (c.isLoggedIn()) {
 		System.out.println("Versucht wirklich zu senden");
 		c.sendToClient(packet);
-		System.out.println("Hat wirklich gesendet"); }
+		System.out.println("Hat wirklich gesendet");
+	    }
 	}
     }
 
@@ -185,11 +189,11 @@ public class SaboteurServer {
 	pause = false;
 	System.out.println("Unpaused!");
     }
-    
+
     public int getTime() {
 	return time;
     }
-    
+
     public ArrayList<Player> getPlayers() {
 	return players;
     }
@@ -197,17 +201,17 @@ public class SaboteurServer {
     public void removeClientHandler(ClientHandler ch) {
 	removeList.add(ch);
     }
-    
+
     public void deadPlayer(DeadPlayer dp) {
 	System.out.println("Innerhalb von SaboteurServer");
-	for(Player p : players) {
+	for (Player p : players) {
 	    System.out.println("Jeder Spieler...:  " + p.getId());
-	    if(p.getId() == dp.getId()) {
+	    if (p.getId() == dp.getId()) {
 		p.setDead(true);
 		break;
 	    }
 	}
-	
+
 	deadplayers.add(dp);
 	Packet11SpawnDead packet11 = new Packet11SpawnDead();
 	System.out.println("Neues Packet wurde erstellt");
@@ -220,10 +224,10 @@ public class SaboteurServer {
 	packet11.role = dp.getRole().ordinal();
 	packet11.name = dp.getName();
 	System.out.println("Neues Packet wird gesendet");
-	
+
 	broadcastPacket(packet11);
 	System.out.println("Neues Packet wurde gesendet");
-	
+
     }
 
     /**
@@ -234,12 +238,12 @@ public class SaboteurServer {
      */
     public void handlePlayerLogout(Player player) {
 	System.out.println("Player " + player.getName() + " logged out.");
-	if(players.contains(player)) {
-	    players.remove(player); 
+	if (players.contains(player)) {
+	    players.remove(player);
 	} else {
 	    System.out.println("Player ist warscheinlich tod...");
 	}
-	
+
     }
 
     public Packet12PlayerSpawned[] getPlayerSpawnPackets() {
