@@ -10,7 +10,6 @@ import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
-import org.javajumper.saboteur.packet.Packet13Time;
 import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
@@ -108,17 +107,13 @@ public class ServerListener implements Runnable {
 			Packet07Snapshot packet07Snapshot = new Packet07Snapshot();
 			packet07Snapshot.readFromByteBuffer(bb);
 			instance.setSnapshot(packet07Snapshot.snapshot);
+			instance.setTime(packet07Snapshot.snapshot.time);
 			break;
 		    case 12:
-			
+
 			Packet12PlayerSpawned packet12 = new Packet12PlayerSpawned();
 			packet12.readFromByteBuffer(bb);
 			instance.addPlayer(new SPPlayer(packet12.playerId, Role.values()[packet12.role], packet12.name, 100, new Vector2f(packet12.x, packet12.y), "Fuzzi.png"));
-			break;
-		    case 13:
-			Packet13Time packet13 = new Packet13Time();
-			packet13.readFromByteBuffer(bb);
-			instance.setTime(packet13.time);
 			break;
 		    /*
 		     * case 3: Packet03NewPlayer newPlayerPacket = new

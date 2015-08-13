@@ -80,6 +80,8 @@ public class SaboteurGame extends BasicGameState {
 	    p.draw(p.getPos().x, p.getPos().y);
 	}
 
+	gui.draw();
+
 	g.drawString(stringTimeInSec, 1200, 996);
 
     }
@@ -91,9 +93,7 @@ public class SaboteurGame extends BasicGameState {
 	    return;
 
 	int timeInSec = 0;
-
-	time = time + delta;
-	timeInSec = time / 2000; //Zeit erhöht sich unerklärlicherweise doppelt so schnell
+	timeInSec = time / 1000;
 	stringTimeInSec = Integer.toString(timeInSec);
 
 	Input input = container.getInput();
@@ -211,7 +211,7 @@ public class SaboteurGame extends BasicGameState {
 
 	return p;
     }
-    
+
     public void setTime(int t) {
 	time = t;
     }
