@@ -31,7 +31,7 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-	byte[] buffer = new byte[2048];
+	byte[] buffer = new byte[524288];
 	System.out.println("Socket geöffnet");
 	int size;
 

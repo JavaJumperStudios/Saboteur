@@ -53,7 +53,7 @@ public class ServerListener implements Runnable {
 	Packet01LoginRequest packet = new Packet01LoginRequest();
 
 	packet.id = 1;
-	packet.name = "Jakob";
+	packet.name = "JayJay";
 	packet.password = "";
 
 	try {
@@ -63,7 +63,7 @@ public class ServerListener implements Runnable {
 	    System.exit(0);
 	}
 
-	byte[] buffer = new byte[2048];
+	byte[] buffer = new byte[524288];
 	int size;
 
 	System.out.println("Request sent, waiting for Login Packet...");
@@ -85,6 +85,7 @@ public class ServerListener implements Runnable {
 		    int oldPos = bb.position();
 
 		    byte id = bb.get();
+		    System.out.println("Paket: " + id);
 		    int length = bb.getInt();
 		    switch (id) {
 		    case 2:

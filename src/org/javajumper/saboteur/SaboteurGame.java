@@ -93,7 +93,7 @@ public class SaboteurGame extends BasicGameState {
 	    int x = 500;
 	    int y = 250;
 	    background.draw();
-	    for (SPPlayer p : players) {
+	    for (SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
 		if (p.ready()) {
 		    g.setColor(Color.green);
 		} else {

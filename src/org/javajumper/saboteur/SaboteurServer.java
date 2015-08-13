@@ -19,6 +19,7 @@ import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
+import org.javajumper.saboteur.player.SPPlayer;
 import org.javajumper.saboteur.player.inventory.Gun;
 import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.geom.Vector2f;
@@ -122,7 +123,7 @@ public class SaboteurServer {
 		return;
 	    boolean allReady = true;
 
-	    for (Player p : players) {
+	    for (SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
 		if (!p.ready())
 		    allReady = false;
 	    }
