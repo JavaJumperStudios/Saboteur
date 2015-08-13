@@ -1,5 +1,6 @@
 package org.javajumper.saboteur;
 
+import java.awt.TextArea;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -55,21 +56,20 @@ public class SaboteurServer {
 	acceptor = new Thread(new ClientAcceptor(this));
 	acceptor.start();
 
+	time = 300000;
 	int delta;
 	long lastTimeMillis = System.currentTimeMillis();
 	while (!stop) {
 	    delta = (int) (System.currentTimeMillis() - lastTimeMillis);
-	    lastTimeMillis = System.currentTimeMillis();
-
-	    if (delta < 20) {
+	    if (delta < 10) {
 		try {
-		    Thread.sleep(20 - delta);
+		    Thread.sleep(10 - delta);
 		} catch (InterruptedException e) {
 		    e.printStackTrace();
 		}
-		delta = 20;
+		delta = 10;
 	    }
-
+	    lastTimeMillis = System.currentTimeMillis();
 	    update(delta);
 	}
 
@@ -77,6 +77,8 @@ public class SaboteurServer {
 
     private void update(int delta) {
 	if (!pause) {
+
+	    time -= delta;
 
 	    map.update(delta);
 	    
@@ -101,7 +103,18 @@ public class SaboteurServer {
 	    for (Player p : players) {
 		p.update(delta);
 	    }
+
+	    checkWinConditions();
 	}
+    }
+
+    public void checkWinConditions() {
+
+	if (time <= 0) {
+	    pause = true;
+
+	}
+
     }
 
     public void addClientHandler(ClientHandler client) {
@@ -118,6 +131,8 @@ public class SaboteurServer {
 	for (int i = 0; i < pl.length; i++) {
 	    ps[i] = pl[i].generateSnapshot();
 	}
+
+	snapshot.time = time;
 
 	snapshot.player = ps;
 
@@ -139,23 +154,19 @@ public class SaboteurServer {
 	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, v);
 	p.addItem(new Gun("TestGun", Item.nextId(), 1));
 	players.add(p);
-	
+
 	Packet12PlayerSpawned packet12 = new Packet12PlayerSpawned();
-	
+
 	packet12.name = name;
 	packet12.playerId = p.getId();
 	packet12.role = Role.LOBBY.ordinal();
 	packet12.x = 0;
 	packet12.y = 0;
-	System.out.println("Broadcast Packet12 start");
 	broadcastPacket(packet12);
-	System.out.println("Broadcast Packet12 stop");
 	return p;
     }
 
     public void broadcastPacket(Packet packet) {
-	System.out.println("Funktion");
-	System.out.println(clientHandler.size());
 	for (ClientHandler c : clientHandler) {
 	    System.out.println("ForSchleife");
 	    if (c.isLoggedIn()) {
@@ -234,7 +245,7 @@ public class SaboteurServer {
     public Packet12PlayerSpawned[] getPlayerSpawnPackets() {
 	Packet12PlayerSpawned[] packets = new Packet12PlayerSpawned[players.size()];
 	int i = 0;
-	
+
 	for (Player p : players) {
 	    Packet12PlayerSpawned packet = new Packet12PlayerSpawned();
 	    packet.name = p.getName();
@@ -244,7 +255,7 @@ public class SaboteurServer {
 	    packet.y = p.getPos().y;
 	    packets[i++] = packet;
 	}
-	
+
 	return packets;
     }
 

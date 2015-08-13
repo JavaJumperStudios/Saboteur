@@ -17,7 +17,6 @@ import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
-import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -29,7 +28,6 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class SaboteurGame extends BasicGameState {
 
-    
     private boolean paused;
     private Map map;
     private SPPlayer thePlayer;
@@ -44,11 +42,16 @@ public class SaboteurGame extends BasicGameState {
     private ToggleButton readyButton;
     private Image background;
     private ServerListener serverListener;
+    private int time;
+    private String stringTimeInSec;
 
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
 	map = new Map();
-	
+
+	time = 0;
+	stringTimeInSec = "";
+
 	try {
 	    map.loadMap("room.map");
 	} catch (IOException e) {
@@ -61,15 +64,14 @@ public class SaboteurGame extends BasicGameState {
 	setUpConnection("localhost", 5000);
 
     }
-    
 
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 	map.draw();
 
 	for (SPPlayer p : players) {
-	    if(!p.getDead())
-	    p.draw(p.getPos().x, p.getPos().y, g);
+	    if (!p.getDead())
+		p.draw(p.getPos().x, p.getPos().y, g);
 	}
 
 	for (DeadPlayer p : deadplayers) {
@@ -77,6 +79,9 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	gui.draw();
+
+	g.drawString(stringTimeInSec, 1200, 996);
+
     }
 
     @Override
@@ -84,7 +89,12 @@ public class SaboteurGame extends BasicGameState {
 
 	if (thePlayer == null)
 	    return;
-	if(thePlayer.getDead()) {
+
+	int timeInSec = 0;
+	timeInSec = time / 1000;
+	stringTimeInSec = Integer.toString(timeInSec);
+
+	if (thePlayer.getDead()) {
 	    return;
 	}
 
@@ -178,7 +188,7 @@ public class SaboteurGame extends BasicGameState {
     public void addPlayer(SPPlayer p) {
 	players.add(p);
     }
-    
+
     public ArrayList<SPPlayer> getPlayers() {
 	return players;
     }
@@ -205,6 +215,10 @@ public class SaboteurGame extends BasicGameState {
 	SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY, loginPacket.name, 100, new Vector2f(0, 0), "Fuzzi.png");
 
 	return p;
+    }
+
+    public void setTime(int t) {
+	time = t;
     }
 
     public void setSnapshot(Snapshot snapshot) {

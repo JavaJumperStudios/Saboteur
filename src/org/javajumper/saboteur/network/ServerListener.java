@@ -109,6 +109,7 @@ public class ServerListener implements Runnable {
 			Packet07Snapshot packet07Snapshot = new Packet07Snapshot();
 			packet07Snapshot.readFromByteBuffer(bb);
 			instance.setSnapshot(packet07Snapshot.snapshot);
+			instance.setTime(packet07Snapshot.snapshot.time);
 			break;
 		    case 11:
 			System.out.println("Packet wurde empfangen");
