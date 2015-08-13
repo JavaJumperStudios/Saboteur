@@ -14,7 +14,7 @@ public class Player {
     private static SaboteurServer instance;
     private static int currentId = 0;
     private int id;
-    private Role role;
+    protected Role role;
     private String name;
     protected int lifepoints;
     private int currentWeapon;
@@ -126,6 +126,7 @@ public class Player {
 
     public void setRole(Role role) {
 	this.role = role;
+	System.out.println(role);
     }
 
     public Role getRole() {

@@ -14,6 +14,7 @@ public class SPPlayer extends Player {
 
     public SPPlayer(int id, Role role, String name, int livepoints, Vector2f pos, String texture) {
 	super(id, role, name, livepoints, pos);
+
 	this.texture = texture;
 
     }
@@ -24,7 +25,9 @@ public class SPPlayer extends Player {
     }
 
     public void draw(float x, float y, Graphics g) {
-	if (image == null)
+	
+	
+	if (image == null || texture != "")
 	    image = RessourceManager.loadImage(texture);
 
 	image.rotate(lookAngle - image.getRotation() + 90);
@@ -43,6 +46,13 @@ public class SPPlayer extends Player {
 	Vector2f v2 = v.copy().add(v1);
 
 	g.drawLine(v.x, v.y, v2.x, v2.y);
+    }
+    
+    @Override
+    public void setRole(Role role) {
+	this.role = role;
+	if(role == Role.TRAITOR) this.texture = "Fuzzi_Traitor.png";
+	if(role == Role.INNOCENT) this.texture = "Fuzzi_Innocent.png";
     }
 
 }

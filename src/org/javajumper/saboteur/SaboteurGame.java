@@ -31,6 +31,8 @@ import org.newdawn.slick.state.StateBasedGame;
 public class SaboteurGame extends BasicGameState {
 
     private boolean paused;
+    private boolean start;
+    private boolean stop;
     private Map map;
     private SPPlayer thePlayer;
     private Image gui;
@@ -45,7 +47,7 @@ public class SaboteurGame extends BasicGameState {
     private ServerListener serverListener;
     private int time;
     private String stringTimeInSec;
-    private boolean start;
+    private int endCause;
 
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
@@ -54,6 +56,8 @@ public class SaboteurGame extends BasicGameState {
 	time = 0;
 	start = false;
 	stringTimeInSec = "";
+	endCause = 0;
+	stop = false;
 
 	try {
 	    map.loadMap("room.map");
@@ -72,7 +76,7 @@ public class SaboteurGame extends BasicGameState {
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 
-	if (start) {
+	if (start && !stop) {
 	    map.draw();
 
 	    for (SPPlayer p : players) {
@@ -88,7 +92,9 @@ public class SaboteurGame extends BasicGameState {
 
 	    g.drawString(stringTimeInSec, 1200, 996);
 
-	} else {
+	} 
+	
+	if(!start) {
 
 	    int x = 500;
 	    int y = 250;
@@ -105,6 +111,52 @@ public class SaboteurGame extends BasicGameState {
 	    }
 
 	}
+	
+	if(stop) {
+	    
+	    background.draw();
+	    
+	    switch(endCause) {
+	    
+	    case 0:
+		g.setColor(Color.green);
+		g.fillRect(300, 250, 700, 256);
+		g.setColor(Color.blue);
+		g.drawString("Innocent gewinnen, weil die Zeit abgelaufen ist.", 360, 350);
+		break;
+	    case 1:
+		g.setColor(Color.green);
+		g.fillRect(300, 250, 700, 256);
+		g.setColor(Color.blue);
+		g.drawString("Innocent gewinnen, weil alle Traitor gestorben sind.", 360, 350);
+		break;
+	    case 2:
+		g.setColor(Color.red);
+		g.fillRect(300, 250, 700, 256);
+		g.setColor(Color.blue);
+		g.drawString("Traitor gewinnen, weil alle Innocent gestorben sind.", 360, 350);
+		break;
+	    case 3:
+		g.setColor(Color.gray);
+		g.fillRect(300, 250, 700, 256);
+		g.setColor(Color.blue);
+		g.drawString("Unentschieden. Kein Plan wie das passieren konnte.", 360, 350);
+		break;
+	    
+	    }
+	    
+	    if(thePlayer.getDead()) {
+		for(DeadPlayer dp : deadplayers) {
+		    if(dp.getId() == thePlayer.getId()) {
+			g.drawString("Du warst ein " + dp.getRole(), 500, 400);
+		    }
+		}
+	    } else {
+		g.drawString("Du warst ein " + thePlayer.getRole(), 500, 400);
+	    }
+	    
+	    
+	}
 
     }
 
@@ -116,7 +168,7 @@ public class SaboteurGame extends BasicGameState {
 
 	Input input = container.getInput();
 
-	if (start) {
+	if (start && !stop) {
 
 	    int timeInSec = 0;
 	    timeInSec = time / 1000;
@@ -210,6 +262,14 @@ public class SaboteurGame extends BasicGameState {
     public Map getMap() {
 	return map;
     }
+    
+    public void setRole(int playerId, Role role) {
+	for (SPPlayer p : players) {
+	    if (p.getId() == playerId) {
+		p.setRole(role);
+	    }
+	}
+    }
 
     @Override
     public int getID() {
@@ -221,7 +281,6 @@ public class SaboteurGame extends BasicGameState {
     }
 
     public void setPlayerReadyState(int id, byte ready) {
-	System.out.println(ready);
 	for (SPPlayer p : players) {
 	    if (p.getId() == id) {
 		if (ready == 0) {
@@ -236,6 +295,11 @@ public class SaboteurGame extends BasicGameState {
 
     public void setMainPlayer(SPPlayer p) {
 	thePlayer = p;
+    }
+    
+    public void setEndCause(int e) {
+	this.endCause = e;
+	stop = true;
     }
 
     public void addPlayer(SPPlayer p) {
@@ -265,7 +329,7 @@ public class SaboteurGame extends BasicGameState {
 
     public SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
 
-	SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY, loginPacket.name, 100, new Vector2f(0, 0), "Fuzzi.png");
+	SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY, loginPacket.name, 100, new Vector2f(0, 0), "Fuzzi_Neutral.png");
 
 	return p;
     }

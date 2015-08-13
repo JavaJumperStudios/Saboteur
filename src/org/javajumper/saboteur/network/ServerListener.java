@@ -8,10 +8,12 @@ import org.javajumper.saboteur.SaboteurGame;
 import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
+import org.javajumper.saboteur.packet.Packet04EndGame;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
 import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet11SpawnDead;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
+import org.javajumper.saboteur.packet.Packet13Role;
 import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
@@ -85,7 +87,6 @@ public class ServerListener implements Runnable {
 		    int oldPos = bb.position();
 
 		    byte id = bb.get();
-		    System.out.println("Paket: " + id);
 		    int length = bb.getInt();
 		    switch (id) {
 		    case 2:
@@ -107,6 +108,12 @@ public class ServerListener implements Runnable {
 			System.out.println("Startpaket erhalten");
 			instance.start();
 			break;
+		    case 4:
+			System.out.println("Endpacket erhalten");
+			Packet04EndGame packet04 = new Packet04EndGame();
+			packet04.readFromByteBuffer(bb);
+			instance.setEndCause(packet04.endCause);
+			break;
 		    case 7:
 			if (!active) {
 			    System.out.println("Ignoring early Snapshot");
@@ -124,7 +131,6 @@ public class ServerListener implements Runnable {
 			instance.setPlayerReadyState(packet10.playerId, packet10.ready);
 			break;			
 		    case 11:
-			System.out.println("Packet wurde empfangen");
 			Packet11SpawnDead packet11 = new Packet11SpawnDead();
 			packet11.readFromByteBuffer(bb);
 			instance.spawnDeadPlayer(new DeadPlayer(packet11.playerId, packet11.name, Role.values()[packet11.role], packet11.timeOfDeath, packet11.killerId, packet11.itemId, new Vector2f(packet11.posX, packet11.posY)));
@@ -138,8 +144,15 @@ public class ServerListener implements Runnable {
 		    case 12:
 			Packet12PlayerSpawned packet12 = new Packet12PlayerSpawned();
 			packet12.readFromByteBuffer(bb);
-			instance.addPlayer(new SPPlayer(packet12.playerId, Role.values()[packet12.role], packet12.name, 100, new Vector2f(packet12.x, packet12.y), "Fuzzi.png"));
+			instance.addPlayer(new SPPlayer(packet12.playerId, Role.values()[packet12.role], packet12.name, 100, new Vector2f(packet12.x, packet12.y), "Fuzzi_Neutral.png"));
 			instance.setPlayerReadyState(packet12.playerId, packet12.ready);
+			break;
+		    case 13:
+			Packet13Role packet13 = new Packet13Role();
+			packet13.readFromByteBuffer(bb);
+			instance.setRole(packet13.playerId, Role.values()[packet13.role]);
+			
+			
 			break;
 		    /*
 		     * case 3: Packet03NewPlayer newPlayerPacket = new
