@@ -9,6 +9,7 @@ public class Packet12PlayerSpawned extends Packet {
     public float x;
     public float y;
     public int role;
+    public byte ready;
 
     public Packet12PlayerSpawned() {
 	super((byte) 12);
@@ -17,15 +18,16 @@ public class Packet12PlayerSpawned extends Packet {
     @Override
     public void readFromByteBuffer(ByteBuffer bb) {
 	name = "";
-	
+
 	for (int i = 0; i < 16; i++) {
 	    name += bb.getChar();
 	}
-	
+
 	playerId = bb.getInt();
 	x = bb.getFloat();
 	y = bb.getFloat();
 	role = bb.getInt();
+	ready = bb.get();
     }
 
     @Override
@@ -46,13 +48,14 @@ public class Packet12PlayerSpawned extends Packet {
 	bb.putFloat(x);
 	bb.putFloat(y);
 	bb.putInt(role);
+	bb.put(ready);
 
 	return bb;
     }
 
     @Override
     public int getLength() {
-	return super.getLength() + Integer.BYTES * 2 + Float.BYTES * 2 + Character.BYTES * 16;
+	return super.getLength() + Integer.BYTES * 2 + Float.BYTES * 2 + Character.BYTES * 16 + 1;
     }
 
 }

@@ -9,6 +9,7 @@ import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
+import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet11SpawnDead;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
 import org.javajumper.saboteur.player.DeadPlayer;
@@ -101,6 +102,10 @@ public class ServerListener implements Runnable {
 			    active = true;
 			}
 			break;
+		    case 3:
+			System.out.println("Startpaket erhalten");
+			instance.start();
+			break;
 		    case 7:
 			if (!active) {
 			    System.out.println("Ignoring early Snapshot");
@@ -111,6 +116,12 @@ public class ServerListener implements Runnable {
 			instance.setSnapshot(packet07Snapshot.snapshot);
 			instance.setTime(packet07Snapshot.snapshot.time);
 			break;
+		    case 10:
+			System.out.println("Player ready packet erhalten");
+			Packet10Ready packet10 = new Packet10Ready();
+			packet10.readFromByteBuffer(bb);
+			instance.setPlayerReadyState(packet10.playerId, packet10.ready);
+			break;			
 		    case 11:
 			System.out.println("Packet wurde empfangen");
 			Packet11SpawnDead packet11 = new Packet11SpawnDead();
@@ -124,10 +135,10 @@ public class ServerListener implements Runnable {
 			}
 			break;
 		    case 12:
-
 			Packet12PlayerSpawned packet12 = new Packet12PlayerSpawned();
 			packet12.readFromByteBuffer(bb);
 			instance.addPlayer(new SPPlayer(packet12.playerId, Role.values()[packet12.role], packet12.name, 100, new Vector2f(packet12.x, packet12.y), "Fuzzi.png"));
+			instance.setPlayerReadyState(packet12.playerId, packet12.ready);
 			break;
 		    /*
 		     * case 3: Packet03NewPlayer newPlayerPacket = new

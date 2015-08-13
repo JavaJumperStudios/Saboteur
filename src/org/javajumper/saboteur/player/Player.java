@@ -25,6 +25,7 @@ public class Player {
     private boolean sprinting;
     private boolean dead;
     protected Rectangle collisionBox;
+    protected boolean ready;
 
     public Player(int id, Role role, String name, int lifepoints, Vector2f pos) {
 
@@ -39,6 +40,7 @@ public class Player {
 	this.lookAngle = 0f;
 	this.sprinting = false;
 	this.dead = false;
+	this.ready = false;
 
 	collisionBox = new Rectangle(pos.x, pos.y, 32, 32);
 
@@ -128,6 +130,14 @@ public class Player {
 
     public Role getRole() {
 	return role;
+    }
+    
+    public void setReadyState(boolean r) {
+	ready = r;
+    }
+    
+    public boolean ready() {
+	return ready;
     }
 
     public void setLivepoints(int lifepoints) {

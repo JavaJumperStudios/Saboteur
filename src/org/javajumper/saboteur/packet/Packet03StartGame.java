@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 public class Packet03StartGame extends Packet {
 
-    Packet03StartGame() {
+    public Packet03StartGame() {
 	super((byte) 3);
     }
 
@@ -16,8 +16,11 @@ public class Packet03StartGame extends Packet {
 
     @Override
     public ByteBuffer writeToByteBuffer() {
-	// TODO Auto-generated method stub
-	return null;
+	ByteBuffer bb = ByteBuffer.allocate(getLength());
+	bb.put(id);
+	bb.putInt(getLength());
+	
+	return bb;
     }
 
 }

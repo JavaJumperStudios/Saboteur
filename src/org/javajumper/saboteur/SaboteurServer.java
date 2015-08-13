@@ -9,7 +9,9 @@ import org.javajumper.saboteur.network.ClientAcceptor;
 import org.javajumper.saboteur.network.ClientHandler;
 import org.javajumper.saboteur.network.ServerListener;
 import org.javajumper.saboteur.packet.Packet;
+import org.javajumper.saboteur.packet.Packet03StartGame;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
+import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet11SpawnDead;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
@@ -35,7 +37,9 @@ public class SaboteurServer {
     private ArrayList<ClientHandler> clientHandler = new ArrayList<>();
     private ArrayList<ClientHandler> removeList = new ArrayList<>();
     public static SaboteurServer instance;
-    private int time; //Zeit in Millisekunden
+    private int time; // Zeit in Millisekunden
+    private boolean start;
+    private boolean[] blocked = new boolean[5];
 
     private ArrayList<Player> players = new ArrayList<>();
     private ArrayList<DeadPlayer> deadplayers = new ArrayList<>();
@@ -46,7 +50,11 @@ public class SaboteurServer {
     private void start() {
 
 	time = 0;
+	start = false;
 	map = new MapServer();
+	for (int j = 0; j <= 4; j++) {
+	    blocked[j] = false;
+	}
 	try {
 	    map.loadMap("room.map");
 	} catch (IOException e1) {
@@ -76,36 +84,60 @@ public class SaboteurServer {
     }
 
     private void update(int delta) {
-	if (!pause) {
 
-	    time -= delta;
+	if (start) {
 
-	    map.update(delta);
-	    
-	    time += delta;
+	    if (!pause) {
 
-	    Packet07Snapshot packet = new Packet07Snapshot();
-	    packet.snapshot = generateSnapshot();
+		time -= delta;
 
-	    if (!removeList.isEmpty()) {
-		for (ClientHandler c : removeList) {
-		    clientHandler.remove(c);
+		map.update(delta);
+
+		time += delta;
+
+		Packet07Snapshot packet = new Packet07Snapshot();
+		packet.snapshot = generateSnapshot();
+
+		if (!removeList.isEmpty()) {
+		    for (ClientHandler c : removeList) {
+			clientHandler.remove(c);
+		    }
+		    removeList.clear();
 		}
-		removeList.clear();
-	    }
 
-	    for (ClientHandler c : clientHandler) {
-		if (c != null) {
-		    c.sendToClient(packet);
+		for (ClientHandler c : clientHandler) {
+		    if (c != null) {
+			c.sendToClient(packet);
+		    }
 		}
+
+		for (Player p : players) {
+		    p.update(delta);
+		}
+
+		checkWinConditions();
 	    }
+	} else {
+
+	    if (players.size() == 0)
+		return;
+	    boolean allReady = true;
 
 	    for (Player p : players) {
-		p.update(delta);
+		if (!p.ready())
+		    allReady = false;
 	    }
 
-	    checkWinConditions();
+	    if (allReady) {
+		Packet03StartGame packet03 = new Packet03StartGame();
+		broadcastPacket(packet03);
+		start = true;
+		unpause();
+		System.out.println("Alle bereit");
+	    }
+
 	}
+
     }
 
     public void checkWinConditions() {
@@ -113,6 +145,22 @@ public class SaboteurServer {
 	if (time <= 0) {
 	    pause = true;
 
+	}
+
+    }
+
+    public void setPlayerReadyState(int id, byte ready) {
+
+	for (Player p : players) {
+	    if (p.getId() == id) {
+		if (ready == 0) {
+		    p.setReadyState(false);
+		    System.out.println("Player is not Ready");
+		} else {
+		    p.setReadyState(true);
+		    System.out.println("Player is now Ready");
+		}
+	    }
 	}
 
     }
@@ -139,18 +187,46 @@ public class SaboteurServer {
 	return snapshot;
     }
 
+    public Vector2f getSpawnPosition() {
+	Vector2f v = new Vector2f(0, 0);
+	boolean found = false;
+	
+	while(!found) {
+	    double i = Math.random();
+	
+        	if (i <= 0.2 && !blocked[0]) {
+        	    v = new Vector2f(0, 0);
+        	    blocked[0] = true;
+        	    found = true;
+        	} else if (i > 0.2 && i <= 0.4 && !blocked[1]) {
+        	    v = new Vector2f(1248, 0);
+        	    blocked[1] = true;
+        	    found = true;
+        	} else if (i > 0.4 && i <= 0.6 && !blocked[2]) {
+        	    v = new Vector2f(0, 928);
+        	    blocked[2] = true;
+        	    found = true;
+        	} else if (i > 0.6 && i <= 0.8 && !blocked[3]) {
+        	    v = new Vector2f(1248, 928);
+        	    blocked[3] = true;
+        	    found = true;
+        	} else if (i > 0.8 && i <= 1.0 && !blocked[4]) {
+        	    v = new Vector2f(640, 512);
+        	    blocked[4] = true;
+        	    found = true;
+        	}
+	}
+	
+	
+
+	return v;
+    }
+
     public Player addNewPlayer(String name) {
 	System.out.println("New Player added: " + name);
-	
-	double i = Math.random();
-	Vector2f v = new Vector2f(0, 0);
-	if(i <= 0.2) { v = new Vector2f(0, 0); }
-	else if(i > 0.2 && i <= 0.4) { v = new Vector2f(1248, 0); }
-	else if(i > 0.4 && i <= 0.6) { v = new Vector2f(0, 928); }
-	else if(i > 0.6 && i <= 0.8) { v = new Vector2f(1248, 928); }
-	else if(i > 0.8 && i <= 1.0) { v = new Vector2f(640, 512); }
-	
-	
+
+	Vector2f v = getSpawnPosition();
+
 	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, v);
 	p.addItem(new Gun("TestGun", Item.nextId(), 1));
 	players.add(p);
@@ -162,17 +238,16 @@ public class SaboteurServer {
 	packet12.role = Role.LOBBY.ordinal();
 	packet12.x = 0;
 	packet12.y = 0;
+	packet12.ready = (byte) (p.ready() ? 1 : 0);
 	broadcastPacket(packet12);
 	return p;
     }
 
     public void broadcastPacket(Packet packet) {
 	for (ClientHandler c : clientHandler) {
-	    System.out.println("ForSchleife");
 	    if (c.isLoggedIn()) {
-		System.out.println("Versucht wirklich zu senden");
 		c.sendToClient(packet);
-		System.out.println("Hat wirklich gesendet"); }
+	    }
 	}
     }
 
@@ -185,11 +260,11 @@ public class SaboteurServer {
 	pause = false;
 	System.out.println("Unpaused!");
     }
-    
+
     public int getTime() {
 	return time;
     }
-    
+
     public ArrayList<Player> getPlayers() {
 	return players;
     }
@@ -197,20 +272,17 @@ public class SaboteurServer {
     public void removeClientHandler(ClientHandler ch) {
 	removeList.add(ch);
     }
-    
+
     public void deadPlayer(DeadPlayer dp) {
-	System.out.println("Innerhalb von SaboteurServer");
-	for(Player p : players) {
-	    System.out.println("Jeder Spieler...:  " + p.getId());
-	    if(p.getId() == dp.getId()) {
+	for (Player p : players) {
+	    if (p.getId() == dp.getId()) {
 		p.setDead(true);
 		break;
 	    }
 	}
-	
+
 	deadplayers.add(dp);
 	Packet11SpawnDead packet11 = new Packet11SpawnDead();
-	System.out.println("Neues Packet wurde erstellt");
 	packet11.playerId = dp.getId();
 	packet11.timeOfDeath = dp.getTimeOfDeath();
 	packet11.killerId = dp.getPlayerOfImpact();
@@ -219,11 +291,9 @@ public class SaboteurServer {
 	packet11.posY = dp.getPos().y;
 	packet11.role = dp.getRole().ordinal();
 	packet11.name = dp.getName();
-	System.out.println("Neues Packet wird gesendet");
-	
+
 	broadcastPacket(packet11);
-	System.out.println("Neues Packet wurde gesendet");
-	
+
     }
 
     /**
@@ -234,12 +304,12 @@ public class SaboteurServer {
      */
     public void handlePlayerLogout(Player player) {
 	System.out.println("Player " + player.getName() + " logged out.");
-	if(players.contains(player)) {
-	    players.remove(player); 
+	if (players.contains(player)) {
+	    players.remove(player);
 	} else {
 	    System.out.println("Player ist warscheinlich tod...");
 	}
-	
+
     }
 
     public Packet12PlayerSpawned[] getPlayerSpawnPackets() {
@@ -253,6 +323,7 @@ public class SaboteurServer {
 	    packet.role = p.getRole().ordinal();
 	    packet.x = p.getPos().x;
 	    packet.y = p.getPos().y;
+	    packet.ready = (byte) (p.ready() ? 1 : 0);
 	    packets[i++] = packet;
 	}
 

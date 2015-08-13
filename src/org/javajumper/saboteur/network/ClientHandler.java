@@ -82,19 +82,6 @@ public class ClientHandler implements Runnable {
 			player.getInventory()[2].use(player, server);
 
 			break;
-
-		    case 10:
-			Packet10Ready packet10 = new Packet10Ready();
-			packet10.readFromByteBuffer(bb);
-
-			// server.setPlayerReady(packet10.playerId);
-			// Server starts the Game now
-			// TODO Implement ready states
-
-			System.out.println("Received one Player ready, Game starts!");
-			server.unpause();
-
-			break;
 		    case 9:
 			Packet09PlayerUpdate packet09 = new Packet09PlayerUpdate();
 			packet09.readFromByteBuffer(bb);
@@ -104,6 +91,13 @@ public class ClientHandler implements Runnable {
 			player.setCurrentWeapon(packet09.currentItem);
 			player.setSprint(packet09.sprinting != 0);
 			player.setAngle(packet09.lookAngle);
+			break;
+		    case 10:
+			Packet10Ready packet10 = new Packet10Ready();
+			packet10.readFromByteBuffer(bb);
+			server.setPlayerReadyState(packet10.playerId, packet10.ready);
+			server.broadcastPacket(packet10);
+			// Server starts the Game now
 			break;
 		    default:
 			System.out.println("Unknown Package");
