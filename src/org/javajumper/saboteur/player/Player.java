@@ -7,11 +7,11 @@ import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
 public class Player {
 
+    private static SaboteurServer instance;
     private static int currentId = 0;
     private int id;
     private Role role;
@@ -24,7 +24,7 @@ public class Player {
     protected float lookAngle;
     private boolean sprinting;
     private boolean dead;
-    private Rectangle collisionBox;
+    protected Rectangle collisionBox;
 
     public Player(int id, Role role, String name, int lifepoints, Vector2f pos) {
 
@@ -41,6 +41,8 @@ public class Player {
 	this.dead = false;
 
 	collisionBox = new Rectangle(pos.x, pos.y, 32, 32);
+
+	instance = new SaboteurServer();
 
     }
 
@@ -65,12 +67,12 @@ public class Player {
 
 	for (Player pl : players) {
 	    if (collisionBox.intersects(pl.collision())) {
-		if(pl.getId() != this.getId()) {
+		if (pl.getId() != this.getId()) {
 		    pos.x = pos.x - move.x * delta / 5f;
 		    collisionBox.setLocation(pos);
 		    break;
 		}
-		
+
 	    }
 	}
 
@@ -89,7 +91,7 @@ public class Player {
 
 	for (Player pl : players) {
 	    if (collisionBox.intersects(pl.collision())) {
-		if(pl.getId() != this.getId()) {
+		if (pl.getId() != this.getId()) {
 		    pos.y = pos.y - move.y * delta / 5f;
 		    collisionBox.setLocation(pos);
 		    break;
@@ -130,6 +132,26 @@ public class Player {
 
     public void setLivepoints(int lifepoints) {
 	this.lifepoints = lifepoints;
+	if (lifepoints <= 0) {
+	    lifepoints = 0;
+	}
+    }
+
+    public void damage(int damage, Player playerOfImpact, int i) {
+	if (!dead) {
+	    lifepoints -= damage;
+	    if (lifepoints <= 0) {
+		lifepoints = 0;
+		die(playerOfImpact, i);
+	    }
+
+	}
+    }
+
+    public void die(Player p, int i) {
+	DeadPlayer dp = new DeadPlayer(id, name, role, SaboteurServer.instance.getTime(), p.getId(), i, pos);
+	dead = true;
+	SaboteurServer.instance.deadPlayer(dp);
     }
 
     public int getLivepoints() {
@@ -140,21 +162,21 @@ public class Player {
 	this.currentWeapon = currentWeapon;
     }
 
+    public void setDead(boolean d) {
+	dead = d;
+    }
+
     public int getCurrentWeapon() {
 	return currentWeapon;
     }
 
     public void addItem(Item item) {
 
-	System.out.println("Item TypeId in Player:   " + item.getTypeId());
-
 	if (item.getTypeId() == 0) {
 	    inventory[1] = item;
 	} else if (item.getTypeId() == 1) {
 	    inventory[2] = item;
 	}
-
-	System.out.println("Inventar:  " + inventory[2].getTypeId());
 
     }
 

@@ -1,7 +1,5 @@
 package org.javajumper.saboteur;
 
-import java.awt.TextArea;
-import java.awt.TextField;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -19,7 +17,6 @@ import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
-import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -73,7 +70,8 @@ public class SaboteurGame extends BasicGameState {
 	map.draw();
 
 	for (SPPlayer p : players) {
-	    p.draw(p.getPos().x, p.getPos().y, g);
+	    if (!p.getDead())
+		p.draw(p.getPos().x, p.getPos().y, g);
 	}
 
 	for (DeadPlayer p : deadplayers) {
@@ -95,6 +93,10 @@ public class SaboteurGame extends BasicGameState {
 	int timeInSec = 0;
 	timeInSec = time / 1000;
 	stringTimeInSec = Integer.toString(timeInSec);
+
+	if (thePlayer.getDead()) {
+	    return;
+	}
 
 	Input input = container.getInput();
 
@@ -187,6 +189,10 @@ public class SaboteurGame extends BasicGameState {
 	players.add(p);
     }
 
+    public ArrayList<SPPlayer> getPlayers() {
+	return players;
+    }
+
     public void setUpConnection(String server, int port) {
 	serverListener = new ServerListener(this, server, port);
 	Thread serverListenerThread = new Thread(serverListener);
@@ -199,10 +205,9 @@ public class SaboteurGame extends BasicGameState {
 
     }
 
-    public void spawnDeadPlayer(DeadPlayer p) {
+    public void spawnDeadPlayer(DeadPlayer dp) {
 
-	deadplayers.add(p);
-
+	deadplayers.add(dp);
     }
 
     public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
