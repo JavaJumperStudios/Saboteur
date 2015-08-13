@@ -1,5 +1,7 @@
 package org.javajumper.saboteur;
 
+import java.awt.TextArea;
+import java.awt.TextField;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -30,7 +32,6 @@ import org.newdawn.slick.state.StateBasedGame;
 public class SaboteurGame extends BasicGameState {
 
     private boolean paused;
-    private int time;
     private Map map;
     private SPPlayer thePlayer;
     private Image gui;
@@ -44,11 +45,16 @@ public class SaboteurGame extends BasicGameState {
     private ToggleButton readyButton;
     private Image background;
     private ServerListener serverListener;
+    private int time;
+    private String stringTimeInSec;
 
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
 	map = new Map();
-	
+
+	time = 0;
+	stringTimeInSec = "";
+
 	try {
 	    map.loadMap("room.map");
 	} catch (IOException e) {
@@ -74,7 +80,8 @@ public class SaboteurGame extends BasicGameState {
 	    p.draw(p.getPos().x, p.getPos().y);
 	}
 
-	gui.draw();
+	g.drawString(stringTimeInSec, 1200, 996);
+
     }
 
     @Override
@@ -82,6 +89,12 @@ public class SaboteurGame extends BasicGameState {
 
 	if (thePlayer == null)
 	    return;
+
+	int timeInSec = 0;
+
+	time = time + delta;
+	timeInSec = time / 2000; //Zeit erhöht sich unerklärlicherweise doppelt so schnell
+	stringTimeInSec = Integer.toString(timeInSec);
 
 	Input input = container.getInput();
 
@@ -197,6 +210,10 @@ public class SaboteurGame extends BasicGameState {
 	SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY, loginPacket.name, 100, new Vector2f(0, 0), "Fuzzi.png");
 
 	return p;
+    }
+    
+    public void setTime(int t) {
+	time = t;
     }
 
     public void setSnapshot(Snapshot snapshot) {

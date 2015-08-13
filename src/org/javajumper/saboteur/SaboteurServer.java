@@ -1,13 +1,16 @@
 package org.javajumper.saboteur;
 
+import java.awt.TextArea;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.network.ClientAcceptor;
 import org.javajumper.saboteur.network.ClientHandler;
+import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
+import org.javajumper.saboteur.packet.Packet13Time;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.Player;
@@ -30,6 +33,8 @@ public class SaboteurServer {
     private ArrayList<ClientHandler> clientHandler = new ArrayList<>();
     private ArrayList<ClientHandler> removeList = new ArrayList<>();
     public static SaboteurServer instance;
+    private int time;
+    
 
     ArrayList<Player> players = new ArrayList<>();
     private MapServer map;
@@ -47,7 +52,10 @@ public class SaboteurServer {
 
 	acceptor = new Thread(new ClientAcceptor(this));
 	acceptor.start();
-
+	
+	
+	
+	time = 0;
 	int delta;
 	long lastTimeMillis = System.currentTimeMillis();
 	while (!stop) {
@@ -70,8 +78,14 @@ public class SaboteurServer {
 
     private void update(int delta) {
 	if (!pause) {
+	 
+	    time += delta;
 
 	    map.update(delta);
+	    
+	    Packet13Time packet13 = new Packet13Time();
+	    packet13.time = time;
+	    broadcastPacket(packet13);
 
 	    Packet07Snapshot packet = new Packet07Snapshot();
 	    packet.snapshot = generateSnapshot();
@@ -134,7 +148,7 @@ public class SaboteurServer {
 	return p;
     }
 
-    public void broadcastPacket(Packet12PlayerSpawned packet) {
+    public void broadcastPacket(Packet packet) {
 	for (ClientHandler c : clientHandler) {
 	    if (c.isLoggedIn())
 		c.sendToClient(packet);
