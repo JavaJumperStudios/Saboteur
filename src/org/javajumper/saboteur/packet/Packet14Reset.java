@@ -2,18 +2,16 @@ package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
 
-public class Packet05Logout extends Packet {
+public class Packet14Reset extends Packet {
 
-    public int playerId;
-    
-    public Packet05Logout() {
-	super((byte) 5);
+    public Packet14Reset() {
+	super((byte) 14);
     }
 
     @Override
     public void readFromByteBuffer(ByteBuffer bb) {
-	playerId = bb.getInt();
-	
+	// TODO Auto-generated method stub
+
     }
 
     @Override
@@ -21,16 +19,9 @@ public class Packet05Logout extends Packet {
 	ByteBuffer bb = ByteBuffer.allocate(getLength());
 
 	bb.put(id);
-	bb.putInt(getLength());
-	
-	bb.putInt(playerId);
+	bb.putInt(length);
 	
 	return bb;
-    }
-    
-    @Override
-    public int getLength() {
-	return super.getLength() + Integer.BYTES;
     }
 
 }

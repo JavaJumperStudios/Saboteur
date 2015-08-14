@@ -12,11 +12,13 @@ import org.javajumper.saboteur.network.ServerListener;
 import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet03StartGame;
 import org.javajumper.saboteur.packet.Packet04EndGame;
+import org.javajumper.saboteur.packet.Packet05Logout;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
 import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet11SpawnDead;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
 import org.javajumper.saboteur.packet.Packet13Role;
+import org.javajumper.saboteur.packet.Packet14Reset;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.DeadPlayer;
@@ -216,6 +218,44 @@ public class SaboteurServer {
 	packet04.endCause = (byte) endCause;
 	broadcastPacket(packet04);
 	pause = true;
+	
+	try {
+	    Thread.sleep(5000);
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
+	
+	resetServer();
+    }
+    
+    public void resetServer() {
+	
+	start = false;
+	
+	time = 60000;
+	map = new MapServer();
+	for (int j = 0; j <= 4; j++) {
+	    blocked[j] = false;
+	}
+	try {
+	    map.loadMap("room.map");
+	} catch (IOException e1) {
+	    System.out.println("Karte konnte nicht geladen werden");
+	}
+	
+	for(Player p : (ArrayList<Player>) players.clone()) {
+	    
+	    p.setDead(false);
+	    p.setSprint(false);
+	    p.setLivepoints(100);
+	    p.setRole(Role.LOBBY);
+	    p.setReadyState(false);
+	    
+	}
+	deadplayers.clear();
+	
+	Packet14Reset packet14 = new Packet14Reset();
+	broadcastPacket(packet14);
     }
 
     public void setPlayerReadyState(int id, byte ready) {
@@ -370,9 +410,16 @@ public class SaboteurServer {
 	System.out.println("Player " + player.getName() + " logged out.");
 	if (players.contains(player)) {
 	    players.remove(player);
-	} else {
-	    System.out.println("Player ist warscheinlich tod...");
+	} 
+	for(DeadPlayer dp : (ArrayList<DeadPlayer>) deadplayers.clone()) {
+	    if(dp.getId() == player.getId()) {
+		deadplayers.remove(dp);
+	    }
 	}
+	
+	Packet05Logout packet05 = new Packet05Logout();
+	packet05.playerId = player.getId();
+	broadcastPacket(packet05);
 
     }
 

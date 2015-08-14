@@ -9,11 +9,13 @@ import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
 import org.javajumper.saboteur.packet.Packet04EndGame;
+import org.javajumper.saboteur.packet.Packet05Logout;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
 import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet11SpawnDead;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
 import org.javajumper.saboteur.packet.Packet13Role;
+import org.javajumper.saboteur.packet.Packet14Reset;
 import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
@@ -114,11 +116,16 @@ public class ServerListener implements Runnable {
 			packet04.readFromByteBuffer(bb);
 			instance.setEndCause(packet04.endCause);
 			break;
+		    case 5:
+			System.out.println("Logout Packet erhalten");
+			Packet05Logout packet05 = new Packet05Logout();
+			packet05.readFromByteBuffer(bb);
+			instance.handlePlayerLogout(packet05.playerId);
+			break;
 		    case 7:
 			if (!active) {
 			    System.out.println("Ignoring early Snapshot");
 			}
-
 			Packet07Snapshot packet07Snapshot = new Packet07Snapshot();
 			packet07Snapshot.readFromByteBuffer(bb);
 			instance.setSnapshot(packet07Snapshot.snapshot);
@@ -151,8 +158,10 @@ public class ServerListener implements Runnable {
 			Packet13Role packet13 = new Packet13Role();
 			packet13.readFromByteBuffer(bb);
 			instance.setRole(packet13.playerId, Role.values()[packet13.role]);
-			
-			
+			break;
+		    case 14:
+			System.out.println("Reset-Packet erhalten");
+			instance.reset();		
 			break;
 		    /*
 		     * case 3: Packet03NewPlayer newPlayerPacket = new
