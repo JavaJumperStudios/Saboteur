@@ -3,22 +3,40 @@ package org.javajumper.saboteur.packet;
 import java.nio.ByteBuffer;
 
 public class Packet04EndGame extends Packet {
+    
+    public byte endCause;
+    /*
+     * 0 = Zeit ausgelaufen --> Innocent gewinnen
+     * 1 = Alle Traitor tot --> Innocent gewinnen
+     * 2 = Alle Innocents tot --> Traitor gewinnen
+     * 3 = Alle tot --> Unentschieden
+     */
 
-    Packet04EndGame(byte id) {
-	super(id);
-	// TODO Auto-generated constructor stub
+    public Packet04EndGame() {
+	super((byte) 4);
     }
 
     @Override
     public void readFromByteBuffer(ByteBuffer bb) {
-	// TODO Auto-generated method stub
+	endCause = bb.get();
 	
     }
 
     @Override
     public ByteBuffer writeToByteBuffer() {
-	// TODO Auto-generated method stub
-	return null;
+	ByteBuffer bb = ByteBuffer.allocate(getLength());
+	bb.put(id);
+	bb.putInt(getLength());
+	
+	bb.put(endCause);
+	
+	
+	return bb;
+    }
+    
+    @Override
+    public int getLength() {
+	return super.getLength() + 1;
     }
 
 }
