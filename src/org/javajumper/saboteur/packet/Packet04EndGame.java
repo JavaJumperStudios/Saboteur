@@ -9,7 +9,7 @@ public class Packet04EndGame extends Packet {
      * 0 = Zeit ausgelaufen --> Innocent gewinnen
      * 1 = Alle Traitor tot --> Innocent gewinnen
      * 2 = Alle Innocents tot --> Traitor gewinnen
-     * 3 = Alle tot --> Unentschieden
+     * 3 = Alle tot --> Reset
      */
 
     public Packet04EndGame() {

@@ -99,6 +99,9 @@ public class ClientHandler implements Runnable {
 			server.broadcastPacket(packet10);
 			// Server starts the Game now
 			break;
+		    case 14:
+			server.resetServer();			
+			break;
 		    default:
 			System.out.println("Unknown Package");
 			System.out.println("ID:" + packetId);
@@ -132,7 +135,7 @@ public class ClientHandler implements Runnable {
 	} catch (IOException e) {
 	    System.out.println("Could not even close the Socket :( Client sad");
 	}
-
+	login = false;
 	server.removeClientHandler(this);
 	server.handlePlayerLogout(player);
     }

@@ -6,12 +6,15 @@ import java.util.ArrayList;
 
 import org.javajumper.saboteur.gui.ToggleButton;
 import org.javajumper.saboteur.map.Map;
+import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.map.Tile;
 import org.javajumper.saboteur.network.ServerListener;
 import org.javajumper.saboteur.packet.Packet02Login;
+import org.javajumper.saboteur.packet.Packet05Logout;
 import org.javajumper.saboteur.packet.Packet06UseItem;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
+import org.javajumper.saboteur.packet.Packet14Reset;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.DeadPlayer;
@@ -145,7 +148,7 @@ public class SaboteurGame extends BasicGameState {
 		g.setColor(Color.gray);
 		g.fillRect(300, 250, 700, 256);
 		g.setColor(Color.blue);
-		g.drawString("Unentschieden. Kein Plan wie das passieren konnte.", 360, 350);
+		g.drawString("Der Server wurde manuell RESETTET.", 360, 350);
 		break;
 	    
 	    }
@@ -222,6 +225,11 @@ public class SaboteurGame extends BasicGameState {
 		serverListener.sendToServer(packet10);
 		System.out.println("I changed ready state to: " + ready);
 	    }
+	    
+	    if(input.isKeyPressed(Input.KEY_F10)) {
+		Packet14Reset packet14 = new Packet14Reset();
+		serverListener.sendToServer(packet14);
+	    }
 
 	    move = move.normalise();
 
@@ -258,10 +266,6 @@ public class SaboteurGame extends BasicGameState {
 
     public void start() {
 	start = true;
-    }
-
-    public void reset() {
-
     }
 
     public Map getMap() {
@@ -326,10 +330,44 @@ public class SaboteurGame extends BasicGameState {
 	players.add(p);
 
     }
+    
+    public void handlePlayerLogout(int id) {
+	
+	for(SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
+	    if(p.getId() == id) {
+		players.remove(p);
+	    }
+	}
+	
+	for(DeadPlayer dp : (ArrayList<DeadPlayer>) deadplayers.clone()) {
+	    if(dp.getId() == id) {
+		deadplayers.remove(dp);
+	    }
+	}
+    }
 
     public void spawnDeadPlayer(DeadPlayer dp) {
 
 	deadplayers.add(dp);
+    }
+    
+    public void reset() {
+	
+	start = false;
+	stop = false;
+	endCause = 0;
+	
+	for(SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
+	    
+	    p.setDead(false);
+	    p.setSprint(false);
+	    p.setLivepoints(100);
+	    p.setRole(Role.LOBBY);
+	    p.setReadyState(false);
+	    
+	}
+	deadplayers.clear();
+	System.out.println("ResetClient wurde ausgeführt");
     }
 
     public SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
