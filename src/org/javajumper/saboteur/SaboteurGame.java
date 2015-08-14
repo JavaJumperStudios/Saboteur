@@ -91,6 +91,11 @@ public class SaboteurGame extends BasicGameState {
 	    gui.draw();
 
 	    g.drawString(stringTimeInSec, 1200, 996);
+	    
+	    if(thePlayer.getRole() == Role.TRAITOR) g.setColor(Color.red);
+	    if(thePlayer.getRole() == Role.INNOCENT) g.setColor(Color.green);
+	    
+	    g.drawString(thePlayer.getRole().toString(), 200, 985);
 
 	} 
 	
