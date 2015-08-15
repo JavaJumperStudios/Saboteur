@@ -282,7 +282,7 @@ public class SaboteurGame extends BasicGameState {
 
     @Override
     public int getID() {
-	return 0;
+	return 1;
     }
 
     public void exitGame() {

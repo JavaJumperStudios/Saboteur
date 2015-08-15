@@ -26,7 +26,9 @@ public class Saboteur extends StateBasedGame {
 
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
-	addState(new SaboteurGame());
+	StateManager.init(this);
+	//addState(new SaboteurGame());
+	addState(new SaboteurMenue());
     }
 
 }
