@@ -83,7 +83,7 @@ public class SaboteurGame extends BasicGameState {
 
 	    for (SPPlayer p : players) {
 		if (!p.getDead())
-		    p.draw(p.getPos().x, p.getPos().y, g);
+		    p.draw(p.getPos().x, p.getPos().y, g, thePlayer);
 	    }
 
 	    for (DeadPlayer p : deadplayers) {
