@@ -2,6 +2,7 @@ package org.javajumper.saboteur.network;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import org.javajumper.saboteur.SaboteurGame;
@@ -28,26 +29,9 @@ public class ServerListener implements Runnable {
     private boolean active = false;
     private SaboteurGame instance;
 
-    public ServerListener(SaboteurGame instance, String server, int port) {
+    public ServerListener(SaboteurGame instance, String server, int port) throws UnknownHostException, IOException {
 	this.instance = instance;
-
-	boolean connected = false;
-
-	while (!connected) {
-
-	    try {
-		socket = new Socket(server, port);
-		connected = true;
-	    } catch (IOException e) {
-		System.out.println("Es konnte keine Verbindung zum Server hergestellt werden.");
-		System.out.println("Es wird in 0.1 Sekunden erneut versucht.");
-		try {
-		    Thread.sleep(100);
-		} catch (InterruptedException e1) {
-		    e1.printStackTrace();
-		}
-	    }
-	}
+	socket = new Socket(server, port);
     }
 
     @Override
