@@ -1,6 +1,8 @@
 package org.javajumper.saboteur;
 
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
 
 public class StateManager {
 
@@ -10,8 +12,12 @@ public class StateManager {
 	StateManager.game = game;
     }
 
-    public void changeState(int id) {
+    public static void changeState(int id) {
 	game.enterState(id);
+    }
+
+    public static void changeState(int id, FadeOutTransition fadeOutTransition, FadeInTransition fadeInTransition) {
+	game.enterState(id, fadeOutTransition, fadeInTransition);
     }
 
 }

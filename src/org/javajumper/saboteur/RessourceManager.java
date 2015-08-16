@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.SpriteSheet;
 
 /**
@@ -13,6 +14,7 @@ import org.newdawn.slick.SpriteSheet;
  */
 public class RessourceManager {
     private static HashMap<String, Image> images = new HashMap<>();
+    private static HashMap<String, Sound> sounds = new HashMap<>();
     private static HashMap<String, File> files = new HashMap<>();
 
     private static Image tiles[];
@@ -134,6 +136,32 @@ public class RessourceManager {
 	}
 
 	return model;
+    }
+    
+    /**
+     * Lädt einen Sound aus einer Datei oder dem Speicher
+     * 
+     * @param name Dateiname der Datei im Ordner "res/music"
+     * @return der geladene Sound
+     */
+    public static Sound loadSound(String name) {
+	if (sounds.containsKey(name)) {
+	    return sounds.get(name);
+	}
+	Sound newSound;
+	try {
+	    newSound = new Sound("res/music/" + name);
+	} catch (SlickException e) {
+	    e.printStackTrace();
+	    if (!"missingSound.ogg".equals(name))
+		return loadSound("missingSound.ogg");
+	    // Schutz vor Rekursion falls "missingSound.ogg" fehlt
+	    return null;
+	}
+
+	sounds.put(name, newSound);
+
+	return newSound;
     }
 
 }

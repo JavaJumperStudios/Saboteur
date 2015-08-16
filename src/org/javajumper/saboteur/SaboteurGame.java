@@ -1,16 +1,14 @@
 package org.javajumper.saboteur;
 
-import java.awt.Font;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import org.javajumper.saboteur.gui.ToggleButton;
 import org.javajumper.saboteur.map.Map;
-import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.map.Tile;
 import org.javajumper.saboteur.network.ServerListener;
 import org.javajumper.saboteur.packet.Packet02Login;
-import org.javajumper.saboteur.packet.Packet05Logout;
 import org.javajumper.saboteur.packet.Packet06UseItem;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
@@ -33,6 +31,8 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class SaboteurGame extends BasicGameState {
 
+    public static SaboteurGame instance;
+
     private boolean paused;
     private boolean start;
     private boolean stop;
@@ -54,6 +54,8 @@ public class SaboteurGame extends BasicGameState {
 
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
+	instance = this;
+
 	map = new Map();
 
 	time = 0;
@@ -71,9 +73,6 @@ public class SaboteurGame extends BasicGameState {
 	gui = RessourceManager.loadImage("gui.png");
 	background = RessourceManager.loadImage("background.png");
 	Tile.initTileRendering();
-
-	setUpConnection("localhost", 5000);
-
     }
 
     @Override
@@ -94,15 +93,17 @@ public class SaboteurGame extends BasicGameState {
 	    gui.draw();
 
 	    g.drawString(stringTimeInSec, 1200, 996);
-	    
-	    if(thePlayer.getRole() == Role.TRAITOR) g.setColor(Color.red);
-	    if(thePlayer.getRole() == Role.INNOCENT) g.setColor(Color.green);
-	    
+
+	    if (thePlayer.getRole() == Role.TRAITOR)
+		g.setColor(Color.red);
+	    if (thePlayer.getRole() == Role.INNOCENT)
+		g.setColor(Color.green);
+
 	    g.drawString(thePlayer.getRole().toString(), 200, 985);
 
-	} 
-	
-	if(!start) {
+	}
+
+	if (!start) {
 
 	    int x = 500;
 	    int y = 250;
@@ -119,13 +120,13 @@ public class SaboteurGame extends BasicGameState {
 	    }
 
 	}
-	
-	if(stop) {
-	    
+
+	if (stop) {
+
 	    background.draw();
-	    
-	    switch(endCause) {
-	    
+
+	    switch (endCause) {
+
 	    case 0:
 		g.setColor(Color.green);
 		g.fillRect(300, 250, 700, 256);
@@ -150,20 +151,19 @@ public class SaboteurGame extends BasicGameState {
 		g.setColor(Color.blue);
 		g.drawString("Der Server wurde manuell RESETTET.", 360, 350);
 		break;
-	    
+
 	    }
-	    
-	    if(thePlayer.getDead()) {
-		for(DeadPlayer dp : deadplayers) {
-		    if(dp.getId() == thePlayer.getId()) {
+
+	    if (thePlayer.getDead()) {
+		for (DeadPlayer dp : deadplayers) {
+		    if (dp.getId() == thePlayer.getId()) {
 			g.drawString("Du warst ein " + dp.getRole(), 500, 400);
 		    }
 		}
 	    } else {
 		g.drawString("Du warst ein " + thePlayer.getRole(), 500, 400);
 	    }
-	    
-	    
+
 	}
 
     }
@@ -225,8 +225,8 @@ public class SaboteurGame extends BasicGameState {
 		serverListener.sendToServer(packet10);
 		System.out.println("I changed ready state to: " + ready);
 	    }
-	    
-	    if(input.isKeyPressed(Input.KEY_F10)) {
+
+	    if (input.isKeyPressed(Input.KEY_F10)) {
 		Packet14Reset packet14 = new Packet14Reset();
 		serverListener.sendToServer(packet14);
 	    }
@@ -271,7 +271,7 @@ public class SaboteurGame extends BasicGameState {
     public Map getMap() {
 	return map;
     }
-    
+
     public void setRole(int playerId, Role role) {
 	for (SPPlayer p : players) {
 	    if (p.getId() == playerId) {
@@ -305,7 +305,7 @@ public class SaboteurGame extends BasicGameState {
     public void setMainPlayer(SPPlayer p) {
 	thePlayer = p;
     }
-    
+
     public void setEndCause(int e) {
 	this.endCause = e;
 	stop = true;
@@ -319,7 +319,7 @@ public class SaboteurGame extends BasicGameState {
 	return players;
     }
 
-    public void setUpConnection(String server, int port) {
+    public void setUpConnection(String server, int port) throws UnknownHostException, IOException {
 	serverListener = new ServerListener(this, server, port);
 	Thread serverListenerThread = new Thread(serverListener);
 	serverListenerThread.start();
@@ -330,17 +330,17 @@ public class SaboteurGame extends BasicGameState {
 	players.add(p);
 
     }
-    
+
     public void handlePlayerLogout(int id) {
-	
-	for(SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
-	    if(p.getId() == id) {
+
+	for (SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
+	    if (p.getId() == id) {
 		players.remove(p);
 	    }
 	}
-	
-	for(DeadPlayer dp : (ArrayList<DeadPlayer>) deadplayers.clone()) {
-	    if(dp.getId() == id) {
+
+	for (DeadPlayer dp : (ArrayList<DeadPlayer>) deadplayers.clone()) {
+	    if (dp.getId() == id) {
 		deadplayers.remove(dp);
 	    }
 	}
@@ -350,21 +350,21 @@ public class SaboteurGame extends BasicGameState {
 
 	deadplayers.add(dp);
     }
-    
+
     public void reset() {
-	
+
 	start = false;
 	stop = false;
 	endCause = 0;
-	
-	for(SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
-	    
+
+	for (SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
+
 	    p.setDead(false);
 	    p.setSprint(false);
 	    p.setLivepoints(100);
 	    p.setRole(Role.LOBBY);
 	    p.setReadyState(false);
-	    
+
 	}
 	deadplayers.clear();
 	System.out.println("ResetClient wurde ausgeführt");
