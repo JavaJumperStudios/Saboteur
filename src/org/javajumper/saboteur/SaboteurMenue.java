@@ -34,7 +34,7 @@ public class SaboteurMenue extends BasicGameState {
 		SaboteurGame.instance.setUpConnection(ipTextField.getText(), 5000);
 		openingMenuMusic.fade(5000, 0, true);
 		StateManager.changeState(1, new FadeOutTransition(Color.black, 1000), new FadeInTransition(Color.black, 1000));
-		action.disable();
+		//action.disable();
 	    } catch (Exception e) {
 		System.out.println("Verbindung zum Server konnte nicht hergestellt werden.");
 		e.printStackTrace();

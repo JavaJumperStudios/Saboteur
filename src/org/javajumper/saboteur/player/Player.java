@@ -7,6 +7,7 @@ import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
 public class Player {
@@ -52,13 +53,13 @@ public class Player {
 
 	boolean c = false;
 
-	ArrayList<Rectangle> t = MapServer.getTileCollision();
+	ArrayList<Shape> t = MapServer.getTileCollision();
 	ArrayList<Player> players = SaboteurServer.instance.getPlayers();
 
 	pos.x = pos.x + move.x * delta / 5f;
 	collisionBox.setLocation(pos);
 
-	for (Rectangle r : t) {
+	for (Shape r : t) {
 	    if (collisionBox.intersects(r)) {
 		pos.x = pos.x - move.x * delta / 5f;
 		collisionBox.setLocation(pos);
@@ -81,7 +82,7 @@ public class Player {
 	pos.y = pos.y + move.y * delta / 5f;
 	collisionBox.setLocation(pos);
 
-	for (Rectangle r : t) {
+	for (Shape r : t) {
 
 	    if (collisionBox.intersects(r)) {
 		pos.y = pos.y - move.y * delta / 5f;
