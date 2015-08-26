@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.newdawn.slick.geom.Polygon;
+import org.newdawn.slick.geom.Shape;
+
 public class Map {
 
     protected Tile[][] tiles = new Tile[40][30];
@@ -24,7 +27,8 @@ public class Map {
     /**
      * Lädt eine Karte aus dem "maps" Verzeichnis
      * 
-     * @param filename Der Name der Karte
+     * @param filename
+     *            Der Name der Karte
      */
     public void loadMap(String filename) throws IOException {
 
@@ -42,12 +46,14 @@ public class Map {
 		for (int column = 0; column < 40; column++) {
 		    byte type = Byte.parseByte(tokens[column]);
 		    boolean solid = false;
-		    if (type == 1) solid = true;
-		    
+		    if (type == 1)
+			solid = true;
+
 		    setTile(column, row, new Tile(type, solid));
 		}
 	    }
 	}
+
     }
 
     public int getWidth() {
