@@ -25,7 +25,7 @@ public class Gun extends Item {
 
 	boolean t = true;
 
-	ArrayList<Shape> a = MapServer.getTileCollision();
+	ArrayList<Shape> a = MapServer.getCollisionShapes();
 	ArrayList<Player> players = server.getPlayers();
 
 	while (t) {

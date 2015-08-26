@@ -11,7 +11,7 @@ import org.newdawn.slick.geom.Shape;
 
 public class Map {
     
-    private static ArrayList<Shape> tileCollision = new ArrayList<>();
+    private static ArrayList<Shape> collisionShapes = new ArrayList<>();
     private static ArrayList<Line> collisionLines = new ArrayList<>();
 
     protected Tile[][] tiles = new Tile[40][30];
@@ -25,8 +25,8 @@ public class Map {
 
     }
     
-    public static ArrayList<Shape> getTileCollision() {
-	return tileCollision;
+    public static ArrayList<Shape> getCollisionShapes() {
+	return collisionShapes;
     }
     
     public static ArrayList<Line> getCollisionLines() {
@@ -78,11 +78,11 @@ public class Map {
 		    collisionElement.addPoint(x, y);
 		}
 		
-		tileCollision.add(collisionElement);
+		collisionShapes.add(collisionElement);
 
 	    }
 	    Line l;
-	    for (Shape s : tileCollision) {
+	    for (Shape s : collisionShapes) {
 		for (int i = 1; i < s.getPointCount(); i++) {
 
 		    l = new Line(s.getPoint(i - 1)[0], s.getPoint(i - 1)[1], s.getPoint(i)[0], s.getPoint(i)[1]);
@@ -91,9 +91,9 @@ public class Map {
 
 		collisionLines.add(new Line(s.getPoint(0)[0], s.getPoint(0)[1], s.getPoint(s.getPointCount() - 1)[0], s.getPoint(s.getPointCount() - 1)[1]));
 		collisionLines.add(new Line(0, 0, 1280, 0));
-		collisionLines.add(new Line(1280, 0, 1280, 928));
-		collisionLines.add(new Line(0, 0, 0, 928));
-		collisionLines.add(new Line(0, 928, 1280, 928));
+		collisionLines.add(new Line(1280, 0, 1280, 960));
+		collisionLines.add(new Line(0, 0, 0, 960));
+		collisionLines.add(new Line(0, 960, 1280, 960));
 	    }
 	    
 	}

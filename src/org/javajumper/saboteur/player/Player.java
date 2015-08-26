@@ -53,7 +53,7 @@ public class Player {
 
 	boolean c = false;
 
-	ArrayList<Shape> t = MapServer.getTileCollision();
+	ArrayList<Shape> t = MapServer.getCollisionShapes();
 	ArrayList<Player> players = SaboteurServer.instance.getPlayers();
 
 	pos.x = pos.x + move.x * delta / 5f;

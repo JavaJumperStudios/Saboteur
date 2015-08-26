@@ -25,6 +25,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;
@@ -169,32 +170,34 @@ public class SaboteurGame extends BasicGameState {
 
 	}
 
-	// EXAKT HIA
-	Polygon p = new Polygon();
-	Vector2f v = new Vector2f(0, 0);
-	p.addPoint(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16);
-	for (Shape s : map.getTileCollision()) {
-	    for (int i = 0; i < s.getPointCount(); i++) {
+	Polygon shadowPoly = new Polygon();
+	Vector2f pointOfCollision;
+	shadowPoly.addPoint(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16);
+	
+	for (Shape s : map.getCollisionShapes()) {
+	    
+	    float[] shapePoints = s.getPoints();
+	    float[] mapCorners = {0,0, 0,960, 1280,0, 1280,960};	    
+	    
+	    float[] points = new float[shapePoints.length + mapCorners.length];
+	    System.arraycopy(shapePoints, 0, points, 0, shapePoints.length);
+	    System.arraycopy(mapCorners, 0, points, shapePoints.length, mapCorners.length);
+	    
+	    for (int i = 0; i < points.length; i+=2) {
 
-		v = checkCollisionPoint(s.getPoint(i)[0], s.getPoint(i)[1], g);
-		p.addPoint(v.x, v.y);
+		pointOfCollision = getCollisionPoint(points[i], points[i+1], g);
+		if (pointOfCollision != null)
+		    shadowPoly.addPoint(pointOfCollision.x, pointOfCollision.y);
+		else
+		    System.out.println("Ohoh");
 
 	    }
 	}
 	
-	v = checkCollisionPoint(0, 0, g);
-	p.addPoint(v.x, v.y);
-	v = checkCollisionPoint(1280, 0, g);
-	p.addPoint(v.x, v.y);
-	v = checkCollisionPoint(1280, 928, g);
-	p.addPoint(v.x, v.y);
-	v = checkCollisionPoint(0, 928, g);
-	p.addPoint(v.x, v.y);
-	
 	
 	
 	g.setColor(new Color(0, 0, 0, 0.5f));
-	g.fill(p);
+	g.fill(shadowPoly);
 	g.setColor(Color.red);
 	for(Line l : map.getCollisionLines()) {
 	    g.draw(l);
@@ -202,24 +205,26 @@ public class SaboteurGame extends BasicGameState {
 
     }
     
-    public Vector2f checkCollisionPoint(float x, float y, Graphics g) {
+    public Vector2f getCollisionPoint(float x, float y, Graphics g) {
 	
 	Line line = new Line(new Vector2f(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16), new Vector2f(x, y));
 	g.setColor(Color.green);
 	g.draw(line);
-	ArrayList<Vector2f> collisionPoints = new ArrayList<Vector2f>();
+	ArrayList<Vector2f> collisionPoints = new ArrayList<>();
 	for (Line l : map.getCollisionLines()) {
-
-	    Vector2f collisionPoint = l.intersect(line);
-	    if (collisionPoint != null)
+	    Vector2f collisionPoint = l.intersect(line, true);	    
+	    if (collisionPoint != null) {
 		collisionPoints.add(collisionPoint);
-
+		g.setColor(Color.pink);
+		g.draw(new Circle(collisionPoint.x, collisionPoint.y, 1));
+	    }
 	}
+	
 	Vector2f thePoint = null;
-	for (Vector2f v : collisionPoints) {
+	for (Vector2f pointOfCollision : collisionPoints) {
 
-	    if (thePoint == null || thePlayer.getPos().distance(thePoint) > thePlayer.getPos().distance(v))
-		thePoint = v;
+	    if (thePoint == null || thePlayer.getPos().distance(thePoint) > thePlayer.getPos().distance(pointOfCollision))
+		thePoint = pointOfCollision;
 
 	}
 	
