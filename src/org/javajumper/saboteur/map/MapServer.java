@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
@@ -12,9 +13,14 @@ import org.newdawn.slick.geom.Shape;
 public class MapServer extends Map {
 
     private static ArrayList<Shape> tileCollision = new ArrayList<>();
-
+    private static ArrayList<Line> collisionLines = new ArrayList<>();
+    
     public static ArrayList<Shape> getTileCollision() {
 	return tileCollision;
+    }
+    
+    public static ArrayList<Line> getCollisionLines() {
+	return collisionLines;
     }
 
     /**
@@ -62,6 +68,22 @@ public class MapServer extends Map {
 		tileCollision.add(collisionElement);
 
 	    }
+	    Line l;
+	    for (Shape s : tileCollision) {
+		for (int i = 1; i < s.getPointCount(); i++) {
+
+		    l = new Line(s.getPoint(i - 1)[0], s.getPoint(i - 1)[1], s.getPoint(i)[0], s.getPoint(i)[1]);
+		    collisionLines.add(l);
+		}
+
+		collisionLines.add(new Line(s.getPoint(0)[0], s.getPoint(0)[1], s.getPoint(s.getPointCount() - 1)[0], s.getPoint(s.getPointCount() - 1)[1]));
+		collisionLines.add(new Line(0, 0, 1280, 0));
+		collisionLines.add(new Line(1280, 0, 1280, 928));
+		collisionLines.add(new Line(0, 0, 0, 928));
+		collisionLines.add(new Line(0, 928, 1280, 928));
+
+	    }
+	    
 	}
     }
 }

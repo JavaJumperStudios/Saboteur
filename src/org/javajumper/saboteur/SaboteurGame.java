@@ -25,7 +25,9 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Polygon;
+import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -166,12 +168,63 @@ public class SaboteurGame extends BasicGameState {
 	    }
 
 	}
-	
-	//EXAKT HIA
+
+	// EXAKT HIA
 	Polygon p = new Polygon();
+	Vector2f v = new Vector2f(0, 0);
+	p.addPoint(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16);
+	for (Shape s : map.getTileCollision()) {
+	    for (int i = 0; i < s.getPointCount(); i++) {
 
+		v = checkCollisionPoint(s.getPoint(i)[0], s.getPoint(i)[1], g);
+		p.addPoint(v.x, v.y);
+
+	    }
+	}
 	
+	v = checkCollisionPoint(0, 0, g);
+	p.addPoint(v.x, v.y);
+	v = checkCollisionPoint(1280, 0, g);
+	p.addPoint(v.x, v.y);
+	v = checkCollisionPoint(1280, 928, g);
+	p.addPoint(v.x, v.y);
+	v = checkCollisionPoint(0, 928, g);
+	p.addPoint(v.x, v.y);
+	
+	
+	
+	g.setColor(new Color(0, 0, 0, 0.5f));
+	g.fill(p);
+	g.setColor(Color.red);
+	for(Line l : map.getCollisionLines()) {
+	    g.draw(l);
+	}
 
+    }
+    
+    public Vector2f checkCollisionPoint(float x, float y, Graphics g) {
+	
+	Line line = new Line(new Vector2f(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16), new Vector2f(x, y));
+	g.setColor(Color.green);
+	g.draw(line);
+	ArrayList<Vector2f> collisionPoints = new ArrayList<Vector2f>();
+	for (Line l : map.getCollisionLines()) {
+
+	    Vector2f collisionPoint = l.intersect(line);
+	    if (collisionPoint != null)
+		collisionPoints.add(collisionPoint);
+
+	}
+	Vector2f thePoint = null;
+	for (Vector2f v : collisionPoints) {
+
+	    if (thePoint == null || thePlayer.getPos().distance(thePoint) > thePlayer.getPos().distance(v))
+		thePoint = v;
+
+	}
+	
+	return thePoint;
+	
     }
 
     @Override
