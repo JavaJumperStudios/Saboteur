@@ -171,65 +171,121 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	Polygon shadowPoly = new Polygon();
-	Vector2f pointOfCollision;
+	ArrayList<Vector2f> shadowPolyPoints = new ArrayList<>();
+	Vector2f[] pointsOfCollision = new Vector2f[3];
 	shadowPoly.addPoint(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16);
-	
+
 	for (Shape s : map.getCollisionShapes()) {
-	    
+
 	    float[] shapePoints = s.getPoints();
-	    float[] mapCorners = {0,0, 0,960, 1280,0, 1280,960};	    
-	    
+	    float[] mapCorners = { 0, 0, 0, 960, 1280, 0, 1280, 960 };
+
 	    float[] points = new float[shapePoints.length + mapCorners.length];
 	    System.arraycopy(shapePoints, 0, points, 0, shapePoints.length);
 	    System.arraycopy(mapCorners, 0, points, shapePoints.length, mapCorners.length);
-	    
-	    for (int i = 0; i < points.length; i+=2) {
 
-		pointOfCollision = getCollisionPoint(points[i], points[i+1], g);
-		if (pointOfCollision != null)
-		    shadowPoly.addPoint(pointOfCollision.x, pointOfCollision.y);
-		else
-		    System.out.println("Ohoh");
+	    for (int i = 0; i < points.length; i += 2) {
+
+		pointsOfCollision = getCollisionPoint(new Vector2f(points[i], points[i + 1]), g);
+
+//		for (int j = 0; j < 3; j++) {
+		    if (pointsOfCollision[0] != null)
+			shadowPolyPoints.add(pointsOfCollision[0]);
+		    else System.out.println(points[i] + "  " + points[i+1]);
+//		}
 
 	    }
 	}
-	
-	
-	
+
+	for (int j = shadowPolyPoints.size(); j > 1; j = j - 1) {
+	    for (int i = 0; i < j - 1; i++) {
+		Vector2f vPlayer = thePlayer.getPos().copy();
+		vPlayer = vPlayer.negate();
+		Vector2f vRichtung1 = shadowPolyPoints.get(i).copy();
+		Vector2f vRichtung2 = shadowPolyPoints.get(i + 1).copy();
+
+		vRichtung1 = vRichtung1.add(vPlayer.copy());
+		vRichtung2 = vRichtung2.add(vPlayer.copy());
+
+		if (vRichtung1.getTheta() < vRichtung2.getTheta()) {
+		    Vector2f hilfe = shadowPolyPoints.get(i + 1);
+		    shadowPolyPoints.remove(hilfe);
+		    shadowPolyPoints.add(i, hilfe);
+		}
+	    }
+	}
+	int a = 0;
+	for (Vector2f v : shadowPolyPoints) {
+	    a++;
+	    System.out.println("VectorPosition:  " + a + "Winkel:  " + v.getTheta());
+	    shadowPoly.addPoint(v.x, v.y);
+	}
+
 	g.setColor(new Color(0, 0, 0, 0.5f));
 	g.fill(shadowPoly);
 	g.setColor(Color.red);
-	for(Line l : map.getCollisionLines()) {
+	for (Line l : map.getCollisionLines()) {
 	    g.draw(l);
 	}
 
     }
-    
-    public Vector2f getCollisionPoint(float x, float y, Graphics g) {
-	
-	Line line = new Line(new Vector2f(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16), new Vector2f(x, y));
+
+    public Vector2f[] getCollisionPoint(Vector2f v, Graphics g) {
+
+	Line line = null;
 	g.setColor(Color.green);
-	g.draw(line);
+
 	ArrayList<Vector2f> collisionPoints = new ArrayList<>();
-	for (Line l : map.getCollisionLines()) {
-	    Vector2f collisionPoint = l.intersect(line, true);	    
-	    if (collisionPoint != null) {
-		collisionPoints.add(collisionPoint);
-		g.setColor(Color.pink);
-		g.draw(new Circle(collisionPoint.x, collisionPoint.y, 1));
+	Vector2f[] thePoint = new Vector2f[3];
+	Vector2f vPoint = new Vector2f(v.x, v.y);
+//	for (int i = 0; i < 3; i++) {
+
+//	    if (i == 0) {
+		line = new Line(new Vector2f(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16), vPoint.copy());
+		g.setColor(Color.green);
+		thePoint[0] = vPoint;
+
+//	    } else {
+//
+//		g.setColor(Color.blue);
+//		Vector2f hilfsVector = thePlayer.getPos().copy();
+//		hilfsVector = hilfsVector.negate();
+//		hilfsVector = hilfsVector.add(vPoint.copy());
+//		hilfsVector = hilfsVector.normalise();
+//		hilfsVector = hilfsVector.scale(2000);
+//		if (i == 1)
+//		    hilfsVector = hilfsVector.add(1);
+//		if (i == 2)
+//		    hilfsVector = hilfsVector.add(-1);
+//
+//		line = new Line(new Vector2f(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16), hilfsVector.copy());
+		
+		thePoint[0] = null;
+//
+//	    }
+	    g.draw(line);
+
+	    for (Line l : map.getCollisionLines()) {
+		Vector2f collisionPoint = l.intersect(line, true);
+
+		if (collisionPoint != null) {
+		    collisionPoints.add(collisionPoint);
+		    g.setColor(Color.pink);
+		    g.draw(new Circle(collisionPoint.x, collisionPoint.y, 5));
+		}
 	    }
-	}
-	
-	Vector2f thePoint = null;
-	for (Vector2f pointOfCollision : collisionPoints) {
 
-	    if (thePoint == null || thePlayer.getPos().distance(thePoint) > thePlayer.getPos().distance(pointOfCollision))
-		thePoint = pointOfCollision;
+	    
+	    for (Vector2f pointOfCollision : collisionPoints) {
 
-	}
-	
+		if (thePoint[0] == null || thePlayer.getPos().distance(thePoint[0]) > thePlayer.getPos().distance(pointOfCollision))
+		    thePoint[0] = pointOfCollision;
+
+	    }
+//	}
+
 	return thePoint;
-	
+
     }
 
     @Override
