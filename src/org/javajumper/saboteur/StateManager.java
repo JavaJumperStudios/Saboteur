@@ -8,8 +8,8 @@ public class StateManager {
 
     private static StateBasedGame game;
 
-    public static void init(StateBasedGame game) {
-	StateManager.game = game;
+    public static void init(StateBasedGame instance) {
+	StateManager.game = instance;
     }
 
     public static void changeState(int id) {

@@ -329,7 +329,7 @@ public class SaboteurServer {
 	System.out.println("New Player added: " + name);
 
 	Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
-	p.addItem(new Gun("TestGun", Item.nextId(), 1));
+	p.addItem(new Gun(this, "TestGun", Item.nextId(), 1));
 	players.add(p);
 
 	Packet12PlayerSpawned packet12 = new Packet12PlayerSpawned();
@@ -435,6 +435,10 @@ public class SaboteurServer {
 	}
 
 	return packets;
+    }
+
+    public MapServer getMap() {
+	return map;
     }
 
 }

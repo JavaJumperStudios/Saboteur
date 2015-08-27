@@ -3,7 +3,6 @@ package org.javajumper.saboteur.player;
 import java.util.ArrayList;
 
 import org.javajumper.saboteur.SaboteurServer;
-import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.geom.Rectangle;
@@ -50,10 +49,7 @@ public class Player {
     }
 
     public void update(int delta) {
-
-	boolean c = false;
-
-	ArrayList<Shape> t = MapServer.getCollisionShapes();
+	ArrayList<Shape> t = instance.getMap().getCollisionShapes();
 	ArrayList<Player> players = SaboteurServer.instance.getPlayers();
 
 	pos.x = pos.x + move.x * delta / 5f;
@@ -145,7 +141,7 @@ public class Player {
     public void setLivepoints(int lifepoints) {
 	this.lifepoints = lifepoints;
 	if (lifepoints <= 0) {
-	    lifepoints = 0;
+	    this.lifepoints = 0;
 	}
     }
 
@@ -233,7 +229,7 @@ public class Player {
 	return inventory;
     }
 
-    public Boolean getDead() {
+    public boolean getDead() {
 	return dead;
     }
 

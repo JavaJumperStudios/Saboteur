@@ -13,8 +13,6 @@ import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
 import org.javajumper.saboteur.player.Player;
-import org.newdawn.slick.geom.Line;
-import org.newdawn.slick.geom.Point;
 
 public class ClientHandler implements Runnable {
 

@@ -7,8 +7,8 @@ import org.newdawn.slick.geom.Vector2f;
 
 public class Knife extends Item {
 
-    public Knife(String name, int id, int typeId) {
-	super(name, id, typeId);
+    public Knife(SaboteurServer instance, String name, int id, int typeId) {
+	super(instance, name, id, typeId);
     }
 
     @Override

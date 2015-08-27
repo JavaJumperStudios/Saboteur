@@ -7,19 +7,20 @@ import java.util.ArrayList;
 
 import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Polygon;
-import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 
 public class MapServer extends Map {
 
-    private static ArrayList<Shape> collisionShapes = new ArrayList<>();
-    private static ArrayList<Line> collisionLines = new ArrayList<>();
+    private ArrayList<Shape> collisionShapes = new ArrayList<>();
+    private ArrayList<Line> collisionLines = new ArrayList<>();
     
-    public static ArrayList<Shape> getCollisionShapes() {
+    @Override
+    public ArrayList<Shape> getCollisionShapes() {
 	return collisionShapes;
     }
     
-    public static ArrayList<Line> getCollisionLines() {
+    @Override
+    public ArrayList<Line> getCollisionLines() {
 	return collisionLines;
     }
 

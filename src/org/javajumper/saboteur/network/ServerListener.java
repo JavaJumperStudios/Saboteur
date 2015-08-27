@@ -16,9 +16,7 @@ import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet11SpawnDead;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
 import org.javajumper.saboteur.packet.Packet13Role;
-import org.javajumper.saboteur.packet.Packet14Reset;
 import org.javajumper.saboteur.player.DeadPlayer;
-import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
 import org.newdawn.slick.geom.Vector2f;
@@ -82,7 +80,7 @@ public class ServerListener implements Runnable {
 			    Packet02Login loginPacket = new Packet02Login();
 			    loginPacket.readFromByteBuffer(bb);
 
-			    SPPlayer p = instance.createPlayerFromLoginPacket(loginPacket);
+			    SPPlayer p = Packet02Login.createPlayerFromLoginPacket(loginPacket);
 
 			    instance.setMainPlayer(p);
 			    instance.addPlayer(p);

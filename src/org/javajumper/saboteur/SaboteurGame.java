@@ -3,12 +3,11 @@ package org.javajumper.saboteur;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 
-import org.javajumper.saboteur.gui.ToggleButton;
 import org.javajumper.saboteur.map.Map;
 import org.javajumper.saboteur.map.Tile;
 import org.javajumper.saboteur.network.ServerListener;
-import org.javajumper.saboteur.packet.Packet02Login;
 import org.javajumper.saboteur.packet.Packet06UseItem;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
@@ -25,7 +24,6 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;
@@ -36,8 +34,6 @@ import org.newdawn.slick.state.StateBasedGame;
 public class SaboteurGame extends BasicGameState {
 
     public static SaboteurGame instance;
-
-    private boolean paused;
     private boolean start;
     private boolean stop;
     private Map map;
@@ -49,7 +45,6 @@ public class SaboteurGame extends BasicGameState {
 
     private boolean ready = false;
 
-    private ToggleButton readyButton;
     private Image background;
     private ServerListener serverListener;
     private int time;
@@ -155,7 +150,9 @@ public class SaboteurGame extends BasicGameState {
 		g.setColor(Color.blue);
 		g.drawString("Der Server wurde manuell RESETTET.", 360, 350);
 		break;
-
+	    default:
+		// TODO
+		break;
 	    }
 
 	    if (thePlayer.getDead()) {
@@ -173,7 +170,6 @@ public class SaboteurGame extends BasicGameState {
 	Polygon shadowPoly = new Polygon();
 	ArrayList<Vector2f> shadowPolyPoints = new ArrayList<>();
 	Vector2f[] pointsOfCollision = new Vector2f[3];
-	shadowPoly.addPoint(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16);
 
 	for (Shape s : map.getCollisionShapes()) {
 
@@ -186,106 +182,81 @@ public class SaboteurGame extends BasicGameState {
 
 	    for (int i = 0; i < points.length; i += 2) {
 
-		pointsOfCollision = getCollisionPoint(new Vector2f(points[i], points[i + 1]), g);
+		pointsOfCollision = getCollisionPoints(new Vector2f(points[i], points[i + 1]));
 
-//		for (int j = 0; j < 3; j++) {
-		    if (pointsOfCollision[0] != null)
-			shadowPolyPoints.add(pointsOfCollision[0]);
-		    else System.out.println(points[i] + "  " + points[i+1]);
-//		}
-
-	    }
-	}
-
-	for (int j = shadowPolyPoints.size(); j > 1; j = j - 1) {
-	    for (int i = 0; i < j - 1; i++) {
-		Vector2f vPlayer = thePlayer.getPos().copy();
-		vPlayer = vPlayer.negate();
-		Vector2f vRichtung1 = shadowPolyPoints.get(i).copy();
-		Vector2f vRichtung2 = shadowPolyPoints.get(i + 1).copy();
-
-		vRichtung1 = vRichtung1.add(vPlayer.copy());
-		vRichtung2 = vRichtung2.add(vPlayer.copy());
-
-		if (vRichtung1.getTheta() < vRichtung2.getTheta()) {
-		    Vector2f hilfe = shadowPolyPoints.get(i + 1);
-		    shadowPolyPoints.remove(hilfe);
-		    shadowPolyPoints.add(i, hilfe);
+		for (int j = 0; j < 3; j++) {
+		    if (pointsOfCollision[j] != null)
+			shadowPolyPoints.add(pointsOfCollision[j]);
 		}
+
 	    }
 	}
-	int a = 0;
+
+	Vector2f vPlayer = thePlayer.getPos().copy().add(new Vector2f(16, 16));
+
+	shadowPolyPoints.sort(new Comparator<Vector2f>() {
+
+	    @Override
+	    public int compare(Vector2f v1, Vector2f v2) {
+
+		Vector2f vec1 = v1.copy().sub(vPlayer);
+		Vector2f vec2 = v2.copy().sub(vPlayer);
+
+		return (int) (vec1.getTheta() * 1000d - vec2.getTheta() * 1000d);
+	    }
+	});
+
 	for (Vector2f v : shadowPolyPoints) {
-	    a++;
-	    System.out.println("VectorPosition:  " + a + "Winkel:  " + v.getTheta());
 	    shadowPoly.addPoint(v.x, v.y);
 	}
 
 	g.setColor(new Color(0, 0, 0, 0.5f));
 	g.fill(shadowPoly);
 	g.setColor(Color.red);
-	for (Line l : map.getCollisionLines()) {
-	    g.draw(l);
-	}
 
     }
 
-    public Vector2f[] getCollisionPoint(Vector2f v, Graphics g) {
+    public Vector2f[] getCollisionPoints(Vector2f vPoint) {
 
-	Line line = null;
-	g.setColor(Color.green);
+	Vector2f[] theCollisionPoints = new Vector2f[3];
+	Vector2f playerCenter = new Vector2f(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16);
 
+	Vector2f destPoint1 = vPoint.copy().add(vPoint.copy().sub(playerCenter));
+	Vector2f destPoint2 = playerCenter.copy().add(destPoint1.copy().sub(playerCenter).normalise().scale(1700f).add(0.1));
+	Vector2f destPoint3 = playerCenter.copy().add(destPoint1.copy().sub(playerCenter).normalise().scale(1700f).add(-0.1));
+
+	Line ray1 = new Line(playerCenter, destPoint1);
+	Line ray2 = new Line(playerCenter, destPoint2);
+	Line ray3 = new Line(playerCenter, destPoint3);
+
+	theCollisionPoints[0] = getCollisionPoint(ray1);
+	theCollisionPoints[1] = getCollisionPoint(ray2);
+	theCollisionPoints[2] = getCollisionPoint(ray3);
+
+	return theCollisionPoints;
+
+    }
+
+    private Vector2f getCollisionPoint(Line ray) {
 	ArrayList<Vector2f> collisionPoints = new ArrayList<>();
-	Vector2f[] thePoint = new Vector2f[3];
-	Vector2f vPoint = new Vector2f(v.x, v.y);
-//	for (int i = 0; i < 3; i++) {
 
-//	    if (i == 0) {
-		line = new Line(new Vector2f(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16), vPoint.copy());
-		g.setColor(Color.green);
-		thePoint[0] = vPoint;
+	for (Line l : map.getCollisionLines()) {
+	    Vector2f collisionPoint = l.intersect(ray, true);
 
-//	    } else {
-//
-//		g.setColor(Color.blue);
-//		Vector2f hilfsVector = thePlayer.getPos().copy();
-//		hilfsVector = hilfsVector.negate();
-//		hilfsVector = hilfsVector.add(vPoint.copy());
-//		hilfsVector = hilfsVector.normalise();
-//		hilfsVector = hilfsVector.scale(2000);
-//		if (i == 1)
-//		    hilfsVector = hilfsVector.add(1);
-//		if (i == 2)
-//		    hilfsVector = hilfsVector.add(-1);
-//
-//		line = new Line(new Vector2f(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16), hilfsVector.copy());
-		
-		thePoint[0] = null;
-//
-//	    }
-	    g.draw(line);
-
-	    for (Line l : map.getCollisionLines()) {
-		Vector2f collisionPoint = l.intersect(line, true);
-
-		if (collisionPoint != null) {
-		    collisionPoints.add(collisionPoint);
-		    g.setColor(Color.pink);
-		    g.draw(new Circle(collisionPoint.x, collisionPoint.y, 5));
-		}
+	    if (collisionPoint != null) {
+		collisionPoints.add(collisionPoint);
 	    }
+	}
 
-	    
-	    for (Vector2f pointOfCollision : collisionPoints) {
+	Vector2f point = ray.getEnd();
+	for (Vector2f pointOfCollision : collisionPoints) {
 
-		if (thePoint[0] == null || thePlayer.getPos().distance(thePoint[0]) > thePlayer.getPos().distance(pointOfCollision))
-		    thePoint[0] = pointOfCollision;
+	    if (point == null || thePlayer.getPos().distance(point) > thePlayer.getPos().distance(pointOfCollision))
+		point = pointOfCollision;
 
-	    }
-//	}
+	}
 
-	return thePoint;
-
+	return point;
     }
 
     @Override
@@ -488,13 +459,6 @@ public class SaboteurGame extends BasicGameState {
 	}
 	deadplayers.clear();
 	System.out.println("ResetClient wurde ausgeführt");
-    }
-
-    public SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
-
-	SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY, loginPacket.name, 100, new Vector2f(0, 0), "Fuzzi_Neutral.png");
-
-	return p;
     }
 
     public void setTime(int t) {

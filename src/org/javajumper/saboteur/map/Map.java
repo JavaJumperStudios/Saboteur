@@ -11,8 +11,8 @@ import org.newdawn.slick.geom.Shape;
 
 public class Map {
     
-    private static ArrayList<Shape> collisionShapes = new ArrayList<>();
-    private static ArrayList<Line> collisionLines = new ArrayList<>();
+    private ArrayList<Shape> collisionShapes = new ArrayList<>();
+    private ArrayList<Line> collisionLines = new ArrayList<>();
 
     protected Tile[][] tiles = new Tile[40][30];
     protected int width;
@@ -25,11 +25,11 @@ public class Map {
 
     }
     
-    public static ArrayList<Shape> getCollisionShapes() {
+    public ArrayList<Shape> getCollisionShapes() {
 	return collisionShapes;
     }
     
-    public static ArrayList<Line> getCollisionLines() {
+    public ArrayList<Line> getCollisionLines() {
 	return collisionLines;
     }
 
