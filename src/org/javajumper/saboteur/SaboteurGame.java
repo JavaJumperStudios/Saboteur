@@ -18,6 +18,7 @@ import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
+import org.lwjgl.Sys;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -62,12 +63,6 @@ public class SaboteurGame extends BasicGameState {
 		stringTimeInSec = "";
 		endCause = 0;
 		stop = false;
-
-		try {
-			map.loadMap("room.map");
-		} catch (IOException e) {
-			System.out.println("Karte konnte nicht geladen werden.");
-		}
 
 		gui = RessourceManager.loadImage("gui.png");
 		background = RessourceManager.loadImage("background.png");
@@ -466,7 +461,23 @@ public class SaboteurGame extends BasicGameState {
 
 		deadplayers.add(dp);
 	}
+	
+	public void loadMap(String mapName) {
+		try {
+			map.loadMap("room.map");
+		} catch (IOException e) {
+			System.out.println("Karte konnte nicht geladen werden.");
+		}
+	}
 
+	public void safeMap(String mapName, Integer[][] mapInfo, int width, int height) {
+		try {
+			map.safeMap(mapName, mapInfo, width, height);
+		} catch (IOException e) {
+			System.out.println("Karte konnte nicht gespeichert werden.");
+		}
+	}
+	
 	public void reset() {
 
 		start = false;

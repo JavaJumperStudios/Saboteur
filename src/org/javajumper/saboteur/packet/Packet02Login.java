@@ -45,10 +45,10 @@ public class Packet02Login extends Packet {
 	return bb;
     }
 
-    @Override
-    public int getLength() {
-	return super.getLength() + Integer.BYTES + Character.BYTES * 16;
-    }
+	@Override
+	public int getLength() {
+		return super.getLength() + Integer.BYTES + Character.BYTES * 16;
+	}
     
     public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
 

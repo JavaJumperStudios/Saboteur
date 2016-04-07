@@ -17,6 +17,7 @@ import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet11SpawnDead;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
 import org.javajumper.saboteur.packet.Packet13Role;
+import org.javajumper.saboteur.packet.Packet15SetMap;
 import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
@@ -160,6 +161,12 @@ public class ServerListener implements Runnable {
 					case 14:
 						System.out.println("Reset-Packet erhalten");
 						instance.reset();
+						break;
+					case 15:
+						Packet15SetMap packet15 = new Packet15SetMap();
+						packet15.readFromByteBuffer(bb);
+						instance.safeMap(packet15.mapName, packet15.map, packet15.width, packet15.height);
+						instance.loadMap(packet15.mapName);
 						break;
 					/*
 					 * case 3: Packet03NewPlayer newPlayerPacket = new

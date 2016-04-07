@@ -24,6 +24,10 @@ public class Tile {
     private Image getTexture() {
 	return Tile.typeIdTextures.get(typeId);
     }
+    
+    public int getTypeId() {
+    	return typeId;
+    }
 
     public boolean isSolid() {
 	return solid;

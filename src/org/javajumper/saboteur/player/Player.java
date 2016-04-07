@@ -44,12 +44,11 @@ public class Player {
 
 	collisionBox = new Rectangle(pos.x, pos.y, 32, 32);
 
-	instance = new SaboteurServer();
-
     }
 
     public void update(int delta) {
-	ArrayList<Shape> t = instance.getMap().getCollisionShapes();
+    
+	ArrayList<Shape> t = SaboteurServer.instance.getMap().getCollisionShapes();
 	ArrayList<Player> players = SaboteurServer.instance.getPlayers();
 
 	pos.x = pos.x + move.x * delta / 5f;
@@ -250,7 +249,7 @@ public class Player {
     }
 
     public static int getNextId() {
-	return currentId++;
-    }
+		return currentId++;
+	}
 
 }
