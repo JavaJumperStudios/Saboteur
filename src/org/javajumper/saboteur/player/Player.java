@@ -187,7 +187,7 @@ public class Player {
 
 	}
 
-	// Entfernt das ausgerï¿½stete Item aus dem Inventar
+	// Entfernt das ausgerüstete Item aus dem Inventar
 	public void removeCurrentItem() {
 		inventory[currentWeapon] = null;
 	}
