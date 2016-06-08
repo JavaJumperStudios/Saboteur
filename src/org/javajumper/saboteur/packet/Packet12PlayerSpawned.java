@@ -4,58 +4,58 @@ import java.nio.ByteBuffer;
 
 public class Packet12PlayerSpawned extends Packet {
 
-    public String name;
-    public int playerId;
-    public float x;
-    public float y;
-    public int role;
-    public byte ready;
+	public String name;
+	public int playerId;
+	public float x;
+	public float y;
+	public int role;
+	public byte ready;
 
-    public Packet12PlayerSpawned() {
-	super((byte) 12);
-    }
-
-    @Override
-    public void readFromByteBuffer(ByteBuffer bb) {
-	name = "";
-
-	for (int i = 0; i < 16; i++) {
-	    name += bb.getChar();
+	public Packet12PlayerSpawned() {
+		super((byte) 12);
 	}
 
-	playerId = bb.getInt();
-	x = bb.getFloat();
-	y = bb.getFloat();
-	role = bb.getInt();
-	ready = bb.get();
-    }
+	@Override
+	public void readFromByteBuffer(ByteBuffer bb) {
+		name = "";
 
-    @Override
-    public ByteBuffer writeToByteBuffer() {
-	ByteBuffer bb = ByteBuffer.allocate(getLength());
+		for (int i = 0; i < 16; i++) {
+			name += bb.getChar();
+		}
 
-	bb.put(id);
-	bb.putInt(length);
-
-	for (int i = 0; i < 16; i++) {
-	    if (name.length() > i)
-		bb.putChar(name.charAt(i));
-	    else
-		bb.putChar('_');
+		playerId = bb.getInt();
+		x = bb.getFloat();
+		y = bb.getFloat();
+		role = bb.getInt();
+		ready = bb.get();
 	}
 
-	bb.putInt(playerId);
-	bb.putFloat(x);
-	bb.putFloat(y);
-	bb.putInt(role);
-	bb.put(ready);
+	@Override
+	public ByteBuffer writeToByteBuffer() {
+		ByteBuffer bb = ByteBuffer.allocate(getLength());
 
-	return bb;
-    }
+		bb.put(id);
+		bb.putInt(length);
 
-    @Override
-    public int getLength() {
-	return super.getLength() + Integer.BYTES * 2 + Float.BYTES * 2 + Character.BYTES * 16 + 1;
-    }
+		for (int i = 0; i < 16; i++) {
+			if (name.length() > i)
+				bb.putChar(name.charAt(i));
+			else
+				bb.putChar('_');
+		}
+
+		bb.putInt(playerId);
+		bb.putFloat(x);
+		bb.putFloat(y);
+		bb.putInt(role);
+		bb.put(ready);
+
+		return bb;
+	}
+
+	@Override
+	public int getLength() {
+		return super.getLength() + Integer.BYTES * 2 + Float.BYTES * 2 + Character.BYTES * 16 + 1;
+	}
 
 }

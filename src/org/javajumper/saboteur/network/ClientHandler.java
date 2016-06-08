@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 
 import org.javajumper.saboteur.SaboteurServer;
-import org.javajumper.saboteur.map.Tile;
 import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
@@ -13,7 +12,6 @@ import org.javajumper.saboteur.packet.Packet06UseItem;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
-import org.javajumper.saboteur.packet.Packet14Reset;
 import org.javajumper.saboteur.packet.Packet15SetMap;
 import org.javajumper.saboteur.player.Player;
 
@@ -33,7 +31,7 @@ public class ClientHandler implements Runnable {
 	@Override
 	public void run() {
 		byte[] buffer = new byte[524288];
-		System.out.println("Socket geöffnet");
+		System.out.println("Socket geï¿½ffnet");
 		int size;
 
 		try {

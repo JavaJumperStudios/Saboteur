@@ -10,158 +10,156 @@ import org.newdawn.slick.Sound;
 import org.newdawn.slick.SpriteSheet;
 
 /**
- * Lässt neue Ressourcen dynamisch laden
+ * Lï¿½sst neue Ressourcen dynamisch laden
  */
 public class RessourceManager {
-    private static HashMap<String, Image> images = new HashMap<>();
-    private static HashMap<String, Sound> sounds = new HashMap<>();
-    private static HashMap<String, File> files = new HashMap<>();
+	private static HashMap<String, Image> images = new HashMap<>();
+	private static HashMap<String, Sound> sounds = new HashMap<>();
+	private static HashMap<String, File> files = new HashMap<>();
 
-    private static Image tiles[];
+	private static Image tiles[];
 
-    /**
-     * Lädt ein Bild aus einer Datei oder dem Speicher
-     * 
-     * @param name
-     *            Dateiname der Datei im Ordner "res"
-     * @return das geladene Bild
-     */
-    public static Image loadImage(String name) {
-	if (images.containsKey(name)) {
-	    return images.get(name);
-	}
-	Image newImage;
-	try {
-	    newImage = new Image("res/" + name);
-	} catch (SlickException e) {
-	    e.printStackTrace();
-	    if (!"missingTexture.png".equals(name))
-		return loadImage("missingTexture.png");
-	    // Schutz vor Rekursion falls missingTexture.png fehlt
-	    return null;
-	}
+	/**
+	 * Lï¿½dt ein Bild aus einer Datei oder dem Speicher
+	 * 
+	 * @param name
+	 *            Dateiname der Datei im Ordner "res"
+	 * @return das geladene Bild
+	 */
+	public static Image loadImage(String name) {
+		if (images.containsKey(name)) {
+			return images.get(name);
+		}
+		Image newImage;
+		try {
+			newImage = new Image("res/" + name);
+		} catch (SlickException e) {
+			e.printStackTrace();
+			if (!"missingTexture.png".equals(name))
+				return loadImage("missingTexture.png");
+			// Schutz vor Rekursion falls missingTexture.png fehlt
+			return null;
+		}
 
-	images.put(name, newImage);
+		images.put(name, newImage);
 
-	return newImage;
-    }
-
-    /**
-     * Lädt eine XML-Datei aus dem Speicher
-     * 
-     * @param name
-     *            Dateiname der Datei im Ordner "data"
-     * @return das geladene Bild
-     */
-    public static File loadXML(String filename) {
-	if (files.containsKey(filename)) {
-	    return files.get(filename);
+		return newImage;
 	}
 
-	File newFile;
-	try {
-	    newFile = new File("data/" + filename);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    return null;
+	/**
+	 * Lï¿½dt eine XML-Datei aus dem Speicher
+	 * 
+	 * @param name
+	 *            Dateiname der Datei im Ordner "data"
+	 * @return das geladene Bild
+	 */
+	public static File loadXML(String filename) {
+		if (files.containsKey(filename)) {
+			return files.get(filename);
+		}
+
+		File newFile;
+		try {
+			newFile = new File("data/" + filename);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		files.put(filename, newFile);
+
+		return newFile;
 	}
 
-	files.put(filename, newFile);
-
-	return newFile;
-    }
-
-    /**
-     * Lädt ein Bild aus einem Tilesheet aus einer Datei oder dem Speicher
-     * 
-     * @param tilesheetname
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     * @return das geladene Bild
-     */
-    public static Image loadImage(String tilesheetname, int x, int y,
-	    int width, int height) {
-	Image tilesheet = loadImage(tilesheetname);
-	return tilesheet.getSubImage(x, y, width, height);
-    }
-
-    /**
-     * @param filename
-     * @param twidth
-     * @param theight
-     * @throws SlickException
-     */
-    public static void loadSprites(String filename, int twidth, int theight)
-	    throws SlickException {
-	Image tileSheet = loadImage(filename);
-
-	int numCol = tileSheet.getWidth() / twidth;
-	int numRow = tileSheet.getHeight() / theight;
-
-	tiles = new Image[numCol * numRow];
-
-	int tile = 0;
-	for (int row = 0; row < numRow; row++) {
-	    for (int column = 0; column < numCol; column++) {
-		tiles[tile] = tileSheet.getSubImage(column * twidth, row
-			* theight, twidth, theight);
-		tile++;
-	    }
-	}
-    }
-
-    /**
-     * @param index
-     * @return das gewählte Tile
-     */
-    public static Image getTile(int index) {
-	return tiles[index];
-    }
-
-    public static Animation[] loadPlayerFeet() {
-	SpriteSheet sprites = new SpriteSheet(loadImage("feet.png"), 64, 64);
-
-	Animation[] model = new Animation[8];
-
-	Image[] frames = new Image[8];
-	for (int angle = 0, j = 0; angle < 360; angle += 45, j++) {
-	    for (int i = 0; i < 8; i++) {
-		Image temp = sprites.getSprite(0, i);
-		temp.rotate(angle);
-		frames[i] = temp;
-	    }
-	    model[j] = new Animation(frames, 100);
+	/**
+	 * Lï¿½dt ein Bild aus einem Tilesheet aus einer Datei oder dem Speicher
+	 * 
+	 * @param tilesheetname
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @return das geladene Bild
+	 */
+	public static Image loadImage(String tilesheetname, int x, int y, int width, int height) {
+		Image tilesheet = loadImage(tilesheetname);
+		return tilesheet.getSubImage(x, y, width, height);
 	}
 
-	return model;
-    }
-    
-    /**
-     * Lädt einen Sound aus einer Datei oder dem Speicher
-     * 
-     * @param name Dateiname der Datei im Ordner "res/music"
-     * @return der geladene Sound
-     */
-    public static Sound loadSound(String name) {
-	if (sounds.containsKey(name)) {
-	    return sounds.get(name);
-	}
-	Sound newSound;
-	try {
-	    newSound = new Sound("res/music/" + name);
-	} catch (SlickException e) {
-	    e.printStackTrace();
-	    if (!"missingSound.ogg".equals(name))
-		return loadSound("missingSound.ogg");
-	    // Schutz vor Rekursion falls "missingSound.ogg" fehlt
-	    return null;
+	/**
+	 * @param filename
+	 * @param twidth
+	 * @param theight
+	 * @throws SlickException
+	 */
+	public static void loadSprites(String filename, int twidth, int theight) throws SlickException {
+		Image tileSheet = loadImage(filename);
+
+		int numCol = tileSheet.getWidth() / twidth;
+		int numRow = tileSheet.getHeight() / theight;
+
+		tiles = new Image[numCol * numRow];
+
+		int tile = 0;
+		for (int row = 0; row < numRow; row++) {
+			for (int column = 0; column < numCol; column++) {
+				tiles[tile] = tileSheet.getSubImage(column * twidth, row * theight, twidth, theight);
+				tile++;
+			}
+		}
 	}
 
-	sounds.put(name, newSound);
+	/**
+	 * @param index
+	 * @return das gewï¿½hlte Tile
+	 */
+	public static Image getTile(int index) {
+		return tiles[index];
+	}
 
-	return newSound;
-    }
+	public static Animation[] loadPlayerFeet() {
+		SpriteSheet sprites = new SpriteSheet(loadImage("feet.png"), 64, 64);
+
+		Animation[] model = new Animation[8];
+
+		Image[] frames = new Image[8];
+		for (int angle = 0, j = 0; angle < 360; angle += 45, j++) {
+			for (int i = 0; i < 8; i++) {
+				Image temp = sprites.getSprite(0, i);
+				temp.rotate(angle);
+				frames[i] = temp;
+			}
+			model[j] = new Animation(frames, 100);
+		}
+
+		return model;
+	}
+
+	/**
+	 * Lï¿½dt einen Sound aus einer Datei oder dem Speicher
+	 * 
+	 * @param name
+	 *            Dateiname der Datei im Ordner "res/music"
+	 * @return der geladene Sound
+	 */
+	public static Sound loadSound(String name) {
+		if (sounds.containsKey(name)) {
+			return sounds.get(name);
+		}
+		Sound newSound;
+		try {
+			newSound = new Sound("res/music/" + name);
+		} catch (SlickException e) {
+			e.printStackTrace();
+			if (!"missingSound.ogg".equals(name))
+				return loadSound("missingSound.ogg");
+			// Schutz vor Rekursion falls "missingSound.ogg" fehlt
+			return null;
+		}
+
+		sounds.put(name, newSound);
+
+		return newSound;
+	}
 
 }

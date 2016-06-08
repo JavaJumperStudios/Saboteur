@@ -7,37 +7,37 @@ import org.newdawn.slick.Image;
 
 public class Tile {
 
-    public static HashMap<Integer, Image> typeIdTextures = new HashMap<>();
+	public static HashMap<Integer, Image> typeIdTextures = new HashMap<>();
 
-    private int typeId;
-    private boolean solid;
+	private int typeId;
+	private boolean solid;
 
-    public Tile(int typeId, boolean solid) {
-	this.typeId = typeId;
-	this.solid = solid;
-    }
+	public Tile(int typeId, boolean solid) {
+		this.typeId = typeId;
+		this.solid = solid;
+	}
 
-    public void draw(int x, int y) {
-	getTexture().draw(x, y);
-    }
+	public void draw(int x, int y) {
+		getTexture().draw(x, y);
+	}
 
-    private Image getTexture() {
-	return Tile.typeIdTextures.get(typeId);
-    }
-    
-    public int getTypeId() {
-    	return typeId;
-    }
+	private Image getTexture() {
+		return Tile.typeIdTextures.get(typeId);
+	}
 
-    public boolean isSolid() {
-	return solid;
-    }
+	public int getTypeId() {
+		return typeId;
+	}
 
-    // Static Methods
+	public boolean isSolid() {
+		return solid;
+	}
 
-    public static void initTileRendering() {
-	typeIdTextures.put(0, RessourceManager.loadImage("Tile-sheet.png", 0, 0, 32, 32));
-	typeIdTextures.put(1, RessourceManager.loadImage("Tile-sheet.png", 64, 0, 32, 32));
-    }
+	// Static Methods
+
+	public static void initTileRendering() {
+		typeIdTextures.put(0, RessourceManager.loadImage("Tile-sheet.png", 0, 0, 32, 32));
+		typeIdTextures.put(1, RessourceManager.loadImage("Tile-sheet.png", 64, 0, 32, 32));
+	}
 
 }

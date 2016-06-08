@@ -6,7 +6,6 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import org.javajumper.saboteur.SaboteurGame;
-import org.javajumper.saboteur.SaboteurMenue;
 import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;

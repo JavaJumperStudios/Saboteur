@@ -11,244 +11,244 @@ import org.newdawn.slick.geom.Vector2f;
 
 public class Player {
 
-    private static SaboteurServer instance;
-    private static int currentId = 0;
-    private int id;
-    protected Role role;
-    private String name;
-    protected int lifepoints;
-    private int currentWeapon;
-    private Item[] inventory;
-    protected Vector2f pos;
-    private Vector2f move;
-    protected float lookAngle;
-    private boolean sprinting;
-    private boolean dead;
-    protected Rectangle collisionBox;
-    protected boolean ready;
+	private static SaboteurServer instance;
+	private static int currentId = 0;
+	private int id;
+	protected Role role;
+	private String name;
+	protected int lifepoints;
+	private int currentWeapon;
+	private Item[] inventory;
+	protected Vector2f pos;
+	private Vector2f move;
+	protected float lookAngle;
+	private boolean sprinting;
+	private boolean dead;
+	protected Rectangle collisionBox;
+	protected boolean ready;
 
-    public Player(int id, Role role, String name, int lifepoints, Vector2f pos) {
+	public Player(int id, Role role, String name, int lifepoints, Vector2f pos) {
 
-	this.id = id;
-	this.role = role;
-	this.name = name;
-	this.lifepoints = lifepoints;
-	this.currentWeapon = 0;
-	this.inventory = new Item[3];
-	this.pos = pos;
-	this.move = new Vector2f(0, 0);
-	this.lookAngle = 0f;
-	this.sprinting = false;
-	this.dead = false;
-	this.ready = false;
+		this.id = id;
+		this.role = role;
+		this.name = name;
+		this.lifepoints = lifepoints;
+		this.currentWeapon = 0;
+		this.inventory = new Item[3];
+		this.pos = pos;
+		this.move = new Vector2f(0, 0);
+		this.lookAngle = 0f;
+		this.sprinting = false;
+		this.dead = false;
+		this.ready = false;
 
-	collisionBox = new Rectangle(pos.x, pos.y, 32, 32);
-
-    }
-
-    public void update(int delta) {
-    
-	ArrayList<Shape> t = SaboteurServer.instance.getMap().getCollisionShapes();
-	ArrayList<Player> players = SaboteurServer.instance.getPlayers();
-
-	pos.x = pos.x + move.x * delta / 5f;
-	collisionBox.setLocation(pos);
-
-	for (Shape r : t) {
-	    if (collisionBox.intersects(r)) {
-		pos.x = pos.x - move.x * delta / 5f;
-		collisionBox.setLocation(pos);
-		break;
-	    }
+		collisionBox = new Rectangle(pos.x, pos.y, 32, 32);
 
 	}
 
-	for (Player pl : players) {
-	    if (collisionBox.intersects(pl.collision())) {
-		if (pl.getId() != this.getId()) {
-		    pos.x = pos.x - move.x * delta / 5f;
-		    collisionBox.setLocation(pos);
-		    break;
+	public void update(int delta) {
+
+		ArrayList<Shape> t = SaboteurServer.instance.getMap().getCollisionShapes();
+		ArrayList<Player> players = SaboteurServer.instance.getPlayers();
+
+		pos.x = pos.x + move.x * delta / 5f;
+		collisionBox.setLocation(pos);
+
+		for (Shape r : t) {
+			if (collisionBox.intersects(r)) {
+				pos.x = pos.x - move.x * delta / 5f;
+				collisionBox.setLocation(pos);
+				break;
+			}
+
 		}
 
-	    }
-	}
+		for (Player pl : players) {
+			if (collisionBox.intersects(pl.collision())) {
+				if (pl.getId() != this.getId()) {
+					pos.x = pos.x - move.x * delta / 5f;
+					collisionBox.setLocation(pos);
+					break;
+				}
 
-	pos.y = pos.y + move.y * delta / 5f;
-	collisionBox.setLocation(pos);
-
-	for (Shape r : t) {
-
-	    if (collisionBox.intersects(r)) {
-		pos.y = pos.y - move.y * delta / 5f;
-		collisionBox.setLocation(pos);
-		break;
-	    }
-
-	}
-
-	for (Player pl : players) {
-	    if (collisionBox.intersects(pl.collision())) {
-		if (pl.getId() != this.getId()) {
-		    pos.y = pos.y - move.y * delta / 5f;
-		    collisionBox.setLocation(pos);
-		    break;
+			}
 		}
-	    }
-	}
 
-	if (pos.x < 0)
-	    pos.x = 0;
-	if (pos.x > 1248)
-	    pos.x = 1248;
-	if (pos.y < 0)
-	    pos.y = 0;
-	if (pos.y > 928)
-	    pos.y = 928;
+		pos.y = pos.y + move.y * delta / 5f;
+		collisionBox.setLocation(pos);
 
-    }
+		for (Shape r : t) {
 
-    public int getId() {
-	return id;
-    }
+			if (collisionBox.intersects(r)) {
+				pos.y = pos.y - move.y * delta / 5f;
+				collisionBox.setLocation(pos);
+				break;
+			}
 
-    public void setName(String name) {
-	this.name = name;
-    }
+		}
 
-    public String getName() {
-	return name;
-    }
+		for (Player pl : players) {
+			if (collisionBox.intersects(pl.collision())) {
+				if (pl.getId() != this.getId()) {
+					pos.y = pos.y - move.y * delta / 5f;
+					collisionBox.setLocation(pos);
+					break;
+				}
+			}
+		}
 
-    public void setRole(Role role) {
-	this.role = role;
-	System.out.println(role);
-    }
-
-    public Role getRole() {
-	return role;
-    }
-    
-    public void setReadyState(boolean r) {
-	ready = r;
-    }
-    
-    public boolean ready() {
-	return ready;
-    }
-
-    public void setLivepoints(int lifepoints) {
-	this.lifepoints = lifepoints;
-	if (lifepoints <= 0) {
-	    this.lifepoints = 0;
-	}
-    }
-
-    public void damage(int damage, Player playerOfImpact, int i) {
-	if (!dead) {
-	    lifepoints -= damage;
-	    if (lifepoints <= 0) {
-		lifepoints = 0;
-		die(playerOfImpact, i);
-	    }
+		if (pos.x < 0)
+			pos.x = 0;
+		if (pos.x > 1248)
+			pos.x = 1248;
+		if (pos.y < 0)
+			pos.y = 0;
+		if (pos.y > 928)
+			pos.y = 928;
 
 	}
-    }
 
-    public void die(Player p, int i) {
-	DeadPlayer dp = new DeadPlayer(id, name, role, SaboteurServer.instance.getTime(), p.getId(), i, pos);
-	dead = true;
-	SaboteurServer.instance.deadPlayer(dp);
-    }
-
-    public int getLivepoints() {
-	return lifepoints;
-    }
-
-    public void setCurrentWeapon(int currentWeapon) {
-	this.currentWeapon = currentWeapon;
-    }
-
-    public void setDead(boolean d) {
-	dead = d;
-    }
-
-    public int getCurrentWeapon() {
-	return currentWeapon;
-    }
-
-    public void addItem(Item item) {
-
-	if (item.getTypeId() == 0) {
-	    inventory[1] = item;
-	} else if (item.getTypeId() == 1) {
-	    inventory[2] = item;
+	public int getId() {
+		return id;
 	}
 
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    // Entfernt das ausgerüstete Item aus dem Inventar
-    public void removeCurrentItem() {
-	inventory[currentWeapon] = null;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setPos(Vector2f pos) {
-	this.pos = pos;
-    }
+	public void setRole(Role role) {
+		this.role = role;
+		System.out.println(role);
+	}
 
-    public Vector2f getPos() {
-	return pos;
-    }
+	public Role getRole() {
+		return role;
+	}
 
-    public void setMove(Vector2f move) {
-	this.move = move;
-    }
+	public void setReadyState(boolean r) {
+		ready = r;
+	}
 
-    public Vector2f getMove() {
-	return move;
-    }
+	public boolean ready() {
+		return ready;
+	}
 
-    public void setSprint(boolean sprint) {
-	this.sprinting = sprint;
-    }
+	public void setLivepoints(int lifepoints) {
+		this.lifepoints = lifepoints;
+		if (lifepoints <= 0) {
+			this.lifepoints = 0;
+		}
+	}
 
-    public boolean getSprint() {
-	return sprinting;
-    }
+	public void damage(int damage, Player playerOfImpact, int i) {
+		if (!dead) {
+			lifepoints -= damage;
+			if (lifepoints <= 0) {
+				lifepoints = 0;
+				die(playerOfImpact, i);
+			}
 
-    public float getAngle() {
-	return lookAngle;
-    }
+		}
+	}
 
-    public void setAngle(float angle) {
-	this.lookAngle = angle;
-    }
+	public void die(Player p, int i) {
+		DeadPlayer dp = new DeadPlayer(id, name, role, SaboteurServer.instance.getTime(), p.getId(), i, pos);
+		dead = true;
+		SaboteurServer.instance.deadPlayer(dp);
+	}
 
-    public Item[] getInventory() {
-	return inventory;
-    }
+	public int getLivepoints() {
+		return lifepoints;
+	}
 
-    public boolean getDead() {
-	return dead;
-    }
+	public void setCurrentWeapon(int currentWeapon) {
+		this.currentWeapon = currentWeapon;
+	}
 
-    public Rectangle collision() {
-	return collisionBox;
-    }
+	public void setDead(boolean d) {
+		dead = d;
+	}
 
-    public PlayerSnapshot generateSnapshot() {
-	PlayerSnapshot ps = new PlayerSnapshot();
-	ps.playerId = id;
-	ps.currentWeapon = currentWeapon;
-	ps.lifepoints = lifepoints;
-	ps.lookAngle = lookAngle;
-	ps.x = pos.x;
-	ps.y = pos.y;
+	public int getCurrentWeapon() {
+		return currentWeapon;
+	}
 
-	return ps;
-    }
+	public void addItem(Item item) {
 
-    public static int getNextId() {
+		if (item.getTypeId() == 0) {
+			inventory[1] = item;
+		} else if (item.getTypeId() == 1) {
+			inventory[2] = item;
+		}
+
+	}
+
+	// Entfernt das ausgerï¿½stete Item aus dem Inventar
+	public void removeCurrentItem() {
+		inventory[currentWeapon] = null;
+	}
+
+	public void setPos(Vector2f pos) {
+		this.pos = pos;
+	}
+
+	public Vector2f getPos() {
+		return pos;
+	}
+
+	public void setMove(Vector2f move) {
+		this.move = move;
+	}
+
+	public Vector2f getMove() {
+		return move;
+	}
+
+	public void setSprint(boolean sprint) {
+		this.sprinting = sprint;
+	}
+
+	public boolean getSprint() {
+		return sprinting;
+	}
+
+	public float getAngle() {
+		return lookAngle;
+	}
+
+	public void setAngle(float angle) {
+		this.lookAngle = angle;
+	}
+
+	public Item[] getInventory() {
+		return inventory;
+	}
+
+	public boolean getDead() {
+		return dead;
+	}
+
+	public Rectangle collision() {
+		return collisionBox;
+	}
+
+	public PlayerSnapshot generateSnapshot() {
+		PlayerSnapshot ps = new PlayerSnapshot();
+		ps.playerId = id;
+		ps.currentWeapon = currentWeapon;
+		ps.lifepoints = lifepoints;
+		ps.lookAngle = lookAngle;
+		ps.x = pos.x;
+		ps.y = pos.y;
+
+		return ps;
+	}
+
+	public static int getNextId() {
 		return currentId++;
 	}
 
