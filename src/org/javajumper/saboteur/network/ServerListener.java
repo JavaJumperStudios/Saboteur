@@ -165,7 +165,7 @@ public class ServerListener implements Runnable {
 					case 15:
 						Packet15SetMap packet15 = new Packet15SetMap();
 						packet15.readFromByteBuffer(bb);
-						instance.safeMap(packet15.mapName, packet15.map, packet15.width, packet15.height);
+						instance.saveMap(packet15.mapName, packet15.map, packet15.width, packet15.height);
 						instance.loadMap(packet15.mapName);
 						break;
 					/*
