@@ -10,7 +10,7 @@ import org.newdawn.slick.Sound;
 import org.newdawn.slick.SpriteSheet;
 
 /**
- * Lï¿½sst neue Ressourcen dynamisch laden
+ * Verwaltet dynamisch Ressourcen
  */
 public class RessourceManager {
 	private static HashMap<String, Image> images = new HashMap<>();
@@ -20,7 +20,7 @@ public class RessourceManager {
 	private static Image tiles[];
 
 	/**
-	 * Lï¿½dt ein Bild aus einer Datei oder dem Speicher
+	 * Lädt ein Bild aus einer Datei oder dem Speicher
 	 * 
 	 * @param name
 	 *            Dateiname der Datei im Ordner "res"
@@ -47,7 +47,7 @@ public class RessourceManager {
 	}
 
 	/**
-	 * Lï¿½dt eine XML-Datei aus dem Speicher
+	 * Lädt eine XML-Datei aus dem Speicher
 	 * 
 	 * @param name
 	 *            Dateiname der Datei im Ordner "data"
@@ -72,7 +72,7 @@ public class RessourceManager {
 	}
 
 	/**
-	 * Lï¿½dt ein Bild aus einem Tilesheet aus einer Datei oder dem Speicher
+	 * Lädt ein Bild aus einem Tilesheet aus einer Datei oder dem Speicher
 	 * 
 	 * @param tilesheetname
 	 * @param x
@@ -111,7 +111,7 @@ public class RessourceManager {
 
 	/**
 	 * @param index
-	 * @return das gewï¿½hlte Tile
+	 * @return das gewählte Tile
 	 */
 	public static Image getTile(int index) {
 		return tiles[index];
@@ -136,7 +136,7 @@ public class RessourceManager {
 	}
 
 	/**
-	 * Lï¿½dt einen Sound aus einer Datei oder dem Speicher
+	 * Lädt einen Sound aus einer Datei oder dem Speicher
 	 * 
 	 * @param name
 	 *            Dateiname der Datei im Ordner "res/music"
