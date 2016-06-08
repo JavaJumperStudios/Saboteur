@@ -41,7 +41,7 @@ public class Map {
 	}
 
 	/**
-	 * L�dt eine Karte aus dem "maps" Verzeichnis
+	 * Lädt eine Karte aus dem "maps" Verzeichnis
 	 * 
 	 * @param filename
 	 *            Der Name der Karte

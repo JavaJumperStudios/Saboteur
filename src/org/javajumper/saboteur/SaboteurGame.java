@@ -494,7 +494,7 @@ public class SaboteurGame extends BasicGameState {
 
 		}
 		deadplayers.clear();
-		System.out.println("ResetClient wurde ausgef�hrt");
+		System.out.println("ResetClient wurde ausgeführt");
 	}
 
 	public void setTime(int t) {
