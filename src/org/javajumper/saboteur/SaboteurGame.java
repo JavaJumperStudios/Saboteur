@@ -26,6 +26,7 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Polygon;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
@@ -164,19 +165,14 @@ public class SaboteurGame extends BasicGameState {
 		Polygon shadowPoly = new Polygon();
 		ArrayList<Vector2f> shadowPolyPoints = new ArrayList<>();
 		Vector2f[] pointsOfCollision = new Vector2f[3];
-
+		
 		for (Shape s : map.getCollisionShapes()) {
 
 			float[] shapePoints = s.getPoints();
-			float[] mapCorners = { 0, 0, 0, 960, 1280, 0, 1280, 960 };
 
-			float[] points = new float[shapePoints.length + mapCorners.length];
-			System.arraycopy(shapePoints, 0, points, 0, shapePoints.length);
-			System.arraycopy(mapCorners, 0, points, shapePoints.length, mapCorners.length);
+			for (int i = 0; i < shapePoints.length; i += 2) {
 
-			for (int i = 0; i < points.length; i += 2) {
-
-				pointsOfCollision = getCollisionPoints(new Vector2f(points[i], points[i + 1]));
+				pointsOfCollision = getCollisionPoints(new Vector2f(shapePoints[i], shapePoints[i + 1]));
 
 				for (int j = 0; j < 3; j++) {
 					if (pointsOfCollision[j] != null)
@@ -185,7 +181,11 @@ public class SaboteurGame extends BasicGameState {
 
 			}
 		}
-
+		
+		Shape mapCorners = new Rectangle(0,0, 1280, 1024);
+		float[] mapCornerPoints = mapCorners.getPoints();
+		
+		
 		Vector2f vPlayer = thePlayer.getPos().copy().add(new Vector2f(16, 16));
 
 		shadowPolyPoints.sort(new Comparator<Vector2f>() {
@@ -199,27 +199,20 @@ public class SaboteurGame extends BasicGameState {
 				return (int) (vec1.getTheta() * 1000d - vec2.getTheta() * 1000d);
 			}
 		});
+		
+		for (int i = 0; i < mapCornerPoints.length; i+=2) {
+			Vector2f corner = new Vector2f(mapCornerPoints[i], mapCornerPoints[i + 1]);
+			
+			pointsOfCollision = getCollisionPoints(corner);
 
-		float x = 0;
-		float y = 0;
-		if (!shadowPolyPoints.contains(new Vector2f(0, 0))) {
-			x = 0;
-			y = 0;
+				System.out.println("With " + mapCornerPoints[i] + " , " + mapCornerPoints[i+1] + " its " + 
+						pointsOfCollision[0].distance(corner));
+				
+				if (pointsOfCollision[0] != null && pointsOfCollision[0].distance(corner) > 10) {
+					shadowPolyPoints.add(corner);
+					System.out.println("Adding " + pointsOfCollision[0].x  + " , " + pointsOfCollision[0].y);
+				}
 		}
-		if (!shadowPolyPoints.contains(new Vector2f(0, 960))) {
-			x = 0;
-			y = 960;
-		}
-		if (!shadowPolyPoints.contains(new Vector2f(1280, 0))) {
-			x = 1280;
-			y = 0;
-		}
-		if (!shadowPolyPoints.contains(new Vector2f(1280, 960))) {
-			x = 1280;
-			y = 960;
-		}
-
-		shadowPoly.addPoint(x, y);
 
 		for (Vector2f v : shadowPolyPoints) {
 			shadowPoly.addPoint(v.x, v.y);
@@ -231,6 +224,12 @@ public class SaboteurGame extends BasicGameState {
 
 	}
 
+	/**
+	 * Casts 3 rays from the player to the given point and returns the 3  points where the ray collides with an object or null
+	 * 
+	 * @param vPoint
+	 * @return
+	 */
 	public Vector2f[] getCollisionPoints(Vector2f vPoint) {
 
 		Vector2f[] theCollisionPoints = new Vector2f[3];
