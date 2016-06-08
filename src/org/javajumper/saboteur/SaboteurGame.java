@@ -470,9 +470,9 @@ public class SaboteurGame extends BasicGameState {
 		}
 	}
 
-	public void safeMap(String mapName, Integer[][] mapInfo, int width, int height) {
+	public void saveMap(String mapName, Integer[][] mapInfo, int width, int height) {
 		try {
-			map.safeMap(mapName, mapInfo, width, height);
+			map.saveMap(mapName, mapInfo, width, height);
 		} catch (IOException e) {
 			System.out.println("Karte konnte nicht gespeichert werden.");
 		}
@@ -494,7 +494,7 @@ public class SaboteurGame extends BasicGameState {
 
 		}
 		deadplayers.clear();
-		System.out.println("ResetClient wurde ausgeführt");
+		System.out.println("ResetClient wurde ausgefï¿½hrt");
 	}
 
 	public void setTime(int t) {

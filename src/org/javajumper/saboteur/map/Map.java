@@ -41,7 +41,7 @@ public class Map {
 	}
 
 	/**
-	 * Lädt eine Karte aus dem "maps" Verzeichnis
+	 * Lï¿½dt eine Karte aus dem "maps" Verzeichnis
 	 * 
 	 * @param filename
 	 *            Der Name der Karte
@@ -109,7 +109,7 @@ public class Map {
 		}
 	}
 	
-	public void safeMap(String mapName, Integer[][] map, int width, int height) throws IOException {
+	public void saveMap(String mapName, Integer[][] map, int width, int height) throws IOException {
 		
 		FileWriter fw = new FileWriter("maps/" + mapName);
 		BufferedWriter bw = new BufferedWriter(fw);
