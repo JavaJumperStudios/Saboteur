@@ -162,73 +162,150 @@ public class SaboteurGame extends BasicGameState {
 
 		}
 
-		Polygon shadowPoly = new Polygon();
-		ArrayList<Vector2f> shadowPolyPoints = new ArrayList<>();
-		Vector2f[] pointsOfCollision = new Vector2f[3];
-		
+		ArrayList<Polygon> shadowPolys = new ArrayList<>();
+		ArrayList<Vector2f> points = new ArrayList<>();
+		ArrayList<Arc> arcs = new ArrayList<>();
+
 		for (Shape s : map.getCollisionShapes()) {
 
 			float[] shapePoints = s.getPoints();
 
 			for (int i = 0; i < shapePoints.length; i += 2) {
 
-				pointsOfCollision = getCollisionPoints(new Vector2f(shapePoints[i], shapePoints[i + 1]));
+				Vector2f[] cPoints = getCollisionPoints(new Vector2f(shapePoints[i], shapePoints[i + 1]));
 
-				for (int j = 0; j < 3; j++) {
-					if (pointsOfCollision[j] != null)
-						shadowPolyPoints.add(pointsOfCollision[j]);
+				float distA = cPoints[1].distance(cPoints[0]);
+				float distB = cPoints[2].distance(cPoints[0]);
+
+				if (distA < 5 && distB < 5) {
+					// Its a wall or a corner
+					points.add(cPoints[0]);
+				} else if (distA > 5 && distB > 5) {
+					// Its some kind or point or line, we count two arcs (this
+					// should not happen)
+					System.out.println("Discovered a point or line");
+					//arcs.add(new Arc(false, cPoints[0], cPoints[1], getAngleToPlayer(cPoints[0])));
+					//arcs.add(new Arc(true, cPoints[0], cPoints[2], getAngleToPlayer(cPoints[0])));
+				} else if (distA > 5) {
+					// Its a left arc
+					arcs.add(new Arc(false, cPoints[0], cPoints[1], getAngleToPlayer(cPoints[0])));
+				} else {
+					// Its a right arc
+					arcs.add(new Arc(true, cPoints[0], cPoints[2], getAngleToPlayer(cPoints[0])));
 				}
 
 			}
 		}
 		
-		Shape mapCorners = new Rectangle(0,0, 1280, 1024);
-		float[] mapCornerPoints = mapCorners.getPoints();
+		//The map corners
+		Vector2f[] cornerPoints = new Vector2f[4];
 		
-		
-		Vector2f vPlayer = thePlayer.getPos().copy().add(new Vector2f(16, 16));
+		cornerPoints[0] = new Vector2f(0, 0);
+		cornerPoints[1] = new Vector2f(1280, 0);
+		cornerPoints[2] = new Vector2f(0, 1024);
+		cornerPoints[3] = new Vector2f(1280, 1024);
 
-		shadowPolyPoints.sort(new Comparator<Vector2f>() {
+		Comparator<Arc> c = new Comparator<Arc>() {
 
 			@Override
-			public int compare(Vector2f v1, Vector2f v2) {
+			public int compare(Arc arc1, Arc arc2) {
 
-				Vector2f vec1 = v1.copy().sub(vPlayer);
-				Vector2f vec2 = v2.copy().sub(vPlayer);
-
-				return (int) (vec1.getTheta() * 1000d - vec2.getTheta() * 1000d);
+				return (int) (arc1.angle * 1000d - arc2.angle * 1000d);
 			}
-		});
-		
-		for (int i = 0; i < mapCornerPoints.length; i+=2) {
-			Vector2f corner = new Vector2f(mapCornerPoints[i], mapCornerPoints[i + 1]);
+		};
+
+		arcs.sort(c);
+
+		while (!arcs.isEmpty()) {
+			ArrayList<Arc> remove = new ArrayList<>();
 			
-			pointsOfCollision = getCollisionPoints(corner);
+			Arc currentRightArc = null;
+			Arc currentLeftArc = null;
+			for (Arc a : arcs) {
+				// Find the first right Arc
+				if (!a.rightArc && currentRightArc == null)
+					continue;
 
-				System.out.println("With " + mapCornerPoints[i] + " , " + mapCornerPoints[i+1] + " its " + 
-						pointsOfCollision[0].distance(corner));
-				
-				if (pointsOfCollision[0] != null && pointsOfCollision[0].distance(corner) > 10) {
-					shadowPolyPoints.add(corner);
-					System.out.println("Adding " + pointsOfCollision[0].x  + " , " + pointsOfCollision[0].y);
+				if (currentRightArc == null) {
+					currentRightArc = a;
+					remove.add(currentRightArc);
+				} else if (!a.rightArc) {
+					if (currentLeftArc != null) {
+						points.add(a.backPoint);
+						points.add(a.frontPoint);
+						remove.add(currentLeftArc);
+					}
+					currentLeftArc = a;
+				} else {
+					if (currentLeftArc == null) {
+						points.add(a.backPoint);
+						points.add(a.frontPoint);
+						remove.add(a);
+					} else {
+						// Its a right arc and we already have one, we got one shape done
+						break;
+					}
 				}
+			}
+			
+			if (currentRightArc == null) {
+				// no more right Arcs, but Points, we are enclosed
+				break;
+			}
+			
+			Polygon poly = new Polygon();
+			
+			poly.addPoint(currentRightArc.backPoint.x, currentRightArc.backPoint.y);
+			poly.addPoint(currentRightArc.frontPoint.x, currentRightArc.frontPoint.y);
+			
+			//Could remove after each iteration
+			for (Vector2f p : points) {
+				if (isAngleBetween(getAngleToPlayer(p), currentLeftArc.angle, currentRightArc.angle)) {
+					poly.addPoint(p.x, p.y);
+				}
+			}
+			
+			poly.addPoint(currentLeftArc.frontPoint.x, currentLeftArc.frontPoint.y);
+			poly.addPoint(currentLeftArc.backPoint.x, currentLeftArc.backPoint.y);
+			
+			//Could remove after each iteration
+			for (Vector2f p : cornerPoints) {
+				if (isAngleBetween(getAngleToPlayer(p), currentLeftArc.angle, currentRightArc.angle)) {
+					poly.addPoint(p.x, p.y);
+				}
+			}
+			
+			shadowPolys.add(poly);
+			
+			arcs.removeAll(remove);
+
 		}
 
-		for (Vector2f v : shadowPolyPoints) {
-			shadowPoly.addPoint(v.x, v.y);
-		}
 
 		g.setColor(new Color(0, 0, 0, 0.5f));
-		g.fill(shadowPoly);
+		
+		for (Polygon shadowPoly : shadowPolys)
+			g.fill(shadowPoly);
+
 		g.setColor(Color.red);
+		for (Arc a : arcs) {
+			g.drawLine(a.backPoint.x, a.backPoint.y, a.frontPoint.x, a.frontPoint.y);
+		}
 
 	}
 
+	private double getAngleToPlayer(Vector2f v) {
+		Vector2f vPlayer = thePlayer.getPos().copy().add(new Vector2f(16, 16));
+		return v.copy().sub(vPlayer).getTheta();
+	}
+
 	/**
-	 * Casts 3 rays from the player to the given point and returns the 3  points where the ray collides with an object or null
+	 * Casts 3 rays from the player to the given point and returns the 3 points
+	 * where the ray collides with an object or null
 	 * 
 	 * @param vPoint
-	 * @return
+	 * @return [0] is the ray in the center, [1] is the left ray and [2] is the
+	 *         right ray
 	 */
 	public Vector2f[] getCollisionPoints(Vector2f vPoint) {
 
@@ -513,5 +590,14 @@ public class SaboteurGame extends BasicGameState {
 			}
 		}
 	}
+	
+	private boolean isAngleBetween(double target, double angle1, double angle2) 
+	{
+	  // check if it passes through zero
+	  if (angle1 <= angle2)
+	    return target >= angle1 && target <= angle2;
+	  else
+	    return target >= angle1 || target <= angle2;
+	}  
 
 }
