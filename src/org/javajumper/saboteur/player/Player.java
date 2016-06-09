@@ -3,10 +3,10 @@ package org.javajumper.saboteur.player;
 import java.util.ArrayList;
 
 import org.javajumper.saboteur.SaboteurServer;
-import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.player.inventory.Item;
 import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
 public class Player {
@@ -44,21 +44,17 @@ public class Player {
 
 	collisionBox = new Rectangle(pos.x, pos.y, 32, 32);
 
-	instance = new SaboteurServer();
-
     }
 
     public void update(int delta) {
-
-	boolean c = false;
-
-	ArrayList<Rectangle> t = MapServer.getTileCollision();
+    
+	ArrayList<Shape> t = SaboteurServer.instance.getMap().getCollisionShapes();
 	ArrayList<Player> players = SaboteurServer.instance.getPlayers();
 
 	pos.x = pos.x + move.x * delta / 5f;
 	collisionBox.setLocation(pos);
 
-	for (Rectangle r : t) {
+	for (Shape r : t) {
 	    if (collisionBox.intersects(r)) {
 		pos.x = pos.x - move.x * delta / 5f;
 		collisionBox.setLocation(pos);
@@ -81,7 +77,7 @@ public class Player {
 	pos.y = pos.y + move.y * delta / 5f;
 	collisionBox.setLocation(pos);
 
-	for (Rectangle r : t) {
+	for (Shape r : t) {
 
 	    if (collisionBox.intersects(r)) {
 		pos.y = pos.y - move.y * delta / 5f;
@@ -144,7 +140,7 @@ public class Player {
     public void setLivepoints(int lifepoints) {
 	this.lifepoints = lifepoints;
 	if (lifepoints <= 0) {
-	    lifepoints = 0;
+	    this.lifepoints = 0;
 	}
     }
 
@@ -232,7 +228,7 @@ public class Player {
 	return inventory;
     }
 
-    public Boolean getDead() {
+    public boolean getDead() {
 	return dead;
     }
 
@@ -253,7 +249,7 @@ public class Player {
     }
 
     public static int getNextId() {
-	return currentId++;
-    }
+		return currentId++;
+	}
 
 }

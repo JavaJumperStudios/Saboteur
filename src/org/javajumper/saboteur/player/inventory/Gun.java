@@ -3,17 +3,15 @@ package org.javajumper.saboteur.player.inventory;
 import java.util.ArrayList;
 
 import org.javajumper.saboteur.SaboteurServer;
-import org.javajumper.saboteur.map.MapServer;
 import org.javajumper.saboteur.player.Player;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
 public class Gun extends Item {
 
-    public Gun(String name, int id, int typeId) {
-	super(name, id, typeId);
+    public Gun(SaboteurServer instance, String name, int id, int typeId) {
+	super(instance, name, id, typeId);
     }
 
     @Override
@@ -26,14 +24,14 @@ public class Gun extends Item {
 
 	boolean t = true;
 
-	ArrayList<Rectangle> a = MapServer.getTileCollision();
+	ArrayList<Shape> a = instance.getMap().getCollisionShapes();
 	ArrayList<Player> players = server.getPlayers();
 
 	while (t) {
 
 	    rec.setLocation(startLocation.add(v));
 
-	    for (Rectangle r : a) {
+	    for (Shape r : a) {
 		if (r.intersects(rec)) {
 		    t = false;
 		    System.out.println("Punkt kollidiert mit Block " + r.getX() + "  " + r.getY());
