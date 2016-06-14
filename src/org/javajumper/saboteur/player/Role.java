@@ -1,5 +1,5 @@
 package org.javajumper.saboteur.player;
 
 public enum Role {
-    TRAITOR, INNOCENT, SPECTATE, LOBBY;
+	TRAITOR, INNOCENT, SPECTATE, LOBBY;
 }

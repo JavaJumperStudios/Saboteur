@@ -4,35 +4,35 @@ import java.nio.ByteBuffer;
 
 public abstract class Packet {
 
-    public byte id;
-    public int length;
+	public byte id;
+	public int length;
 
-    Packet(byte id) {
-	this.id = id;
-	this.length = getLength();
-    }
-    
-    protected int getLength() {
-	return Byte.BYTES + Integer.BYTES;
-    }
+	Packet(byte id) {
+		this.id = id;
+		this.length = getLength();
+	}
 
-    public void readFromByteArray(byte[] data) {
-	ByteBuffer bb = ByteBuffer.wrap(data);
+	protected int getLength() {
+		return Byte.BYTES + Integer.BYTES;
+	}
 
-	id = bb.get();
-	length = bb.getInt();
+	public void readFromByteArray(byte[] data) {
+		ByteBuffer bb = ByteBuffer.wrap(data);
 
-	readFromByteBuffer(bb);
-    }
+		id = bb.get();
+		length = bb.getInt();
 
-    public byte[] writeToByteArray() {
-	ByteBuffer bb = writeToByteBuffer();
+		readFromByteBuffer(bb);
+	}
 
-	return bb.array();
-    }
+	public byte[] writeToByteArray() {
+		ByteBuffer bb = writeToByteBuffer();
 
-    public abstract void readFromByteBuffer(ByteBuffer bb);
+		return bb.array();
+	}
 
-    public abstract ByteBuffer writeToByteBuffer();
+	public abstract void readFromByteBuffer(ByteBuffer bb);
+
+	public abstract ByteBuffer writeToByteBuffer();
 
 }

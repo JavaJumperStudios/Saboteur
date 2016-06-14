@@ -108,16 +108,16 @@ public class Map {
 
 		}
 	}
-	
+
 	public void saveMap(String mapName, Integer[][] map, int width, int height) throws IOException {
-		
+
 		FileWriter fw = new FileWriter("maps/" + mapName);
 		BufferedWriter bw = new BufferedWriter(fw);
-		
+
 		bw.write(Integer.toString(width));
 		bw.write(' ');
 		bw.write(Integer.toString(height));
-		
+
 		for (int i = 0; i < height; i++) {
 			bw.newLine();
 			for (int j = 0; j < width; j++) {
@@ -125,9 +125,9 @@ public class Map {
 				bw.write(' ');
 			}
 		}
-		
+
 		bw.close();
-		
+
 	}
 
 	public int getWidth() {
@@ -137,7 +137,7 @@ public class Map {
 	public int getHeight() {
 		return height;
 	}
-	
+
 	public String getName() {
 		return name;
 	}

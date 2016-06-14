@@ -10,11 +10,11 @@ public class ClientAcceptor implements Runnable {
 
 	private ServerSocket socket;
 	private SaboteurServer server;
-	
+
 	public ClientAcceptor(SaboteurServer server) {
-	    this.server = server;
+		this.server = server;
 	}
-	
+
 	@Override
 	public void run() {
 		try {
@@ -22,8 +22,8 @@ public class ClientAcceptor implements Runnable {
 
 			System.out.println("Server gestartet...");
 			Socket clientSocket = null;
-			
-			while ((clientSocket = socket.accept()) != null ) {
+
+			while ((clientSocket = socket.accept()) != null) {
 				ClientHandler client = new ClientHandler(clientSocket, server);
 				Thread clientThread = new Thread(client);
 				clientThread.start();

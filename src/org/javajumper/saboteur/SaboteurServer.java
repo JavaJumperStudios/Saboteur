@@ -67,7 +67,7 @@ public class SaboteurServer {
 		acceptor = new Thread(new ClientAcceptor(this));
 		acceptor.start();
 
-		time = 60000;
+		time = 6000000;
 		int delta;
 		long lastTimeMillis = System.currentTimeMillis();
 		while (!stop) {

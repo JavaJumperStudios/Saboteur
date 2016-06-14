@@ -6,18 +6,18 @@ import org.newdawn.slick.state.transition.FadeOutTransition;
 
 public class StateManager {
 
-    private static StateBasedGame game;
+	private static StateBasedGame game;
 
-    public static void init(StateBasedGame instance) {
-	StateManager.game = instance;
-    }
+	public static void init(StateBasedGame instance) {
+		StateManager.game = instance;
+	}
 
-    public static void changeState(int id) {
-	game.enterState(id);
-    }
+	public static void changeState(int id) {
+		game.enterState(id);
+	}
 
-    public static void changeState(int id, FadeOutTransition fadeOutTransition, FadeInTransition fadeInTransition) {
-	game.enterState(id, fadeOutTransition, fadeInTransition);
-    }
+	public static void changeState(int id, FadeOutTransition fadeOutTransition, FadeInTransition fadeInTransition) {
+		game.enterState(id, fadeOutTransition, fadeInTransition);
+	}
 
 }

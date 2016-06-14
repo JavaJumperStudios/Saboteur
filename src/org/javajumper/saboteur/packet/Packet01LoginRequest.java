@@ -4,57 +4,57 @@ import java.nio.ByteBuffer;
 
 public class Packet01LoginRequest extends Packet {
 
-    public Packet01LoginRequest() {
-	super((byte) 1);
-    }
-
-    public String name;
-    public String password;
-
-    @Override
-    public void readFromByteBuffer(ByteBuffer bb) {
-	String rname = "";
-	String rpassword = "";
-
-	for (int i = 0; i < 16; i++) {
-	    rname = rname + bb.getChar();
+	public Packet01LoginRequest() {
+		super((byte) 1);
 	}
 
-	for (int i = 0; i < 16; i++) {
-	    rpassword = rpassword + bb.getChar();
+	public String name;
+	public String password;
+
+	@Override
+	public void readFromByteBuffer(ByteBuffer bb) {
+		String rname = "";
+		String rpassword = "";
+
+		for (int i = 0; i < 16; i++) {
+			rname = rname + bb.getChar();
+		}
+
+		for (int i = 0; i < 16; i++) {
+			rpassword = rpassword + bb.getChar();
+		}
+
+		this.name = rname;
+		this.password = rpassword;
 	}
 
-	this.name = rname;
-	this.password = rpassword;
-    }
+	@Override
+	public ByteBuffer writeToByteBuffer() {
+		ByteBuffer bb = ByteBuffer.allocate(getLength());
 
-    @Override
-    public ByteBuffer writeToByteBuffer() {
-	ByteBuffer bb = ByteBuffer.allocate(getLength());
+		bb.put(id);
+		bb.putInt(getLength());
 
-	bb.put(id);
-	bb.putInt(getLength());
+		for (int i = 0; i < 16; i++) {
+			if (i < name.length())
+				bb.putChar(name.charAt(i));
+			else
+				bb.putChar('_');
+		}
 
-	for (int i = 0; i < 16; i++) {
-	    if (i < name.length())
-		bb.putChar(name.charAt(i));
-	    else
-		bb.putChar('_');
+		for (int i = 0; i < 16; i++) {
+			if (i < password.length())
+				bb.putChar(password.charAt(i));
+			else
+				bb.putChar('_');
+		}
+
+		return bb;
 	}
 
-	for (int i = 0; i < 16; i++) {
-	    if (i < password.length())
-		bb.putChar(password.charAt(i));
-	    else
-		bb.putChar('_');
+	@Override
+	public int getLength() {
+		return super.getLength() + Character.BYTES * 32;
 	}
-
-	return bb;
-    }
-
-    @Override
-    public int getLength() {
-	return super.getLength() + Character.BYTES * 32;
-    }
 
 }

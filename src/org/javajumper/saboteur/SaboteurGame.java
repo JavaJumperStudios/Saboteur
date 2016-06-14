@@ -18,7 +18,6 @@ import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
-import org.lwjgl.Sys;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -201,8 +200,6 @@ public class SaboteurGame extends BasicGameState {
 			}
 		});
 
-
-		
 		float x = 0;
 		float y = 0;
 		if (!shadowPolyPoints.contains(new Vector2f(0, 0))) {
@@ -221,12 +218,12 @@ public class SaboteurGame extends BasicGameState {
 			x = 1280;
 			y = 960;
 		}
-		
+
 		shadowPoly.addPoint(x, y);
-		
+
 		for (Vector2f v : shadowPolyPoints) {
-		shadowPoly.addPoint(v.x, v.y);
-	}
+			shadowPoly.addPoint(v.x, v.y);
+		}
 
 		g.setColor(new Color(0, 0, 0, 0.5f));
 		g.fill(shadowPoly);
@@ -430,7 +427,8 @@ public class SaboteurGame extends BasicGameState {
 		return players;
 	}
 
-	public void setUpConnection(String server, int port, String password, String name) throws UnknownHostException, IOException {
+	public void setUpConnection(String server, int port, String password, String name)
+			throws UnknownHostException, IOException {
 		serverListener = new ServerListener(this, server, port, password, name);
 		Thread serverListenerThread = new Thread(serverListener);
 		serverListenerThread.start();
@@ -461,7 +459,7 @@ public class SaboteurGame extends BasicGameState {
 
 		deadplayers.add(dp);
 	}
-	
+
 	public void loadMap(String mapName) {
 		try {
 			map.loadMap("room.map");
@@ -477,7 +475,7 @@ public class SaboteurGame extends BasicGameState {
 			System.out.println("Karte konnte nicht gespeichert werden.");
 		}
 	}
-	
+
 	public void reset() {
 
 		start = false;
