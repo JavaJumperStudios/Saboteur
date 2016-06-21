@@ -1,11 +1,9 @@
 package org.javajumper.saboteur;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Properties;
 
 import org.javajumper.saboteur.map.Map;
 import org.javajumper.saboteur.map.Tile;
