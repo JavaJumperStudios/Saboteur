@@ -1,15 +1,19 @@
 package org.javajumper.saboteur.test;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.javajumper.saboteur.SaboteurServer;
 import org.newdawn.slick.SlickException;
-
-import com.sun.istack.internal.logging.Logger;
 
 public class ServerTest {
 
 	public static void main(String[] _args) throws SlickException, InterruptedException {
+		Logger logger = Logger.getLogger(SaboteurServer.class.getName());
+		
 		SaboteurServer server = new SaboteurServer();
 		SaboteurServer.instance = server;
-		Logger.getLogger(SaboteurServer.class).info("Server wird gestartet.");
+		server.init();
+		logger.info("Server wird gestartet.");
 		server.start();
 	}
 

@@ -5,7 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import org.javajumper.saboteur.map.Map;
 import org.javajumper.saboteur.map.MapServer;
@@ -53,7 +60,8 @@ public class SaboteurServer {
 
 	private int timeLeft;
 
-	private boolean running;
+	private boolean initialized = false;
+	private boolean running = false;
 	private boolean[] blocked = new boolean[5];
 
 	private ArrayList<Player> players = new ArrayList<>();
@@ -63,10 +71,14 @@ public class SaboteurServer {
 	private Thread acceptor;
 
 	public void init() {
+		initLogger();
+
+		LOGGER.info("Lade Optionen...");
 		loadProperties();
 
 		gameDuration = 0;
-		running = false;
+
+		LOGGER.info("Lade Map...");
 		map = new Map();
 		for (int j = 0; j <= 4; j++) {
 			blocked[j] = false;
@@ -77,8 +89,42 @@ public class SaboteurServer {
 			System.out.println("Karte konnte nicht geladen werden");
 		}
 
+		LOGGER.info("Öffne Verbindung...");
 		acceptor = new Thread(new ClientAcceptor(this));
 		acceptor.start();
+
+		initialized = true;
+		LOGGER.fine("Initialisierung abgeschlossen.");
+	}
+
+	private void initLogger() {
+		LOGGER.setLevel(Level.ALL);
+
+		try {
+			Handler fileHandler = new FileHandler("log.txt");
+			Handler consoleHandler = new ConsoleHandler();
+
+			Formatter formatter = new Formatter() {
+				public String format(LogRecord record) {
+					StringBuilder sb = new StringBuilder();
+					String[] classes = record.getLoggerName().split("\\.");
+					sb.append("[").append(classes.length > 0 ? classes[classes.length - 1] : record.getLoggerName())
+							.append("][").append(record.getLevel()).append("]: ").append(record.getMessage())
+							.append("\n");
+					return sb.toString();
+				}
+			};
+			fileHandler.setFormatter(formatter);
+			consoleHandler.setFormatter(formatter);
+
+			LOGGER.setUseParentHandlers(false);
+			LOGGER.addHandler(fileHandler);
+			LOGGER.addHandler(consoleHandler);
+		} catch (SecurityException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private void loadProperties() {
@@ -92,12 +138,15 @@ public class SaboteurServer {
 
 		gameDuration = Integer.parseInt(propertyFile.getProperty("game_duration", "600000"));
 		minPlayerCount = Integer.parseInt(propertyFile.getProperty("min_player_count", "2"));
+
+		assert (minPlayerCount != 0);
 	}
 
 	public void start() {
 		int delta;
 		long lastTimeMillis = System.currentTimeMillis();
 
+		LOGGER.fine("Server gestartet.");
 		while (!stop) {
 			delta = (int) (System.currentTimeMillis() - lastTimeMillis);
 			if (delta < 10) {
@@ -115,6 +164,8 @@ public class SaboteurServer {
 	}
 
 	private void update(int delta) {
+		if (!initialized)
+			return;
 
 		if (running) {
 
@@ -158,12 +209,12 @@ public class SaboteurServer {
 			}
 
 			if (allReady) {
+				LOGGER.info("Alle Spieler sind bereit, Spiel wird gestartet.");
 				Packet03StartGame packet03 = new Packet03StartGame();
 				broadcastPacket(packet03);
 				running = true;
 				unpause();
 				initGameStats();
-				System.out.println("Alle bereit");
 			}
 
 		}
