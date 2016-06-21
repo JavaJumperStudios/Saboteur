@@ -156,7 +156,7 @@ public class Player {
 	}
 
 	public void die(Player p, int i) {
-		DeadPlayer dp = new DeadPlayer(id, name, role, SaboteurServer.instance.getTime(), p.getId(), i, pos);
+		DeadPlayer dp = new DeadPlayer(id, name, role, SaboteurServer.instance.getTimeLeft(), p.getId(), i, pos);
 		dead = true;
 		SaboteurServer.instance.deadPlayer(dp);
 	}
@@ -228,7 +228,7 @@ public class Player {
 		return inventory;
 	}
 
-	public boolean getDead() {
+	public boolean isDead() {
 		return dead;
 	}
 

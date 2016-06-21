@@ -1,9 +1,11 @@
 package org.javajumper.saboteur;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Properties;
 
 import org.javajumper.saboteur.map.Map;
 import org.javajumper.saboteur.map.Tile;
@@ -26,7 +28,6 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Polygon;
-import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
@@ -48,17 +49,17 @@ public class SaboteurGame extends BasicGameState {
 
 	private Image background;
 	private ServerListener serverListener;
-	private int time;
+	private int timeLeft;
 	private String stringTimeInSec;
 	private int endCause;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		instance = this;
-
+		
 		map = new Map();
 
-		time = 0;
+		timeLeft = 0;
 		start = false;
 		stringTimeInSec = "";
 		endCause = 0;
@@ -76,7 +77,7 @@ public class SaboteurGame extends BasicGameState {
 			map.draw();
 
 			for (SPPlayer p : players) {
-				if (!p.getDead())
+				if (!p.isDead())
 					p.draw(p.getPos().x, p.getPos().y, g, thePlayer);
 			}
 
@@ -102,7 +103,7 @@ public class SaboteurGame extends BasicGameState {
 			int x = 500;
 			int y = 250;
 			background.draw();
-			for (SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
+			for (SPPlayer p : (new ArrayList<SPPlayer>(players))) {
 				if (p.ready()) {
 					g.setColor(Color.green);
 				} else {
@@ -150,7 +151,7 @@ public class SaboteurGame extends BasicGameState {
 				break;
 			}
 
-			if (thePlayer.getDead()) {
+			if (thePlayer.isDead()) {
 				for (DeadPlayer dp : deadplayers) {
 					if (dp.getId() == thePlayer.getId()) {
 						g.drawString("Du warst ein " + dp.getRole(), 500, 400);
@@ -363,10 +364,10 @@ public class SaboteurGame extends BasicGameState {
 		if (start && !stop) {
 
 			int timeInSec = 0;
-			timeInSec = time / 1000;
+			timeInSec = timeLeft / 1000;
 			stringTimeInSec = Integer.toString(timeInSec);
 
-			if (thePlayer.getDead()) {
+			if (thePlayer.isDead()) {
 				return;
 			}
 
@@ -518,13 +519,13 @@ public class SaboteurGame extends BasicGameState {
 
 	public void handlePlayerLogout(int id) {
 
-		for (SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
+		for (SPPlayer p : (new ArrayList<SPPlayer>(players))) {
 			if (p.getId() == id) {
 				players.remove(p);
 			}
 		}
 
-		for (DeadPlayer dp : (ArrayList<DeadPlayer>) deadplayers.clone()) {
+		for (DeadPlayer dp : (new ArrayList<DeadPlayer>(deadplayers))) {
 			if (dp.getId() == id) {
 				deadplayers.remove(dp);
 			}
@@ -558,7 +559,7 @@ public class SaboteurGame extends BasicGameState {
 		stop = false;
 		endCause = 0;
 
-		for (SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
+		for (SPPlayer p : new ArrayList<SPPlayer>(players)) {
 
 			p.setDead(false);
 			p.setSprint(false);
@@ -572,7 +573,7 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	public void setTime(int t) {
-		time = t;
+		timeLeft = Math.max(0, t);
 	}
 
 	public void setSnapshot(Snapshot snapshot) {
@@ -598,6 +599,6 @@ public class SaboteurGame extends BasicGameState {
 	    return target >= angle1 && target <= angle2;
 	  else
 	    return target >= angle1 || target <= angle2;
-	}  
+	}
 
 }

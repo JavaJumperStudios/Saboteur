@@ -1,6 +1,9 @@
 package org.javajumper.saboteur;
 
 import java.awt.Font;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 import org.javajumper.saboteur.gui.Button;
 import org.newdawn.slick.Color;
@@ -25,30 +28,35 @@ public class SaboteurMenue extends BasicGameState {
 	private TextField nameTextField;
 	private Image background;
 	Music openingMenuMusic;
+	
+	// True wenn Musik abgespielt werden soll
+	private boolean playMusic;
+
+	private boolean skipMenue;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+		loadProperties();
+		
 		background = RessourceManager.loadImage("night.jpg");
 
-		connectButton = new Button(this, container, RessourceManager.loadImage("button.png"), 64, 160, action -> {
+		connectButton = new Button(this, container, RessourceManager.loadImage("button.png"), 64, 160, () -> {
 			try {
 				SaboteurGame.instance.setUpConnection(ipTextField.getText(), 5000, pwTextField.getText(),
 						nameTextField.getText());
 				openingMenuMusic.fade(5000, 0, true);
 				StateManager.changeState(1, new FadeOutTransition(Color.black, 1000),
 						new FadeInTransition(Color.black, 1000));
-				// action.disable();
 			} catch (Exception e) {
 				System.out.println("Verbindung zum Server konnte nicht hergestellt werden.");
 				e.printStackTrace();
-			}
-		});
+			}});
 
 		connectButton.setText("Verbinden");
 		connectButton.setMouseDownImage(RessourceManager.loadImage("buttonShadow.png"));
 
 		exitButton = new Button(this, container, RessourceManager.loadImage("button.png"), 1024, 512,
-				action -> System.exit(0));
+				() -> System.exit(0));
 		exitButton.setText("Spiel beenden");
 		exitButton.setSound(RessourceManager.loadSound("button.wav"));
 
@@ -72,8 +80,14 @@ public class SaboteurMenue extends BasicGameState {
 		nameTextField.setText("");
 		nameTextField.setMaxLength(10);
 
-		openingMenuMusic = new Music("res/music/Kool Kats.ogg");
-		openingMenuMusic.loop();
+		if (playMusic) {
+			openingMenuMusic = new Music("res/music/Kool Kats.ogg");
+			openingMenuMusic.loop();
+		}
+		
+		if (skipMenue) {
+			connectButton.runAction();
+		}
 	}
 
 	@Override
@@ -94,6 +108,19 @@ public class SaboteurMenue extends BasicGameState {
 	@Override
 	public int getID() {
 		return 0;
+	}
+	
+	private void loadProperties() {
+		Properties propertyFile = new Properties();
+
+		try {
+			propertyFile.load(new FileInputStream("saboteur.properties"));
+		} catch (IOException e) {
+			// Do nothing, we have default fallbacks
+		}
+
+		playMusic = Boolean.parseBoolean(propertyFile.getProperty("play_music", "true"));
+		skipMenue = Boolean.parseBoolean(propertyFile.getProperty("debug_skip_menue", "false"));
 	}
 
 }
