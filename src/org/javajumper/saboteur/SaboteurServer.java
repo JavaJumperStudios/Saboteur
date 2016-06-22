@@ -134,6 +134,7 @@ public class SaboteurServer {
 			propertyFile.load(new FileInputStream("saboteur-server.properties"));
 		} catch (IOException e) {
 			// Do nothing, we have default fallbacks
+			LOGGER.warning("No saboteur-server.properties found, using defaults.");
 		}
 
 		gameDuration = Integer.parseInt(propertyFile.getProperty("game_duration", "600000"));
