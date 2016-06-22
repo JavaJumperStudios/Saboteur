@@ -1,4 +1,5 @@
 package org.javajumper.saboteur.test;
+
 import org.javajumper.saboteur.SaboteurServer;
 import org.newdawn.slick.SlickException;
 
