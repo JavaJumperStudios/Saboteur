@@ -8,7 +8,8 @@ public class ClientTest {
 
 	public static void main(String[] _args) {
 		try {
-			AppGameContainer container = new AppGameContainer(new Saboteur());
+			Saboteur saboteur = new Saboteur();
+			AppGameContainer container = new AppGameContainer(saboteur);
 			container.setDisplayMode(1280, 1024, false);
 			container.setAlwaysRender(true);
 			container.setMinimumLogicUpdateInterval(25);

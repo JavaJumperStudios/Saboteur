@@ -164,7 +164,7 @@ public class SaboteurGame extends BasicGameState {
 		ArrayList<Polygon> shadowPolys = new ArrayList<>();
 		ArrayList<Vector2f> points = new ArrayList<>();
 		ArrayList<Arc> arcs = new ArrayList<>();
-
+		
 		for (Shape s : map.getCollisionShapes()) {
 
 			float[] shapePoints = s.getPoints();
@@ -205,7 +205,6 @@ public class SaboteurGame extends BasicGameState {
 		cornerPoints[3] = new Vector2f(1280, 1024);
 
 		Comparator<Arc> c = new Comparator<Arc>() {
-
 			@Override
 			public int compare(Arc arc1, Arc arc2) {
 
@@ -279,7 +278,6 @@ public class SaboteurGame extends BasicGameState {
 			arcs.removeAll(remove);
 
 		}
-
 
 		g.setColor(new Color(0, 0, 0, 0.5f));
 		
