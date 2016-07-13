@@ -1,7 +1,5 @@
 package org.javajumper.saboteur.gui;
 
-import java.util.function.Consumer;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -13,15 +11,13 @@ import org.newdawn.slick.state.GameState;
 public class Button extends MouseOverArea {
 
 	private String text = "";
-	private GameState instance;
 	private boolean active = true;
-	private Consumer<? super Button> action;
+	private Runnable action;
 	private Sound sound;
 
 	public Button(GameState instance, GUIContext container, Image image, int x, int y,
-			Consumer<? super Button> action) {
+			Runnable action) {
 		super(container, image, x, y);
-		this.instance = instance;
 		this.action = action;
 	}
 
@@ -41,7 +37,7 @@ public class Button extends MouseOverArea {
 		if (active && isMouseOver()) {
 			if (sound != null)
 				sound.play();
-			action.accept(null);
+			runAction();
 		}
 	}
 
@@ -51,6 +47,10 @@ public class Button extends MouseOverArea {
 
 	public void setSound(Sound sound) {
 		this.sound = sound;
+	}
+
+	public void runAction() {
+		action.run();
 	}
 
 }

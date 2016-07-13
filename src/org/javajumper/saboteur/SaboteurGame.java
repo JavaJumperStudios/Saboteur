@@ -47,17 +47,17 @@ public class SaboteurGame extends BasicGameState {
 
 	private Image background;
 	private ServerListener serverListener;
-	private int time;
+	private int timeLeft;
 	private String stringTimeInSec;
 	private int endCause;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		instance = this;
-
+		
 		map = new Map();
 
-		time = 0;
+		timeLeft = 0;
 		start = false;
 		stringTimeInSec = "";
 		endCause = 0;
@@ -75,7 +75,7 @@ public class SaboteurGame extends BasicGameState {
 			map.draw();
 
 			for (SPPlayer p : players) {
-				if (!p.getDead())
+				if (!p.isDead())
 					p.draw(p.getPos().x, p.getPos().y, g, thePlayer);
 			}
 
@@ -101,7 +101,7 @@ public class SaboteurGame extends BasicGameState {
 			int x = 500;
 			int y = 250;
 			background.draw();
-			for (SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
+			for (SPPlayer p : (new ArrayList<SPPlayer>(players))) {
 				if (p.ready()) {
 					g.setColor(Color.green);
 				} else {
@@ -149,7 +149,7 @@ public class SaboteurGame extends BasicGameState {
 				break;
 			}
 
-			if (thePlayer.getDead()) {
+			if (thePlayer.isDead()) {
 				for (DeadPlayer dp : deadplayers) {
 					if (dp.getId() == thePlayer.getId()) {
 						g.drawString("Du warst ein " + dp.getRole(), 500, 400);
@@ -161,76 +161,149 @@ public class SaboteurGame extends BasicGameState {
 
 		}
 
-		Polygon shadowPoly = new Polygon();
-		ArrayList<Vector2f> shadowPolyPoints = new ArrayList<>();
-		Vector2f[] pointsOfCollision = new Vector2f[3];
-
+		ArrayList<Polygon> shadowPolys = new ArrayList<>();
+		ArrayList<Vector2f> points = new ArrayList<>();
+		ArrayList<Arc> arcs = new ArrayList<>();
+		
 		for (Shape s : map.getCollisionShapes()) {
 
 			float[] shapePoints = s.getPoints();
-			float[] mapCorners = { 0, 0, 0, 960, 1280, 0, 1280, 960 };
 
-			float[] points = new float[shapePoints.length + mapCorners.length];
-			System.arraycopy(shapePoints, 0, points, 0, shapePoints.length);
-			System.arraycopy(mapCorners, 0, points, shapePoints.length, mapCorners.length);
+			for (int i = 0; i < shapePoints.length; i += 2) {
 
-			for (int i = 0; i < points.length; i += 2) {
+				Vector2f[] cPoints = getCollisionPoints(new Vector2f(shapePoints[i], shapePoints[i + 1]));
 
-				pointsOfCollision = getCollisionPoints(new Vector2f(points[i], points[i + 1]));
+				float distA = cPoints[1].distance(cPoints[0]);
+				float distB = cPoints[2].distance(cPoints[0]);
 
-				for (int j = 0; j < 3; j++) {
-					if (pointsOfCollision[j] != null)
-						shadowPolyPoints.add(pointsOfCollision[j]);
+				if (distA < 5 && distB < 5) {
+					// Its a wall or a corner
+					points.add(cPoints[0]);
+				} else if (distA > 5 && distB > 5) {
+					// Its some kind or point or line, we count two arcs (this
+					// should not happen)
+					System.out.println("Discovered a point or line");
+					//arcs.add(new Arc(false, cPoints[0], cPoints[1], getAngleToPlayer(cPoints[0])));
+					//arcs.add(new Arc(true, cPoints[0], cPoints[2], getAngleToPlayer(cPoints[0])));
+				} else if (distA > 5) {
+					// Its a left arc
+					arcs.add(new Arc(false, cPoints[0], cPoints[1], getAngleToPlayer(cPoints[0])));
+				} else {
+					// Its a right arc
+					arcs.add(new Arc(true, cPoints[0], cPoints[2], getAngleToPlayer(cPoints[0])));
 				}
 
 			}
 		}
+		
+		//The map corners
+		Vector2f[] cornerPoints = new Vector2f[4];
+		
+		cornerPoints[0] = new Vector2f(0, 0);
+		cornerPoints[1] = new Vector2f(1280, 0);
+		cornerPoints[2] = new Vector2f(0, 1024);
+		cornerPoints[3] = new Vector2f(1280, 1024);
 
-		Vector2f vPlayer = thePlayer.getPos().copy().add(new Vector2f(16, 16));
-
-		shadowPolyPoints.sort(new Comparator<Vector2f>() {
-
+		Comparator<Arc> c = new Comparator<Arc>() {
 			@Override
-			public int compare(Vector2f v1, Vector2f v2) {
+			public int compare(Arc arc1, Arc arc2) {
 
-				Vector2f vec1 = v1.copy().sub(vPlayer);
-				Vector2f vec2 = v2.copy().sub(vPlayer);
-
-				return (int) (vec1.getTheta() * 1000d - vec2.getTheta() * 1000d);
+				return (int) (arc1.angle * 1000d - arc2.angle * 1000d);
 			}
-		});
+		};
 
-		float x = 0;
-		float y = 0;
-		if (!shadowPolyPoints.contains(new Vector2f(0, 0))) {
-			x = 0;
-			y = 0;
-		}
-		if (!shadowPolyPoints.contains(new Vector2f(0, 960))) {
-			x = 0;
-			y = 960;
-		}
-		if (!shadowPolyPoints.contains(new Vector2f(1280, 0))) {
-			x = 1280;
-			y = 0;
-		}
-		if (!shadowPolyPoints.contains(new Vector2f(1280, 960))) {
-			x = 1280;
-			y = 960;
-		}
+		arcs.sort(c);
 
-		shadowPoly.addPoint(x, y);
+		while (!arcs.isEmpty()) {
+			ArrayList<Arc> remove = new ArrayList<>();
+			
+			Arc currentRightArc = null;
+			Arc currentLeftArc = null;
+			for (Arc a : arcs) {
+				// Find the first right Arc
+				if (!a.rightArc && currentRightArc == null)
+					continue;
 
-		for (Vector2f v : shadowPolyPoints) {
-			shadowPoly.addPoint(v.x, v.y);
+				if (currentRightArc == null) {
+					currentRightArc = a;
+					remove.add(currentRightArc);
+				} else if (!a.rightArc) {
+					if (currentLeftArc != null) {
+						points.add(a.backPoint);
+						points.add(a.frontPoint);
+						remove.add(currentLeftArc);
+					}
+					currentLeftArc = a;
+				} else {
+					if (currentLeftArc == null) {
+						points.add(a.backPoint);
+						points.add(a.frontPoint);
+						remove.add(a);
+					} else {
+						// Its a right arc and we already have one, we got one shape done
+						break;
+					}
+				}
+			}
+			
+			if (currentRightArc == null) {
+				// no more right Arcs, but Points, we are enclosed
+				break;
+			}
+			
+			Polygon poly = new Polygon();
+			
+			poly.addPoint(currentRightArc.backPoint.x, currentRightArc.backPoint.y);
+			poly.addPoint(currentRightArc.frontPoint.x, currentRightArc.frontPoint.y);
+			
+			//Could remove after each iteration
+			for (Vector2f p : points) {
+				if (isAngleBetween(getAngleToPlayer(p), currentLeftArc.angle, currentRightArc.angle)) {
+					poly.addPoint(p.x, p.y);
+				}
+			}
+			
+			poly.addPoint(currentLeftArc.frontPoint.x, currentLeftArc.frontPoint.y);
+			poly.addPoint(currentLeftArc.backPoint.x, currentLeftArc.backPoint.y);
+			
+			//Could remove after each iteration
+			for (Vector2f p : cornerPoints) {
+				if (isAngleBetween(getAngleToPlayer(p), currentLeftArc.angle, currentRightArc.angle)) {
+					poly.addPoint(p.x, p.y);
+				}
+			}
+			
+			shadowPolys.add(poly);
+			
+			arcs.removeAll(remove);
+
 		}
 
 		g.setColor(new Color(0, 0, 0, 0.5f));
-		g.fill(shadowPoly);
+		
+		for (Polygon shadowPoly : shadowPolys)
+			g.fill(shadowPoly);
+
 		g.setColor(Color.red);
+		for (Arc a : arcs) {
+			g.drawLine(a.backPoint.x, a.backPoint.y, a.frontPoint.x, a.frontPoint.y);
+		}
 
 	}
 
+	private double getAngleToPlayer(Vector2f v) {
+		Vector2f vPlayer = thePlayer.getPos().copy().add(new Vector2f(16, 16));
+		return v.copy().sub(vPlayer).getTheta();
+	}
+
+	/**
+	 * Casts 3 rays from the player to the given point and returns the 3 points
+	 * where the ray collides with an object or null
+	 * 
+	 * @param vPoint
+	 * @return [0] is the ray in the center, [1] is the left ray and [2] is the
+	 *         right ray
+	 */
 	public Vector2f[] getCollisionPoints(Vector2f vPoint) {
 
 		Vector2f[] theCollisionPoints = new Vector2f[3];
@@ -287,10 +360,10 @@ public class SaboteurGame extends BasicGameState {
 		if (start && !stop) {
 
 			int timeInSec = 0;
-			timeInSec = time / 1000;
+			timeInSec = timeLeft / 1000;
 			stringTimeInSec = Integer.toString(timeInSec);
 
-			if (thePlayer.getDead()) {
+			if (thePlayer.isDead()) {
 				return;
 			}
 
@@ -442,13 +515,13 @@ public class SaboteurGame extends BasicGameState {
 
 	public void handlePlayerLogout(int id) {
 
-		for (SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
+		for (SPPlayer p : (new ArrayList<SPPlayer>(players))) {
 			if (p.getId() == id) {
 				players.remove(p);
 			}
 		}
 
-		for (DeadPlayer dp : (ArrayList<DeadPlayer>) deadplayers.clone()) {
+		for (DeadPlayer dp : (new ArrayList<DeadPlayer>(deadplayers))) {
 			if (dp.getId() == id) {
 				deadplayers.remove(dp);
 			}
@@ -482,7 +555,7 @@ public class SaboteurGame extends BasicGameState {
 		stop = false;
 		endCause = 0;
 
-		for (SPPlayer p : (ArrayList<SPPlayer>) players.clone()) {
+		for (SPPlayer p : new ArrayList<SPPlayer>(players)) {
 
 			p.setDead(false);
 			p.setSprint(false);
@@ -496,7 +569,7 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	public void setTime(int t) {
-		time = t;
+		timeLeft = Math.max(0, t);
 	}
 
 	public void setSnapshot(Snapshot snapshot) {
@@ -513,6 +586,15 @@ public class SaboteurGame extends BasicGameState {
 				}
 			}
 		}
+	}
+	
+	private boolean isAngleBetween(double target, double angle1, double angle2) 
+	{
+	  // check if it passes through zero
+	  if (angle1 <= angle2)
+	    return target >= angle1 && target <= angle2;
+	  else
+	    return target >= angle1 || target <= angle2;
 	}
 
 }

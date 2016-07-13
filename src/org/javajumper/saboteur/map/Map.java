@@ -101,9 +101,9 @@ public class Map {
 				collisionLines.add(new Line(s.getPoint(0)[0], s.getPoint(0)[1], s.getPoint(s.getPointCount() - 1)[0],
 						s.getPoint(s.getPointCount() - 1)[1]));
 				collisionLines.add(new Line(0, 0, 1280, 0));
-				collisionLines.add(new Line(1280, 0, 1280, 960));
-				collisionLines.add(new Line(0, 0, 0, 960));
-				collisionLines.add(new Line(0, 960, 1280, 960));
+				collisionLines.add(new Line(1280, 0, 1280, 1024));
+				collisionLines.add(new Line(0, 0, 0, 1024));
+				collisionLines.add(new Line(0, 1024, 1280, 1024));
 			}
 
 		}

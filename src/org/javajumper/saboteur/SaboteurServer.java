@@ -1,8 +1,18 @@
 package org.javajumper.saboteur;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Random;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import org.javajumper.saboteur.map.Map;
 import org.javajumper.saboteur.map.MapServer;
@@ -28,32 +38,47 @@ import org.newdawn.slick.geom.Vector2f;
 
 public class SaboteurServer {
 
-	public static void main(String[] args) {
-		System.out.println("Server wird gestartet.");
-		SaboteurServer server = new SaboteurServer();
-		instance = server;
-		server.start();
-	}
+	public static SaboteurServer instance;
 
 	private boolean stop = false;
 	private boolean pause = true;
+
 	private ArrayList<ClientHandler> clientHandler = new ArrayList<>();
 	private ArrayList<ClientHandler> removeList = new ArrayList<>();
-	public static SaboteurServer instance;
-	private int time; // Zeit in Millisekunden
-	private boolean start;
+
+	public final static Logger LOGGER = Logger.getLogger(SaboteurServer.class.getName());
+
+	/* Optionen */
+
+	// Dauer eines Spiels in Millisekunden
+	private int gameDuration;
+
+	// Minimale Anzahl von Spielern
+	private int minPlayerCount;
+
+	/* Ende Optionen */
+
+	private int timeLeft;
+
+	private boolean initialized = false;
+	private boolean running = false;
 	private boolean[] blocked = new boolean[5];
 
 	private ArrayList<Player> players = new ArrayList<>();
 	private ArrayList<DeadPlayer> deadplayers = new ArrayList<>();
 	private Map map;
 
-	Thread acceptor;
+	private Thread acceptor;
 
-	private void start() {
+	public void init() {
+		initLogger();
 
-		time = 0;
-		start = false;
+		LOGGER.info("Lade Optionen...");
+		loadProperties();
+
+		gameDuration = 0;
+
+		LOGGER.info("Lade Map...");
 		map = new Map();
 		for (int j = 0; j <= 4; j++) {
 			blocked[j] = false;
@@ -64,12 +89,65 @@ public class SaboteurServer {
 			System.out.println("Karte konnte nicht geladen werden");
 		}
 
+		LOGGER.info("Öffne Verbindung...");
 		acceptor = new Thread(new ClientAcceptor(this));
 		acceptor.start();
 
-		time = 6000000;
+		initialized = true;
+		LOGGER.fine("Initialisierung abgeschlossen.");
+	}
+
+	private void initLogger() {
+		LOGGER.setLevel(Level.ALL);
+
+		try {
+			Handler fileHandler = new FileHandler("log.txt");
+			Handler consoleHandler = new ConsoleHandler();
+
+			Formatter formatter = new Formatter() {
+				public String format(LogRecord record) {
+					StringBuilder sb = new StringBuilder();
+					String[] classes = record.getLoggerName().split("\\.");
+					sb.append("[").append(classes.length > 0 ? classes[classes.length - 1] : record.getLoggerName())
+							.append("][").append(record.getLevel()).append("]: ").append(record.getMessage())
+							.append("\n");
+					return sb.toString();
+				}
+			};
+			fileHandler.setFormatter(formatter);
+			consoleHandler.setFormatter(formatter);
+
+			LOGGER.setUseParentHandlers(false);
+			LOGGER.addHandler(fileHandler);
+			LOGGER.addHandler(consoleHandler);
+		} catch (SecurityException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private void loadProperties() {
+		Properties propertyFile = new Properties();
+
+		try {
+			propertyFile.load(new FileInputStream("saboteur-server.properties"));
+		} catch (IOException e) {
+			// Do nothing, we have default fallbacks
+			LOGGER.warning("No saboteur-server.properties found, using defaults.");
+		}
+
+		gameDuration = Integer.parseInt(propertyFile.getProperty("game_duration", "600000"));
+		minPlayerCount = Integer.parseInt(propertyFile.getProperty("min_player_count", "2"));
+
+		assert (minPlayerCount != 0);
+	}
+
+	public void start() {
 		int delta;
 		long lastTimeMillis = System.currentTimeMillis();
+
+		LOGGER.fine("Server gestartet.");
 		while (!stop) {
 			delta = (int) (System.currentTimeMillis() - lastTimeMillis);
 			if (delta < 10) {
@@ -87,13 +165,15 @@ public class SaboteurServer {
 	}
 
 	private void update(int delta) {
+		if (!initialized)
+			return;
 
-		if (start) {
+		if (running) {
 
 			if (!pause) {
 				map.update(delta);
 
-				time -= delta;
+				timeLeft -= delta;
 
 				Packet07Snapshot packet = new Packet07Snapshot();
 				packet.snapshot = generateSnapshot();
@@ -119,22 +199,23 @@ public class SaboteurServer {
 			}
 		} else {
 
-			if (players.size() == 0)
+			if (players.size() < minPlayerCount)
 				return;
+
 			boolean allReady = true;
 
-			for (Player p : (ArrayList<Player>) players.clone()) {
+			for (Player p : new ArrayList<Player>(players)) {
 				if (!p.ready())
 					allReady = false;
 			}
 
 			if (allReady) {
+				LOGGER.info("Alle Spieler sind bereit, Spiel wird gestartet.");
 				Packet03StartGame packet03 = new Packet03StartGame();
 				broadcastPacket(packet03);
-				start = true;
+				running = true;
 				unpause();
 				initGameStats();
-				System.out.println("Alle bereit");
 			}
 
 		}
@@ -155,14 +236,9 @@ public class SaboteurServer {
 			pl[r.nextInt(players.size())].setRole(Role.TRAITOR);
 		} else {
 			pl[r.nextInt(players.size())].setRole(Role.TRAITOR);
-			pl[r.nextInt(players.size())].setRole(Role.TRAITOR); // Falls es 2
-			// mal den
-			// gleichen
-			// Player
-			// treffen
-			// sollte, gibt
-			// es eben nur
-			// 1 Traitor.
+			pl[r.nextInt(players.size())].setRole(Role.TRAITOR);
+			// Falls es 2 mal den gleichen Player treffen sollte, gibt es eben
+			// nur 1 Traitor.
 		}
 
 		for (Player p : players) {
@@ -176,8 +252,8 @@ public class SaboteurServer {
 
 	public void checkWinConditions() {
 
-		if (time <= 0) {
-			// Innocent gewinnt durch Zeit
+		if (timeLeft <= 0) {
+			// Innocents gewinnen durch Zeit
 
 			sendEndPacket(0);
 
@@ -187,9 +263,9 @@ public class SaboteurServer {
 			boolean traitorAlive = false;
 
 			for (Player p : players) {
-				if (!p.getDead() && p.getRole() == Role.INNOCENT) {
+				if (!p.isDead() && p.getRole() == Role.INNOCENT) {
 					innoAlive = true;
-				} else if (!p.getDead() && p.getRole() == Role.TRAITOR) {
+				} else if (!p.isDead() && p.getRole() == Role.TRAITOR) {
 					traitorAlive = true;
 				}
 			}
@@ -225,9 +301,9 @@ public class SaboteurServer {
 
 	public void resetServer() {
 
-		start = false;
+		running = false;
 
-		time = 60000;
+		timeLeft = gameDuration;
 		map = new MapServer();
 		for (int j = 0; j <= 4; j++) {
 			blocked[j] = false;
@@ -238,7 +314,7 @@ public class SaboteurServer {
 			System.out.println("Karte konnte nicht geladen werden");
 		}
 
-		for (Player p : (ArrayList<Player>) players.clone()) {
+		for (Player p : (new ArrayList<Player>(players))) {
 
 			p.setDead(false);
 			p.setSprint(false);
@@ -284,7 +360,7 @@ public class SaboteurServer {
 			ps[i] = pl[i].generateSnapshot();
 		}
 
-		snapshot.time = time;
+		snapshot.time = timeLeft;
 
 		snapshot.player = ps;
 
@@ -361,8 +437,8 @@ public class SaboteurServer {
 		System.out.println("Unpaused!");
 	}
 
-	public int getTime() {
-		return time;
+	public int getTimeLeft() {
+		return timeLeft;
 	}
 
 	public ArrayList<Player> getPlayers() {
@@ -406,7 +482,7 @@ public class SaboteurServer {
 		if (players.contains(player)) {
 			players.remove(player);
 		}
-		for (DeadPlayer dp : (ArrayList<DeadPlayer>) deadplayers.clone()) {
+		for (DeadPlayer dp : (new ArrayList<DeadPlayer>(deadplayers))) {
 			if (dp.getId() == player.getId()) {
 				deadplayers.remove(dp);
 			}
