@@ -28,7 +28,7 @@ public class SaboteurMenue extends BasicGameState {
 	private TextField nameTextField;
 	private Image background;
 	Music openingMenuMusic;
-	
+
 	// True wenn Musik abgespielt werden soll
 	private boolean playMusic;
 
@@ -37,26 +37,28 @@ public class SaboteurMenue extends BasicGameState {
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		loadProperties();
-		
-		background = RessourceManager.loadImage("night.jpg");
+
+		// background = RessourceManager.loadImage("night.jpg");
 
 		connectButton = new Button(this, container, RessourceManager.loadImage("button.png"), 64, 160, () -> {
 			try {
 				SaboteurGame.instance.setUpConnection(ipTextField.getText(), 5000, pwTextField.getText(),
 						nameTextField.getText());
-				openingMenuMusic.fade(5000, 0, true);
+				if (playMusic)
+					openingMenuMusic.fade(5000, 0, true);
 				StateManager.changeState(1, new FadeOutTransition(Color.black, 1000),
 						new FadeInTransition(Color.black, 1000));
 			} catch (Exception e) {
 				System.out.println("Verbindung zum Server konnte nicht hergestellt werden.");
 				e.printStackTrace();
-			}});
+			}
+		});
 
 		connectButton.setText("Verbinden");
 		connectButton.setMouseDownImage(RessourceManager.loadImage("buttonShadow.png"));
 
-		exitButton = new Button(this, container, RessourceManager.loadImage("button.png"), 1024, 512,
-				() -> System.exit(0));
+		exitButton =
+				new Button(this, container, RessourceManager.loadImage("button.png"), 1024, 512, () -> System.exit(0));
 		exitButton.setText("Spiel beenden");
 		exitButton.setSound(RessourceManager.loadSound("button.wav"));
 
@@ -84,18 +86,13 @@ public class SaboteurMenue extends BasicGameState {
 			openingMenuMusic = new Music("res/music/Kool Kats.ogg");
 			openingMenuMusic.loop();
 		}
-		
-		if (skipMenue) {
-			connectButton.runAction();
-		}
 	}
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-		background.draw();
+		// background.draw();
 		connectButton.render(container, g);
 		exitButton.render(container, g);
-
 		g.setColor(Color.white);
 		ipTextField.render(container, g);
 		pwTextField.render(container, g);
@@ -109,7 +106,7 @@ public class SaboteurMenue extends BasicGameState {
 	public int getID() {
 		return 0;
 	}
-	
+
 	private void loadProperties() {
 		Properties propertyFile = new Properties();
 

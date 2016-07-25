@@ -1,6 +1,8 @@
 /bin/
-*.properities
+*.properties
 log.*
+.classpath
+
 # Compiled source #
 ###################
 *.com

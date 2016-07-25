@@ -133,7 +133,7 @@ public class Player {
 		ready = r;
 	}
 
-	public boolean ready() {
+	public boolean isReady() {
 		return ready;
 	}
 

@@ -8,6 +8,9 @@ import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.gui.MouseOverArea;
 import org.newdawn.slick.state.GameState;
 
+/**
+ * A custom button class.
+ */
 public class Button extends MouseOverArea {
 
 	private String text = "";
@@ -15,8 +18,7 @@ public class Button extends MouseOverArea {
 	private Runnable action;
 	private Sound sound;
 
-	public Button(GameState instance, GUIContext container, Image image, int x, int y,
-			Runnable action) {
+	public Button(GameState instance, GUIContext container, Image image, int x, int y, Runnable action) {
 		super(container, image, x, y);
 		this.action = action;
 	}

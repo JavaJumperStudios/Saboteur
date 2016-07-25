@@ -3,6 +3,7 @@ package org.javajumper.saboteur.map;
 import java.util.HashMap;
 
 import org.javajumper.saboteur.RessourceManager;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
 public class Tile {
@@ -17,8 +18,8 @@ public class Tile {
 		this.solid = solid;
 	}
 
-	public void draw(int x, int y) {
-		getTexture().draw(x, y);
+	public void draw(Graphics g, int x, int y) {
+		g.drawImage(getTexture(), x, y);
 	}
 
 	private Image getTexture() {

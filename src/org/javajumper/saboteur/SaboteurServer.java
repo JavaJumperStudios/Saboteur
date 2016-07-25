@@ -65,7 +65,7 @@ public class SaboteurServer {
 	public void init() {
 		loadProperties();
 
-		gameDuration = 0;
+		timeLeft = gameDuration;
 		running = false;
 		map = new Map();
 		for (int j = 0; j <= 4; j++) {
@@ -153,7 +153,7 @@ public class SaboteurServer {
 			boolean allReady = true;
 
 			for (Player p : new ArrayList<Player>(players)) {
-				if (!p.ready())
+				if (!p.isReady())
 					allReady = false;
 			}
 
@@ -217,6 +217,10 @@ public class SaboteurServer {
 					traitorAlive = true;
 				}
 			}
+
+			// TODO if debug...
+			if (true) // To avoid error
+				return;
 
 			if (!innoAlive && !traitorAlive) {
 				// Unentschieden
@@ -362,13 +366,13 @@ public class SaboteurServer {
 		packet12.role = Role.LOBBY.ordinal();
 		packet12.x = 0;
 		packet12.y = 0;
-		packet12.ready = (byte) (p.ready() ? 1 : 0);
+		packet12.ready = (byte) (p.isReady() ? 1 : 0);
 		broadcastPacket(packet12);
 		return p;
 	}
 
 	public void broadcastPacket(Packet packet) {
-		for (ClientHandler c : clientHandler) {
+		for (ClientHandler c : new ArrayList<ClientHandler>(clientHandler)) {
 			if (c.isLoggedIn()) {
 				c.sendToClient(packet);
 			}
@@ -453,7 +457,7 @@ public class SaboteurServer {
 			packet.role = p.getRole().ordinal();
 			packet.x = p.getPos().x;
 			packet.y = p.getPos().y;
-			packet.ready = (byte) (p.ready() ? 1 : 0);
+			packet.ready = (byte) (p.isReady() ? 1 : 0);
 			packets[i++] = packet;
 		}
 

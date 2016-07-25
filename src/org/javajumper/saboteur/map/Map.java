@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;
@@ -150,11 +151,11 @@ public class Map {
 		tiles[x][y] = tile;
 	}
 
-	public void draw() {
+	public void draw(Graphics g) {
 
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				tiles[i][j].draw(i * 32, j * 32);
+				tiles[i][j].draw(g, i * 32, j * 32);
 			}
 		}
 
