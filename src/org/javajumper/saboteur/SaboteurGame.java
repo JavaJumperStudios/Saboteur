@@ -544,6 +544,14 @@ public class SaboteurGame extends BasicGameState {
 	 * Resets the state of all players and the state of the game and goes back
 	 * to the lobby
 	 */
+	public void saveMap(String mapName, int[][] mapInfo, int width, int height) {
+		try {
+			map.saveMap(mapName, mapInfo, width, height);
+		} catch (IOException e) {
+			System.out.println("Karte konnte nicht gespeichert werden.");
+		}
+	}
+
 	public void reset() {
 
 		start = false;

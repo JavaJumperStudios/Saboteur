@@ -66,8 +66,9 @@ public class Map {
 	}
 
 	/**
-	 * Updates the logic of the map based on the time that passed since the last
-	 * update
+	 * <<<<<<< HEAD Updates the logic of the map based on the time that passed
+	 * since the last update ======= Updates the map >>>>>>> branch 'cleanup' of
+	 * https://github.com/JavaJumperStudios/Saboteur.git
 	 * 
 	 * @param delta
 	 *            time since last update
