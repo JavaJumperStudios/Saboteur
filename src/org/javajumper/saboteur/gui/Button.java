@@ -11,6 +11,14 @@ import org.newdawn.slick.state.GameState;
 /**
  * A custom button class.
  */
+/**
+ * @author jakob
+ *
+ */
+/**
+ * @author jakob
+ *
+ */
 public class Button extends MouseOverArea {
 
 	private String text = "";
@@ -18,6 +26,22 @@ public class Button extends MouseOverArea {
 	private Runnable action;
 	private Sound sound;
 
+	/**
+	 * Create a new Button
+	 * 
+	 * @param instance
+	 *            an instance of the current GameState
+	 * @param container
+	 *            the GUIContext container
+	 * @param image
+	 *            the texture for the Button
+	 * @param x
+	 *            the x position
+	 * @param y
+	 *            the y position
+	 * @param action
+	 *            what to do on click
+	 */
 	public Button(GameState instance, GUIContext container, Image image, int x, int y, Runnable action) {
 		super(container, image, x, y);
 		this.action = action;
@@ -30,6 +54,10 @@ public class Button extends MouseOverArea {
 		g.drawString(text, getX() + 20, getY() + 20);
 	}
 
+	/**
+	 * @param string
+	 *            the caption for the button
+	 */
 	public void setText(String string) {
 		this.text = string;
 	}
@@ -43,14 +71,26 @@ public class Button extends MouseOverArea {
 		}
 	}
 
+	/**
+	 * Deativates the button
+	 */
 	public void disable() {
 		active = false;
 	}
 
+	/**
+	 * Set the sound to play on click
+	 * 
+	 * @param sound
+	 *            the sound to play
+	 */
 	public void setSound(Sound sound) {
 		this.sound = sound;
 	}
 
+	/**
+	 * run the action normally performed on click
+	 */
 	public void runAction() {
 		action.run();
 	}
