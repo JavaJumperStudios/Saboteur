@@ -22,6 +22,9 @@ import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
 import org.newdawn.slick.geom.Vector2f;
 
+/**
+ * Handles the connection to the server, sends and receives packets.
+ */
 public class ServerListener implements Runnable {
 
 	private Socket socket;
@@ -30,6 +33,23 @@ public class ServerListener implements Runnable {
 	private String name;
 	private String password;
 
+	/**
+	 * Create a new ServerListener
+	 * 
+	 * @param instance
+	 *            an instance of the current game
+	 * @param server
+	 *            the server ip
+	 * @param port
+	 *            the server port
+	 * @param password
+	 *            the password for the server
+	 * @param name
+	 *            the name of the main player/user
+	 * @throws UnknownHostException
+	 *             if the host could not be reached
+	 * @throws IOException
+	 */
 	public ServerListener(SaboteurGame instance, String server, int port, String password, String name)
 			throws UnknownHostException, IOException {
 		this.instance = instance;
@@ -53,7 +73,7 @@ public class ServerListener implements Runnable {
 		packet.password = "";
 
 		// Noch nicht benutzt
-		// packet.password = password;
+		// TODO packet.password = password;
 
 		try {
 			sendToServer(packet);
@@ -203,6 +223,9 @@ public class ServerListener implements Runnable {
 		}
 	}
 
+	/**
+	 * Closes the connection to the server
+	 */
 	public void close() {
 		try {
 			socket.close();
@@ -212,6 +235,12 @@ public class ServerListener implements Runnable {
 		}
 	}
 
+	/**
+	 * Sends a packet to the server
+	 * 
+	 * @param p
+	 *            the packet to send
+	 */
 	public void sendToServer(Packet p) {
 		try {
 			socket.getOutputStream().write(p.writeToByteArray());
