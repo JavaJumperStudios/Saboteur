@@ -13,15 +13,7 @@ import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;
 
 /**
- * Represent t map of tiles
- */
-/**
- * @author jakob
- *
- */
-/**
- * @author jakob
- *
+ * Represents a map of tiles
  */
 public class Map {
 
@@ -74,7 +66,8 @@ public class Map {
 	}
 
 	/**
-	 * Updates the map
+	 * Updates the logic of the map based on the time that passed since the last
+	 * update
 	 * 
 	 * @param delta
 	 *            time since last update

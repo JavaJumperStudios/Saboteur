@@ -33,9 +33,16 @@ import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+/**
+ * The state when the player is in the ready-up, playing or game-over state
+ */
 public class SaboteurGame extends BasicGameState {
 
+	/**
+	 * A public instance of the game
+	 */
 	public static SaboteurGame instance;
+
 	private boolean start;
 	private boolean stop;
 	private Map map;
@@ -94,6 +101,7 @@ public class SaboteurGame extends BasicGameState {
 				p.draw(p.getPos().x, p.getPos().y);
 			}
 
+			// TODO draw the gui in Graphics.MODE_NORMAL after
 			// gui.draw();
 
 			g.drawString(stringTimeInSec, 1200, 996);
@@ -196,8 +204,6 @@ public class SaboteurGame extends BasicGameState {
 
 		points.sort(spComparator);
 
-		Polygon shadowPoly = new Polygon();
-
 		points.add(points.get(0));
 
 		for (int i = 0; i < points.size() - 1; i++) {
@@ -210,15 +216,23 @@ public class SaboteurGame extends BasicGameState {
 		}
 	}
 
+	/**
+	 * Calculates the angle from the player-center to a given point
+	 * 
+	 * @param v
+	 *            the given point
+	 * @return the angle from the center of the player to the given point
+	 */
 	public double getAngleToPlayer(Vector2f v) {
-		Vector2f vPlayer = thePlayer.getPos().copy().add(new Vector2f(16, 16));
-		return v.copy().sub(vPlayer).getTheta();
+		return v.copy().sub(thePlayer.getCenter()).getTheta();
 	}
 
 	/**
 	 * Casts 3 rays from the player to the given point and returns the 3 points
 	 * where the ray collides with an object or null
 	 * 
+	 * @param g
+	 *            the Graphics context
 	 * @param vPoint
 	 * @return [0] is the ray in the center, [1] is the left ray and [2] is the
 	 *         right ray
@@ -364,14 +378,28 @@ public class SaboteurGame extends BasicGameState {
 		}
 	}
 
+	/**
+	 * Leaves the ready-up state and starts the game
+	 */
 	public void start() {
 		start = true;
 	}
 
+	/**
+	 * @return the currently played map
+	 */
 	public Map getMap() {
 		return map;
 	}
 
+	/**
+	 * Sets the role of a specified player
+	 * 
+	 * @param playerId
+	 *            the id of the player to set the role
+	 * @param role
+	 *            the role that the player should get
+	 */
 	public void setRole(int playerId, Role role) {
 		for (SPPlayer p : players) {
 			if (p.getId() == playerId) {
@@ -385,40 +413,81 @@ public class SaboteurGame extends BasicGameState {
 		return 1;
 	}
 
+	/**
+	 * Exits the game
+	 */
 	public void exitGame() {
+		// TODO implement
 		System.out.println("I should end the Game now");
 	}
 
-	public void setPlayerReadyState(int id, byte ready) {
+	/**
+	 * Sets the ready-state of a player
+	 * 
+	 * @param playerId
+	 *            the id of the player
+	 * @param ready
+	 *            the new ready-state
+	 */
+	public void setPlayerReadyState(int playerId, boolean ready) {
 		for (SPPlayer p : players) {
-			if (p.getId() == id) {
-				if (ready == 0) {
-					p.setReadyState(false);
-				} else {
-					p.setReadyState(true);
-				}
+			if (p.getId() == playerId) {
+				p.setReadyState(ready);
 			}
 		}
 
 	}
 
+	/**
+	 * @param p
+	 *            the player who should be the main player
+	 */
 	public void setMainPlayer(SPPlayer p) {
 		thePlayer = p;
 	}
 
+	// TODO make the endcause an enum
+	/**
+	 * @param e
+	 *            the endcause to set
+	 */
 	public void setEndCause(int e) {
 		this.endCause = e;
 		stop = true;
 	}
 
+	/**
+	 * Adds a new player to the game
+	 * 
+	 * @param p
+	 *            the player to add
+	 */
 	public void addPlayer(SPPlayer p) {
 		players.add(p);
 	}
 
+	/**
+	 * @return a list of all players, including the main player
+	 */
 	public ArrayList<SPPlayer> getPlayers() {
 		return players;
 	}
 
+	/**
+	 * Sets up a connnection to a server
+	 * 
+	 * @param server
+	 *            the server ip
+	 * @param port
+	 *            the server port
+	 * @param password
+	 *            the password for the server
+	 * @param name
+	 *            the name of the client
+	 * @throws UnknownHostException
+	 *             if the host could not be found
+	 * @throws IOException
+	 */
 	public void setUpConnection(String server, int port, String password, String name)
 			throws UnknownHostException, IOException {
 		serverListener = new ServerListener(this, server, port, password, name);
@@ -426,12 +495,12 @@ public class SaboteurGame extends BasicGameState {
 		serverListenerThread.start();
 	}
 
-	public void spawn(SPPlayer p) {
-
-		players.add(p);
-
-	}
-
+	/**
+	 * Handles the logout of a player
+	 * 
+	 * @param id
+	 *            the player id
+	 */
 	public void handlePlayerLogout(int id) {
 
 		for (SPPlayer p : (new ArrayList<>(players))) {
@@ -447,27 +516,34 @@ public class SaboteurGame extends BasicGameState {
 		}
 	}
 
+	/**
+	 * Adds a dead player
+	 * 
+	 * @param dp
+	 *            the dead player to add
+	 */
 	public void spawnDeadPlayer(DeadPlayer dp) {
-
 		deadplayers.add(dp);
 	}
 
+	/**
+	 * Attempts to load a map specified by a name
+	 * 
+	 * @param mapName
+	 *            the filename of the map, including the suffix, e.g. room1.map
+	 */
 	public void loadMap(String mapName) {
 		try {
-			map.loadMap("room.map");
+			map.loadMap(mapName);
 		} catch (IOException e) {
 			System.out.println("Karte konnte nicht geladen werden.");
 		}
 	}
 
-	public void saveMap(String mapName, int[][] mapInfo, int width, int height) {
-		try {
-			map.saveMap(mapName, mapInfo, width, height);
-		} catch (IOException e) {
-			System.out.println("Karte konnte nicht gespeichert werden.");
-		}
-	}
-
+	/**
+	 * Resets the state of all players and the state of the game and goes back
+	 * to the lobby
+	 */
 	public void reset() {
 
 		start = false;
@@ -484,13 +560,27 @@ public class SaboteurGame extends BasicGameState {
 
 		}
 		deadplayers.clear();
+		// TODO Log
 		System.out.println("ResetClient wurde ausgeführt");
 	}
 
-	public void setTime(int t) {
-		timeLeft = Math.max(0, t);
+	/**
+	 * Sets the game time to a specified value
+	 * 
+	 * @param time
+	 *            the time to set
+	 */
+	public void setTime(int time) {
+		timeLeft = Math.max(0, time);
 	}
 
+	/**
+	 * Updates the current snapshot. The Snapshot will later be applied to
+	 * update the game state.
+	 * 
+	 * @param snapshot
+	 *            the snapshot to apply later
+	 */
 	public void setSnapshot(Snapshot snapshot) {
 		snapshots: for (PlayerSnapshot ps : snapshot.player) {
 			for (Player p : players) {
@@ -505,14 +595,6 @@ public class SaboteurGame extends BasicGameState {
 				}
 			}
 		}
-	}
-
-	private boolean isAngleBetween(double target, double angle1, double angle2) {
-		// check if it passes through zero
-		if (angle1 <= angle2)
-			return target >= angle1 && target <= angle2;
-		else
-			return target >= angle1 || target <= angle2;
 	}
 
 }

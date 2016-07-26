@@ -130,7 +130,7 @@ public class ServerListener implements Runnable {
 						System.out.println("Player ready packet erhalten");
 						Packet10Ready packet10 = new Packet10Ready();
 						packet10.readFromByteBuffer(bb);
-						instance.setPlayerReadyState(packet10.playerId, packet10.ready);
+						instance.setPlayerReadyState(packet10.playerId, packet10.ready == 1);
 						break;
 					case 11:
 						Packet11SpawnDead packet11 = new Packet11SpawnDead();
@@ -150,7 +150,7 @@ public class ServerListener implements Runnable {
 						packet12.readFromByteBuffer(bb);
 						instance.addPlayer(new SPPlayer(packet12.playerId, Role.values()[packet12.role], packet12.name,
 								100, new Vector2f(packet12.x, packet12.y), "Fuzzi_Neutral.png"));
-						instance.setPlayerReadyState(packet12.playerId, packet12.ready);
+						instance.setPlayerReadyState(packet12.playerId, packet12.ready == 1);
 						break;
 					case 13:
 						Packet13Role packet13 = new Packet13Role();
@@ -164,12 +164,12 @@ public class ServerListener implements Runnable {
 					case 15:
 						Packet15SetMap packet15 = new Packet15SetMap();
 						packet15.readFromByteBuffer(bb);
-						instance.saveMap(packet15.mapName, packet15.map, packet15.width, packet15.height);
+						instance.getMap().saveMap(packet15.mapName, packet15.map, packet15.width, packet15.height);
 						instance.loadMap(packet15.mapName);
 						break;
 					/*
-					 * case 3: Packet03NewPlayer newPlayerPacket = new
-					 * Packet03NewPlayer();
+					 * TODO What is this? case 3: Packet03NewPlayer
+					 * newPlayerPacket = new Packet03NewPlayer();
 					 * newPlayerPacket.readFromByteBuffer(bb); Player p =
 					 * createPlayer(newPlayerPacket); instance.addPlayer(p);
 					 * System.out.println("NewPlayer logged in: " +

@@ -9,6 +9,9 @@ import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;
 
+/**
+ * A map stored by the server
+ */
 public class MapServer extends Map {
 
 	private ArrayList<Shape> collisionShapes = new ArrayList<>();
@@ -24,12 +27,6 @@ public class MapServer extends Map {
 		return collisionLines;
 	}
 
-	/**
-	 * Lädt eine Karte aus dem "maps" Verzeichnis
-	 * 
-	 * @param filename
-	 *            Der Name der Karte
-	 */
 	@Override
 	public void loadMap(String filename) throws IOException {
 		try (FileReader fr = new FileReader("maps/" + filename); BufferedReader bf = new BufferedReader(fr);) {
