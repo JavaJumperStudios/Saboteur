@@ -152,7 +152,7 @@ public class SaboteurServer {
 
 			boolean allReady = true;
 
-			for (Player p : new ArrayList<Player>(players)) {
+			for (Player p : new ArrayList<>(players)) {
 				if (!p.isReady())
 					allReady = false;
 			}
@@ -266,10 +266,10 @@ public class SaboteurServer {
 			System.out.println("Karte konnte nicht geladen werden");
 		}
 
-		for (Player p : (new ArrayList<Player>(players))) {
+		for (Player p : (new ArrayList<>(players))) {
 
 			p.setDead(false);
-			p.setSprint(false);
+			p.setSprinting(false);
 			p.setLivepoints(100);
 			p.setRole(Role.LOBBY);
 			p.setReadyState(false);
@@ -372,7 +372,7 @@ public class SaboteurServer {
 	}
 
 	public void broadcastPacket(Packet packet) {
-		for (ClientHandler c : new ArrayList<ClientHandler>(clientHandler)) {
+		for (ClientHandler c : new ArrayList<>(clientHandler)) {
 			if (c.isLoggedIn()) {
 				c.sendToClient(packet);
 			}
@@ -434,7 +434,7 @@ public class SaboteurServer {
 		if (players.contains(player)) {
 			players.remove(player);
 		}
-		for (DeadPlayer dp : (new ArrayList<DeadPlayer>(deadplayers))) {
+		for (DeadPlayer dp : (new ArrayList<>(deadplayers))) {
 			if (dp.getId() == player.getId()) {
 				deadplayers.remove(dp);
 			}

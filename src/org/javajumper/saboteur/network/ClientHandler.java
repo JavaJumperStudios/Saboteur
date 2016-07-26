@@ -31,7 +31,7 @@ public class ClientHandler implements Runnable {
 	@Override
 	public void run() {
 		byte[] buffer = new byte[524288];
-		System.out.println("Socket geï¿½ffnet");
+		System.out.println("Socket geöffnet");
 		int size;
 
 		try {
@@ -77,7 +77,7 @@ public class ClientHandler implements Runnable {
 						packetSetMap.height = height;
 						packetSetMap.width = width;
 
-						packetSetMap.map = new Integer[width][height];
+						packetSetMap.map = new int[width][height];
 
 						for (int i = 0; i < width; i++) {
 							for (int j = 0; j < height; j++) {
@@ -107,7 +107,7 @@ public class ClientHandler implements Runnable {
 						player.getMove().x = packet09.moveX;
 						player.getMove().y = packet09.moveY;
 						player.setCurrentWeapon(packet09.currentItem);
-						player.setSprint(packet09.sprinting != 0);
+						player.setSprinting(packet09.sprinting != 0);
 						player.setAngle(packet09.lookAngle);
 						break;
 					case 10:

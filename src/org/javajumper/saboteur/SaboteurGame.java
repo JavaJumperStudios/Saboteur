@@ -346,7 +346,7 @@ public class SaboteurGame extends BasicGameState {
 			packet09.lookAngle = thePlayer.getAngle();
 			packet09.moveX = thePlayer.getMove().x;
 			packet09.moveY = thePlayer.getMove().y;
-			packet09.sprinting = (byte) (thePlayer.getSprint() ? 1 : 0);
+			packet09.sprinting = (byte) (thePlayer.isSprinting() ? 1 : 0);
 
 			serverListener.sendToServer(packet09);
 
@@ -460,7 +460,7 @@ public class SaboteurGame extends BasicGameState {
 		}
 	}
 
-	public void saveMap(String mapName, Integer[][] mapInfo, int width, int height) {
+	public void saveMap(String mapName, int[][] mapInfo, int width, int height) {
 		try {
 			map.saveMap(mapName, mapInfo, width, height);
 		} catch (IOException e) {
@@ -477,14 +477,14 @@ public class SaboteurGame extends BasicGameState {
 		for (SPPlayer p : new ArrayList<>(players)) {
 
 			p.setDead(false);
-			p.setSprint(false);
+			p.setSprinting(false);
 			p.setLivepoints(100);
 			p.setRole(Role.LOBBY);
 			p.setReadyState(false);
 
 		}
 		deadplayers.clear();
-		System.out.println("ResetClient wurde ausgefÃ¼hrt");
+		System.out.println("ResetClient wurde ausgeführt");
 	}
 
 	public void setTime(int t) {

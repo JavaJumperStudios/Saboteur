@@ -7,7 +7,7 @@ public class Packet15SetMap extends Packet {
 	public String mapName;
 	public int width;
 	public int height;
-	public Integer[][] map;
+	public int[][] map;
 
 	/**
 	 * @param id
@@ -28,7 +28,7 @@ public class Packet15SetMap extends Packet {
 		width = bb.getInt();
 		height = bb.getInt();
 
-		map = new Integer[width][height];
+		map = new int[width][height];
 
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {

@@ -208,11 +208,11 @@ public class Player {
 		return move;
 	}
 
-	public void setSprint(boolean sprint) {
-		this.sprinting = sprint;
+	public void setSprinting(boolean sprinting) {
+		this.sprinting = sprinting;
 	}
 
-	public boolean getSprint() {
+	public boolean isSprinting() {
 		return sprinting;
 	}
 
