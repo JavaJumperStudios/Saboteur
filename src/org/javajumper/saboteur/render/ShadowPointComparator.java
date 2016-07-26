@@ -14,7 +14,7 @@ public class ShadowPointComparator implements Comparator<Vector2f> {
 	public int compare(Vector2f v1, Vector2f v2) {
 		SaboteurGame instance = SaboteurGame.instance;
 
-		return ((int) (instance.getAngleToPlayer(v1) - instance.getAngleToPlayer(v2) * 100d));
+		return ((int) ((instance.getAngleToPlayer(v1) - instance.getAngleToPlayer(v2)) * 100d));
 	}
 
 }

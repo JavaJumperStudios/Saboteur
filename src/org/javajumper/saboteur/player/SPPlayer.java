@@ -65,4 +65,8 @@ public class SPPlayer extends Player {
 			this.texture = "Fuzzi_Neutral.png";
 	}
 
+	public Vector2f getCenter() {
+		return new Vector2f(pos.x + 16, pos.y + 16);
+	}
+
 }

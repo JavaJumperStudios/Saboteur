@@ -94,7 +94,7 @@ public class SaboteurGame extends BasicGameState {
 				p.draw(p.getPos().x, p.getPos().y);
 			}
 
-			gui.draw();
+			// gui.draw();
 
 			g.drawString(stringTimeInSec, 1200, 996);
 
@@ -114,7 +114,7 @@ public class SaboteurGame extends BasicGameState {
 
 			background.draw();
 
-			for (SPPlayer p : (new ArrayList<SPPlayer>(players))) {
+			for (SPPlayer p : (new ArrayList<>(players))) {
 				if (p.isReady()) {
 					g.setColor(Color.green);
 				} else {
@@ -198,11 +198,16 @@ public class SaboteurGame extends BasicGameState {
 
 		Polygon shadowPoly = new Polygon();
 
-		for (Vector2f v : points) {
-			shadowPoly.addPoint(v.x, v.y);
-		}
+		points.add(points.get(0));
 
-		g.fill(shadowPoly);
+		for (int i = 0; i < points.size() - 1; i++) {
+			Polygon p = new Polygon();
+			p.addPoint(points.get(i).x, points.get(i).y);
+			p.addPoint(points.get(i + 1).x, points.get(i + 1).y);
+			p.addPoint(thePlayer.getCenter().x, thePlayer.getCenter().y);
+
+			g.fill(p);
+		}
 	}
 
 	public double getAngleToPlayer(Vector2f v) {
@@ -221,13 +226,13 @@ public class SaboteurGame extends BasicGameState {
 	public Vector2f[] getCollisionPoints(Graphics g, Vector2f vPoint) {
 
 		Vector2f[] theCollisionPoints = new Vector2f[3];
-		Vector2f playerCenter = new Vector2f(thePlayer.getPos().x + 16, thePlayer.getPos().y + 16);
+		Vector2f playerCenter = thePlayer.getCenter();
 
 		Vector2f destPoint1 = vPoint.copy().add(vPoint.copy().sub(playerCenter));
 		Vector2f destPoint2 =
-				playerCenter.copy().add(destPoint1.copy().sub(playerCenter).normalise().scale(1700f).add(0.1));
+				playerCenter.copy().add(destPoint1.copy().sub(playerCenter).normalise().scale(1700f).add(0.2));
 		Vector2f destPoint3 =
-				playerCenter.copy().add(destPoint1.copy().sub(playerCenter).normalise().scale(1700f).add(-0.1));
+				playerCenter.copy().add(destPoint1.copy().sub(playerCenter).normalise().scale(1700f).add(-0.2));
 
 		Line ray1 = new Line(playerCenter, destPoint1);
 		Line ray2 = new Line(playerCenter, destPoint2);
@@ -429,13 +434,13 @@ public class SaboteurGame extends BasicGameState {
 
 	public void handlePlayerLogout(int id) {
 
-		for (SPPlayer p : (new ArrayList<SPPlayer>(players))) {
+		for (SPPlayer p : (new ArrayList<>(players))) {
 			if (p.getId() == id) {
 				players.remove(p);
 			}
 		}
 
-		for (DeadPlayer dp : (new ArrayList<DeadPlayer>(deadplayers))) {
+		for (DeadPlayer dp : (new ArrayList<>(deadplayers))) {
 			if (dp.getId() == id) {
 				deadplayers.remove(dp);
 			}
@@ -469,7 +474,7 @@ public class SaboteurGame extends BasicGameState {
 		stop = false;
 		endCause = 0;
 
-		for (SPPlayer p : new ArrayList<SPPlayer>(players)) {
+		for (SPPlayer p : new ArrayList<>(players)) {
 
 			p.setDead(false);
 			p.setSprint(false);
