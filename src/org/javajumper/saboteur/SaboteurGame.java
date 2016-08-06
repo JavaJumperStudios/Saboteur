@@ -539,18 +539,32 @@ public class SaboteurGame extends BasicGameState {
 		}
 	}
 
+	// TODO Further explanation of the "map" array
 	/**
-	 * Resets the state of all players and the state of the game and goes back
-	 * to the lobby
+	 * Saves the map downloaded from the server to a local file for future use
+	 * 
+	 * @param mapName
+	 *            the filename to save to
+	 * @param mapInfo
+	 *            a two-dimensional array of tile information
+	 * @param width
+	 *            the width of the map to save in tiles
+	 * @param height
+	 *            the height of the map to save in tiles
 	 */
 	public void saveMap(String mapName, int[][] mapInfo, int width, int height) {
 		try {
 			map.saveMap(mapName, mapInfo, width, height);
 		} catch (IOException e) {
+			// TODO log
 			System.out.println("Karte konnte nicht gespeichert werden.");
 		}
 	}
 
+	/**
+	 * Resets the state of all players and the state of the game and goes back
+	 * to the lobby
+	 */
 	public void reset() {
 
 		start = false;

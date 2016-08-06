@@ -2,8 +2,12 @@ package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Sent between server and client to indicate that a player has logged out
+ */
 public class Packet05Logout extends Packet {
 
+	/** the id of the player who has logged out */
 	public int playerId;
 
 	public Packet05Logout() {

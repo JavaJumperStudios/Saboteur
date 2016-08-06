@@ -154,8 +154,8 @@ public class Map {
 	/**
 	 * Saves the map downloaded from the server to a local file for future use
 	 * 
-	 * @param mapName//TODO
-	 *            further explanation the filename to save to
+	 * @param mapName
+	 *            the filename to save to
 	 * @param map
 	 *            a two-dimensional array of tile information
 	 * @param width

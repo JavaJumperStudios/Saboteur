@@ -2,9 +2,14 @@ package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Sent from server to clients to indicate the role change of a player
+ */
 public class Packet13Role extends Packet {
 
+	/** the id of the player whose role was changed */
 	public int playerId;
+	/** the new role of the player */
 	public int role;
 
 	public Packet13Role() {

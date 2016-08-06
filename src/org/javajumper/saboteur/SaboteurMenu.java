@@ -19,7 +19,10 @@ import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
-public class SaboteurMenue extends BasicGameState {
+/**
+ * The menu gamestate
+ */
+public class SaboteurMenu extends BasicGameState {
 
 	private Button connectButton;
 	private Button exitButton;
@@ -29,10 +32,11 @@ public class SaboteurMenue extends BasicGameState {
 	private Image background;
 	Music openingMenuMusic;
 
-	// True wenn Musik abgespielt werden soll
+	// True if music shall be played
 	private boolean playMusic;
 
-	private boolean skipMenue;
+	// True if the menu shall be skipped (not implemented)
+	private boolean skipMenu;
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
@@ -109,15 +113,23 @@ public class SaboteurMenue extends BasicGameState {
 
 	private void loadProperties() {
 		Properties propertyFile = new Properties();
+		FileInputStream fis = null;
 
 		try {
-			propertyFile.load(new FileInputStream("saboteur.properties"));
+			fis = new FileInputStream("saboteur.properties");
+			propertyFile.load(fis);
 		} catch (IOException e) {
 			// Do nothing, we have default fallbacks
+		} finally {
+			try {
+				fis.close();
+			} catch (IOException | NullPointerException e) {
+
+			}
 		}
 
 		playMusic = Boolean.parseBoolean(propertyFile.getProperty("play_music", "true"));
-		skipMenue = Boolean.parseBoolean(propertyFile.getProperty("debug_skip_menue", "false"));
+		skipMenu = Boolean.parseBoolean(propertyFile.getProperty("debug_skip_menue", "false"));
 	}
 
 }

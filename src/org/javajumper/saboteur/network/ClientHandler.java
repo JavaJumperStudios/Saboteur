@@ -125,7 +125,7 @@ public class ClientHandler implements Runnable {
 					case 10:
 						Packet10Ready packet10 = new Packet10Ready();
 						packet10.readFromByteBuffer(bb);
-						server.setPlayerReadyState(packet10.playerId, packet10.ready);
+						server.setReadyStateByPlayerId(packet10.playerId, packet10.ready);
 						server.broadcastPacket(packet10);
 						// Server starts the Game now
 						break;

@@ -230,7 +230,7 @@ public class Player {
 		DeadPlayer dp =
 				new DeadPlayer(id, name, role, SaboteurServer.instance.getTimeLeft(), murderer.getId(), itemId, pos);
 		dead = true;
-		SaboteurServer.instance.deadPlayer(dp);
+		SaboteurServer.instance.addDeadPlayer(dp);
 	}
 
 	/**
