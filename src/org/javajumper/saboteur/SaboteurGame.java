@@ -15,7 +15,6 @@ import org.javajumper.saboteur.packet.Packet14Reset;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.DeadPlayer;
-import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
 import org.javajumper.saboteur.render.ShadowPointComparator;
@@ -34,7 +33,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 /**
- * The state when the player is in the ready-up, playing or game-over state
+ * The gamestate when the player is in the ready-up, playing or game-over state
  */
 public class SaboteurGame extends BasicGameState {
 
@@ -94,11 +93,11 @@ public class SaboteurGame extends BasicGameState {
 
 			for (SPPlayer p : players) {
 				if (!p.isDead())
-					p.draw(p.getPos().x, p.getPos().y, g, thePlayer);
+					p.draw(p.getPos().x, p.getPos().y, g, thePlayer.getRole());
 			}
 
 			for (DeadPlayer p : deadplayers) {
-				p.draw(p.getPos().x, p.getPos().y);
+				p.draw();
 			}
 
 			// TODO draw the gui in Graphics.MODE_NORMAL after
@@ -329,7 +328,7 @@ public class SaboteurGame extends BasicGameState {
 			mouse = mouse.negate();
 			mouse.add(new Vector2f(16, 16).add(thePlayer.getPos()));
 			mouse = mouse.negate();
-			thePlayer.setAngle((float) mouse.getTheta());
+			thePlayer.setLookAngle((float) mouse.getTheta());
 
 			if (input.isKeyPressed(Input.KEY_R)) {
 				Packet10Ready packet10 = new Packet10Ready();
@@ -357,7 +356,7 @@ public class SaboteurGame extends BasicGameState {
 
 			Packet09PlayerUpdate packet09 = new Packet09PlayerUpdate();
 			packet09.currentItem = thePlayer.getCurrentWeapon();
-			packet09.lookAngle = thePlayer.getAngle();
+			packet09.lookAngle = thePlayer.getLookAngle();
 			packet09.moveX = thePlayer.getMove().x;
 			packet09.moveY = thePlayer.getMove().y;
 			packet09.sprinting = (byte) (thePlayer.isSprinting() ? 1 : 0);
@@ -562,7 +561,7 @@ public class SaboteurGame extends BasicGameState {
 
 			p.setDead(false);
 			p.setSprinting(false);
-			p.setLivepoints(100);
+			p.resetLifepoints();
 			p.setRole(Role.LOBBY);
 			p.setReadyState(false);
 
@@ -591,12 +590,12 @@ public class SaboteurGame extends BasicGameState {
 	 */
 	public void setSnapshot(Snapshot snapshot) {
 		snapshots: for (PlayerSnapshot ps : snapshot.player) {
-			for (Player p : players) {
+			for (SPPlayer p : players) {
 				if (ps.playerId == p.getId()) {
 					p.getPos().set(ps.x, ps.y);
 					if (p != thePlayer)
-						p.setAngle(ps.lookAngle);
-					p.setLivepoints(ps.lifepoints);
+						p.setLookAngle(ps.lookAngle);
+					p.updateLifepoints(ps.lifepoints);
 					p.setCurrentWeapon(ps.currentWeapon);
 
 					continue snapshots;

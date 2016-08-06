@@ -270,7 +270,7 @@ public class SaboteurServer {
 
 			p.setDead(false);
 			p.setSprinting(false);
-			p.setLivepoints(100);
+			p.resetLifepoints();
 			p.setRole(Role.LOBBY);
 			p.setReadyState(false);
 
@@ -356,7 +356,7 @@ public class SaboteurServer {
 		System.out.println("New Player added: " + name);
 
 		Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
-		p.addItem(new Gun(this, "TestGun", Item.nextId(), 1));
+		p.addItem(new Gun("TestGun", Item.nextId()));
 		players.add(p);
 
 		Packet12PlayerSpawned packet12 = new Packet12PlayerSpawned();
@@ -413,8 +413,8 @@ public class SaboteurServer {
 		Packet11SpawnDead packet11 = new Packet11SpawnDead();
 		packet11.playerId = dp.getId();
 		packet11.timeOfDeath = dp.getTimeOfDeath();
-		packet11.killerId = dp.getPlayerOfImpact();
-		packet11.itemId = dp.getItemOfImpact();
+		packet11.killerId = dp.getMurderer();
+		packet11.itemId = dp.getKillingItem();
 		packet11.posX = dp.getPos().x;
 		packet11.posY = dp.getPos().y;
 		packet11.role = dp.getRole().ordinal();

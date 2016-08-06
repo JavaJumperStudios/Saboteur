@@ -109,7 +109,7 @@ public class ClientHandler implements Runnable {
 						Packet06UseItem packet06 = new Packet06UseItem();
 						packet06.readFromByteBuffer(bb);
 
-						player.getInventory()[2].use(player, server);
+						player.getInventory()[2].use(player);
 
 						break;
 					case 9:
@@ -120,7 +120,7 @@ public class ClientHandler implements Runnable {
 						player.getMove().y = packet09.moveY;
 						player.setCurrentWeapon(packet09.currentItem);
 						player.setSprinting(packet09.sprinting != 0);
-						player.setAngle(packet09.lookAngle);
+						player.setLookAngle(packet09.lookAngle);
 						break;
 					case 10:
 						Packet10Ready packet10 = new Packet10Ready();

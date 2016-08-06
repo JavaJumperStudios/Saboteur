@@ -9,11 +9,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.newdawn.slick.geom.Vector2f;
 
+/**
+ * Holds tests for the Saboteur game
+ */
 public class SaboteurGameTest {
 
 	private SaboteurGame sg;
 	private SPPlayer sp;
 
+	/**
+	 * Initialize the test
+	 */
 	@Before
 	public void init() {
 		sg = new SaboteurGame();
@@ -21,6 +27,9 @@ public class SaboteurGameTest {
 		sg.setMainPlayer(sp);
 	}
 
+	/**
+	 * Tests the getAngleToPlayer() method
+	 */
 	@Test
 	public void testAngleToPlayer() {
 		Vector2f p1 = new Vector2f(200, 200);

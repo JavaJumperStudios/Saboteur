@@ -4,6 +4,9 @@ import org.javajumper.saboteur.RessourceManager;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 
+/**
+ * A dead player
+ */
 public class DeadPlayer {
 
 	private int id;
@@ -11,48 +14,98 @@ public class DeadPlayer {
 	private Image image;
 	private Role role;
 	private int timeOfDeath;
-	private int playerOfImpact;
-	private int itemOfImplact;
+	private int murderer;
+	private int killingItem;
 	private Vector2f pos;
 
-	public DeadPlayer(int id, String name, Role role, int timeOfDeath, int playerOfImpact, int itemOfImpact,
-			Vector2f pos) {
+	/**
+	 * Create a new dead player
+	 * 
+	 * @param id
+	 *            the id of the player who died
+	 * @param name
+	 *            the name of the player who died
+	 * @param role
+	 *            the role of the player who died
+	 * @param timeOfDeath
+	 *            when the player died
+	 * @param murderer
+	 *            the murderer
+	 * @param killingItem
+	 *            the item that inflicted the killing damage
+	 * @param pos
+	 *            where the player died
+	 */
+	public DeadPlayer(int id, String name, Role role, int timeOfDeath, int murderer, int killingItem, Vector2f pos) {
 
 		this.id = id;
 		this.name = name;
 		this.role = role;
 		this.timeOfDeath = timeOfDeath;
-		this.playerOfImpact = playerOfImpact;
-		this.itemOfImplact = itemOfImpact;
+		this.murderer = murderer;
+		this.killingItem = killingItem;
 		this.pos = pos;
 
 	}
 
+	/**
+	 * @return the id of the player who died
+	 */
 	public int getId() {
 		return id;
 	}
 
+	/**
+	 * @return when this player died
+	 */
 	public int getTimeOfDeath() {
 		return timeOfDeath;
 	}
 
+	/**
+	 * @return the name of the player who died
+	 */
 	public String getName() {
 		return name;
 	}
 
-	public int getItemOfImpact() {
-		return itemOfImplact;
+	/**
+	 * @return the item which inflicted the killing damage on this player
+	 */
+	public int getKillingItem() {
+		return killingItem;
 	}
 
-	public int getPlayerOfImpact() {
-		return playerOfImpact;
+	/**
+	 * @return the murderer of this player
+	 */
+	public int getMurderer() {
+		return murderer;
 	}
 
+	/**
+	 * @return the role of the player who died
+	 */
 	public Role getRole() {
 		return role;
 	}
 
-	public void draw(float x, float y) {
+	/**
+	 * Renders the body to the screen
+	 */
+	public void draw() {
+		image.draw(pos.x, pos.y);
+	}
+
+	/**
+	 * Renders the body to the screen
+	 * 
+	 * @param x
+	 *            the x coordinate of this dead player
+	 * @param y
+	 *            the y coordinate of this dead player
+	 */
+	public void drasw(float x, float y) {
 
 		if (image == null)
 			image = RessourceManager.loadImage("Fuzzitot.png");
@@ -61,6 +114,9 @@ public class DeadPlayer {
 
 	}
 
+	/**
+	 * @return the position of this dead player
+	 */
 	public Vector2f getPos() {
 		return pos;
 	}

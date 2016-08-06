@@ -10,7 +10,7 @@ import org.newdawn.slick.Sound;
 import org.newdawn.slick.SpriteSheet;
 
 /**
- * Verwaltet dynamisch Ressourcen
+ * Ein dynamischer Ressourcen-Manager
  */
 public class RessourceManager {
 	private static HashMap<String, Image> images = new HashMap<>();

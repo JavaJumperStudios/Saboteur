@@ -6,13 +6,34 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 
+/**
+ * The player representation on the client, extending the server representation
+ * by rendering
+ */
 public class SPPlayer extends Player {
 
 	private Image image;
 	private String texture;
 
-	public SPPlayer(int id, Role role, String name, int livepoints, Vector2f pos, String texture) {
-		super(id, role, name, livepoints, pos);
+	/**
+	 * Creates a new player
+	 * 
+	 * @param id
+	 *            the id to assign to the new player
+	 * @param role
+	 *            the role of the new Player, see
+	 *            {@link org.javajumper.saboteur.player.Role Role}
+	 * @param name
+	 *            the name to assign to the new player
+	 * @param lifepoints
+	 *            the initial lifepoints of the new player
+	 * @param pos
+	 *            the position to set the player to
+	 * @param texture
+	 *            the texture for the new player on this client
+	 */
+	public SPPlayer(int id, Role role, String name, int lifepoints, Vector2f pos, String texture) {
+		super(id, role, name, lifepoints, pos);
 
 		this.texture = texture;
 
@@ -20,18 +41,30 @@ public class SPPlayer extends Player {
 
 	@Override
 	public void update(int delta) {
-
+		// The player logic is updated on the server
 	}
 
-	public void draw(float x, float y, Graphics g, SPPlayer p) {
+	/**
+	 * Renders the player to the screen
+	 * 
+	 * @param x
+	 *            the x position to render the player to
+	 * @param y
+	 *            the y position to render the player to
+	 * @param g
+	 *            the graphics context
+	 * @param viewerRole
+	 *            the role of the one viewing this player
+	 */
+	public void draw(float x, float y, Graphics g, Role viewerRole) {
 
 		if (image == null) {
 			image = RessourceManager.loadImage(texture);
 		}
-		if (p.getRole() == Role.INNOCENT && (texture == "Fuzzi_Traitor.png" || texture == "Fuzzi_Innocent.png")) {
+		if (viewerRole == Role.INNOCENT && (texture == "Fuzzi_Traitor.png" || texture == "Fuzzi_Innocent.png")) {
 			image = RessourceManager.loadImage("Fuzzi_Innocent.png");
 			texture = "Fuzzi_Neutral.png";
-		} else if (p.getRole() == Role.TRAITOR && (texture == "Fuzzi_Traitor.png" || texture == "Fuzzi_Innocent.png")) {
+		} else if (viewerRole == Role.TRAITOR && (texture == "Fuzzi_Traitor.png" || texture == "Fuzzi_Innocent.png")) {
 			image = RessourceManager.loadImage(texture);
 			texture = "Fuzzi_Neutral.png";
 		}
@@ -48,7 +81,7 @@ public class SPPlayer extends Player {
 		g.fillRect(x + 1, y - 11, lifepoints * 0.31f, 7);
 
 		Vector2f v = new Vector2f(x + 16, y + 16);
-		Vector2f v1 = new Vector2f(getAngle()).scale(130f);
+		Vector2f v1 = new Vector2f(getLookAngle()).scale(130f);
 		Vector2f v2 = v.copy().add(v1);
 
 		g.drawLine(v.x, v.y, v2.x, v2.y);
@@ -56,7 +89,9 @@ public class SPPlayer extends Player {
 
 	@Override
 	public void setRole(Role role) {
-		this.role = role;
+		super.setRole(role);
+
+		// TODO Filenames
 		if (role == Role.TRAITOR)
 			this.texture = "Fuzzi_Traitor.png";
 		if (role == Role.INNOCENT)
@@ -65,8 +100,23 @@ public class SPPlayer extends Player {
 			this.texture = "Fuzzi_Neutral.png";
 	}
 
+	/**
+	 * @return the position of the center of the player, computed by adding 16
+	 *         to the x and y coordinates
+	 */
 	public Vector2f getCenter() {
 		return new Vector2f(pos.x + 16, pos.y + 16);
+	}
+
+	/**
+	 * Updates the lifepoints of the player. Used to update the player
+	 * lifepoints to the lifepoints in the snapshot.
+	 * 
+	 * @param lifepoints
+	 *            the new value for the lifepoints of the player
+	 */
+	public void updateLifepoints(int lifepoints) {
+		this.lifepoints = lifepoints;
 	}
 
 }

@@ -11,14 +11,6 @@ import org.newdawn.slick.state.GameState;
 /**
  * A custom button class.
  */
-/**
- * @author jakob
- *
- */
-/**
- * @author jakob
- *
- */
 public class Button extends MouseOverArea {
 
 	private String text = "";
@@ -27,7 +19,7 @@ public class Button extends MouseOverArea {
 	private Sound sound;
 
 	/**
-	 * Create a new Button
+	 * Creates a new Button
 	 * 
 	 * @param instance
 	 *            an instance of the current GameState
@@ -79,7 +71,7 @@ public class Button extends MouseOverArea {
 	}
 
 	/**
-	 * Set the sound to play on click
+	 * Sets the sound to play on click
 	 * 
 	 * @param sound
 	 *            the sound to play
@@ -89,7 +81,7 @@ public class Button extends MouseOverArea {
 	}
 
 	/**
-	 * run the action normally performed on click
+	 * Runs the action normally performed on click
 	 */
 	public void runAction() {
 		action.run();
