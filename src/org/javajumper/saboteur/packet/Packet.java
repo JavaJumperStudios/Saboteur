@@ -21,25 +21,9 @@ public abstract class Packet {
 	 */
 	public int length;
 
-	Packet(byte id) {
+	public Packet(byte id) {
 		this.id = id;
 		this.length = getLength();
-	}
-
-	/*
-	 * This must be overwritten by any new packet class which adds information
-	 * to the payload of the packet, so the client or server knows, how many
-	 * byte should be read from the byte stream. If this method is not correct,
-	 * the reading host will probably report a "malformed package" error.
-	 * 
-	 * Use super.getLength() in subclasses and add it to your byte count!
-	 */
-	/**
-	 * @return the length of the whole packet, including bytes reserved for id
-	 *         and length
-	 */
-	protected int getLength() {
-		return Byte.BYTES + Integer.BYTES;
 	}
 
 	/**
@@ -85,5 +69,21 @@ public abstract class Packet {
 	 * @return a ByteBuffer containing the packet information
 	 */
 	public abstract ByteBuffer writeToByteBuffer();
+
+	/*
+	 * This must be overwritten by any new packet class which adds information
+	 * to the payload of the packet, so the client or server knows, how many
+	 * byte should be read from the byte stream. If this method is not correct,
+	 * the reading host will probably report a "malformed package" error.
+	 * 
+	 * Use super.getLength() in subclasses and add it to your byte count!
+	 */
+	/**
+	 * @return the length of the whole packet, including bytes reserved for id
+	 *         and length
+	 */
+	protected int getLength() {
+		return Byte.BYTES + Integer.BYTES;
+	}
 
 }

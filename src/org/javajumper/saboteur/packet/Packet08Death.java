@@ -10,7 +10,7 @@ public class Packet08Death extends Packet {
 	/** the player who has died */
 	public int playerId;
 
-	Packet08Death() {
+	public Packet08Death() {
 		super((byte) 8);
 	}
 
@@ -23,6 +23,12 @@ public class Packet08Death extends Packet {
 	public ByteBuffer writeToByteBuffer() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public int getLength() {
+		return -1;
+		// TODO implement
 	}
 
 }

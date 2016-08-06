@@ -7,14 +7,14 @@ import java.nio.ByteBuffer;
  */
 public class Packet01LoginRequest extends Packet {
 
-	public Packet01LoginRequest() {
-		super((byte) 1);
-	}
-
 	/** The name of the player */
 	public String name;
 	/** The password used */
 	public String password;
+
+	public Packet01LoginRequest() {
+		super((byte) 1);
+	}
 
 	@Override
 	public void readFromByteBuffer(ByteBuffer bb) {

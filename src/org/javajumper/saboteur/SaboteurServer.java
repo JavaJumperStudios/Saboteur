@@ -89,10 +89,38 @@ public class SaboteurServer {
 		acceptor.start();
 	}
 
+	private void initGameStats() {
+	
+		for (Player p : players) {
+			p.setPos(getFreeSpawnPosition());
+			p.setRole(Role.INNOCENT);
+		}
+	
+		Player[] pl = new Player[players.size()];
+		players.toArray(pl);
+		Random r = new Random();
+		if (players.size() <= 4) {
+			pl[r.nextInt(players.size())].setRole(Role.TRAITOR);
+		} else {
+			pl[r.nextInt(players.size())].setRole(Role.TRAITOR);
+			pl[r.nextInt(players.size())].setRole(Role.TRAITOR);
+			// Falls es 2 mal den gleichen Player treffen sollte, gibt es eben
+			// nur 1 Traitor.
+		}
+	
+		for (Player p : players) {
+			Packet13Role packet13 = new Packet13Role();
+			packet13.playerId = p.getId();
+			packet13.role = p.getRole().ordinal();
+			broadcastPacket(packet13);
+		}
+	
+	}
+
 	private void loadProperties() {
 		Properties propertyFile = new Properties();
 		FileInputStream fis = null;
-
+	
 		try {
 			fis = new FileInputStream("saboteur-server.properties");
 			propertyFile.load(fis);
@@ -103,7 +131,7 @@ public class SaboteurServer {
 				fis.close();
 			} catch (IOException | NullPointerException e) {}
 		}
-
+	
 		gameDuration = Integer.parseInt(propertyFile.getProperty("game_duration", "600000"));
 		minPlayerCount = Integer.parseInt(propertyFile.getProperty("min_player_count", "2"));
 	}
@@ -132,48 +160,48 @@ public class SaboteurServer {
 	}
 
 	private void update(int delta) {
-
+	
 		if (running) {
-
+	
 			if (!pause) {
 				map.update(delta);
-
+	
 				timeLeft -= delta;
-
+	
 				Packet07Snapshot packet = new Packet07Snapshot();
 				packet.snapshot = generateSnapshot();
-
+	
 				if (!removeList.isEmpty()) {
 					for (ClientHandler c : removeList) {
 						clientHandler.remove(c);
 					}
 					removeList.clear();
 				}
-
+	
 				for (ClientHandler c : clientHandler) {
 					if (c != null) {
 						c.sendToClient(packet);
 					}
 				}
-
+	
 				for (Player p : players) {
 					p.update(delta);
 				}
-
+	
 				checkWinConditions();
 			}
 		} else {
-
+	
 			if (players.size() < minPlayerCount)
 				return;
-
+	
 			boolean allReady = true;
-
+	
 			for (Player p : new ArrayList<>(players)) {
 				if (!p.isReady())
 					allReady = false;
 			}
-
+	
 			if (allReady) {
 				Packet03StartGame packet03 = new Packet03StartGame();
 				broadcastPacket(packet03);
@@ -182,54 +210,42 @@ public class SaboteurServer {
 				initGameStats();
 				System.out.println("Alle bereit");
 			}
-
+	
 		}
-
+	
 	}
 
-	private void initGameStats() {
+	/**
+	 * Pauses the game
+	 */
+	public void pause() {
+		pause = true;
+		System.out.println("Paused.");
+	}
 
-		for (Player p : players) {
-			p.setPos(getFreeSpawnPosition());
-			p.setRole(Role.INNOCENT);
-		}
-
-		Player[] pl = new Player[players.size()];
-		players.toArray(pl);
-		Random r = new Random();
-		if (players.size() <= 4) {
-			pl[r.nextInt(players.size())].setRole(Role.TRAITOR);
-		} else {
-			pl[r.nextInt(players.size())].setRole(Role.TRAITOR);
-			pl[r.nextInt(players.size())].setRole(Role.TRAITOR);
-			// Falls es 2 mal den gleichen Player treffen sollte, gibt es eben
-			// nur 1 Traitor.
-		}
-
-		for (Player p : players) {
-			Packet13Role packet13 = new Packet13Role();
-			packet13.playerId = p.getId();
-			packet13.role = p.getRole().ordinal();
-			broadcastPacket(packet13);
-		}
-
+	/**
+	 * Unpauses the game
+	 */
+	public void unpause() {
+		pause = false;
+		System.out.println("Unpaused!");
 	}
 
 	/**
 	 * Checks if win conditions are met and ends the game if so
 	 */
 	public void checkWinConditions() {
-
+	
 		if (timeLeft <= 0) {
 			// Innocents gewinnen durch Zeit
-
+	
 			sendEndPacket(0);
-
+	
 		} else {
-
+	
 			boolean innoAlive = false;
 			boolean traitorAlive = false;
-
+	
 			for (Player p : players) {
 				if (!p.isDead() && p.getRole() == Role.INNOCENT) {
 					innoAlive = true;
@@ -237,11 +253,11 @@ public class SaboteurServer {
 					traitorAlive = true;
 				}
 			}
-
+	
 			// TODO if debug...
 			if (true) // To avoid dead code error
 				return;
-
+	
 			if (!innoAlive && !traitorAlive) {
 				// Unentschieden
 				sendEndPacket(3);
@@ -252,7 +268,7 @@ public class SaboteurServer {
 				// Traitor gewonnen
 				sendEndPacket(2);
 			}
-
+	
 		}
 	}
 
@@ -268,13 +284,13 @@ public class SaboteurServer {
 		packet04.endCause = (byte) endCause;
 		broadcastPacket(packet04);
 		pause = true;
-
+	
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
+	
 		resetServer();
 	}
 
@@ -337,6 +353,33 @@ public class SaboteurServer {
 	}
 
 	/**
+	 * Adds a new player to the game
+	 * 
+	 * @param name
+	 *            the name of the new player
+	 * @return the new player
+	 */
+	public Player addNewPlayer(String name) {
+		// TODO LOG
+		System.out.println("New Player added: " + name);
+	
+		Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
+		p.addItem(new Gun("TestGun", Item.nextId()));
+		players.add(p);
+	
+		Packet12PlayerSpawned packet12 = new Packet12PlayerSpawned();
+	
+		packet12.name = name;
+		packet12.playerId = p.getId();
+		packet12.role = Role.LOBBY.ordinal();
+		packet12.x = 0;
+		packet12.y = 0;
+		packet12.ready = (byte) (p.isReady() ? 1 : 0);
+		broadcastPacket(packet12);
+		return p;
+	}
+
+	/**
 	 * Adds a new client handler to the maintained list
 	 * 
 	 * @param client
@@ -370,72 +413,6 @@ public class SaboteurServer {
 	}
 
 	/**
-	 * Searches for a free spawn position and returns it
-	 * 
-	 * @return a position where a player could be spawned or null if there is
-	 *         none
-	 */
-	public Vector2f getFreeSpawnPosition() {
-		Vector2f v = null;
-		boolean found = false;
-
-		while (!found) {
-			double i = Math.random();
-
-			if (i <= 0.2 && !blockedSpawnPositions[0]) {
-				v = new Vector2f(0, 0);
-				blockedSpawnPositions[0] = true;
-				found = true;
-			} else if (i > 0.2 && i <= 0.4 && !blockedSpawnPositions[1]) {
-				v = new Vector2f(1248, 0);
-				blockedSpawnPositions[1] = true;
-				found = true;
-			} else if (i > 0.4 && i <= 0.6 && !blockedSpawnPositions[2]) {
-				v = new Vector2f(0, 928);
-				blockedSpawnPositions[2] = true;
-				found = true;
-			} else if (i > 0.6 && i <= 0.8 && !blockedSpawnPositions[3]) {
-				v = new Vector2f(1248, 928);
-				blockedSpawnPositions[3] = true;
-				found = true;
-			} else if (i > 0.8 && i <= 1.0 && !blockedSpawnPositions[4]) {
-				v = new Vector2f(640, 512);
-				blockedSpawnPositions[4] = true;
-				found = true;
-			}
-		}
-
-		return v;
-	}
-
-	/**
-	 * Adds a new player to the game
-	 * 
-	 * @param name
-	 *            the name of the new player
-	 * @return the new player
-	 */
-	public Player addNewPlayer(String name) {
-		// TODO LOG
-		System.out.println("New Player added: " + name);
-
-		Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
-		p.addItem(new Gun("TestGun", Item.nextId()));
-		players.add(p);
-
-		Packet12PlayerSpawned packet12 = new Packet12PlayerSpawned();
-
-		packet12.name = name;
-		packet12.playerId = p.getId();
-		packet12.role = Role.LOBBY.ordinal();
-		packet12.x = 0;
-		packet12.y = 0;
-		packet12.ready = (byte) (p.isReady() ? 1 : 0);
-		broadcastPacket(packet12);
-		return p;
-	}
-
-	/**
 	 * Broadcasts a packet to all client handlers
 	 * 
 	 * @param packet
@@ -447,36 +424,6 @@ public class SaboteurServer {
 				c.sendToClient(packet);
 			}
 		}
-	}
-
-	/**
-	 * Pauses the game
-	 */
-	public void pause() {
-		pause = true;
-		System.out.println("Paused.");
-	}
-
-	/**
-	 * Unpauses the game
-	 */
-	public void unpause() {
-		pause = false;
-		System.out.println("Unpaused!");
-	}
-
-	/**
-	 * @return the time left until the is ended
-	 */
-	public int getTimeLeft() {
-		return timeLeft;
-	}
-
-	/**
-	 * @return a list of all players
-	 */
-	public ArrayList<Player> getPlayers() {
-		return players;
 	}
 
 	/**
@@ -539,6 +486,59 @@ public class SaboteurServer {
 		packet05.playerId = player.getId();
 		broadcastPacket(packet05);
 
+	}
+
+	/**
+	 * @return the time left until the is ended
+	 */
+	public int getTimeLeft() {
+		return timeLeft;
+	}
+
+	/**
+	 * Searches for a free spawn position and returns it
+	 * 
+	 * @return a position where a player could be spawned or null if there is
+	 *         none
+	 */
+	public Vector2f getFreeSpawnPosition() {
+		Vector2f v = null;
+		boolean found = false;
+
+		while (!found) {
+			double i = Math.random();
+
+			if (i <= 0.2 && !blockedSpawnPositions[0]) {
+				v = new Vector2f(0, 0);
+				blockedSpawnPositions[0] = true;
+				found = true;
+			} else if (i > 0.2 && i <= 0.4 && !blockedSpawnPositions[1]) {
+				v = new Vector2f(1248, 0);
+				blockedSpawnPositions[1] = true;
+				found = true;
+			} else if (i > 0.4 && i <= 0.6 && !blockedSpawnPositions[2]) {
+				v = new Vector2f(0, 928);
+				blockedSpawnPositions[2] = true;
+				found = true;
+			} else if (i > 0.6 && i <= 0.8 && !blockedSpawnPositions[3]) {
+				v = new Vector2f(1248, 928);
+				blockedSpawnPositions[3] = true;
+				found = true;
+			} else if (i > 0.8 && i <= 1.0 && !blockedSpawnPositions[4]) {
+				v = new Vector2f(640, 512);
+				blockedSpawnPositions[4] = true;
+				found = true;
+			}
+		}
+
+		return v;
+	}
+
+	/**
+	 * @return a list of all players
+	 */
+	public ArrayList<Player> getPlayers() {
+		return players;
 	}
 
 	/**

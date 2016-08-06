@@ -11,6 +11,9 @@ import org.newdawn.slick.Image;
  */
 public class Tile {
 
+	// Static
+
+	private static ArrayList<Image> typeIdTextures = new ArrayList<>();
 	private int typeId;
 	private boolean solid;
 
@@ -28,6 +31,15 @@ public class Tile {
 	}
 
 	/**
+	 * Initializes the tile rendering and loads the tile's ressources from the
+	 * RessourceManager
+	 */
+	public static void initTileRendering() {
+		typeIdTextures.add(0, RessourceManager.loadImage("Tile-sheet.png", 0, 0, 32, 32));
+		typeIdTextures.add(1, RessourceManager.loadImage("Tile-sheet.png", 64, 0, 32, 32));
+	}
+
+	/**
 	 * Renders the tile to the screen
 	 * 
 	 * @param g
@@ -39,10 +51,6 @@ public class Tile {
 	 */
 	public void draw(Graphics g, int x, int y) {
 		g.drawImage(getTexture(), x, y);
-	}
-
-	private Image getTexture() {
-		return Tile.typeIdTextures.get(typeId);
 	}
 
 	/**
@@ -59,17 +67,8 @@ public class Tile {
 		return solid;
 	}
 
-	// Static
-
-	private static ArrayList<Image> typeIdTextures = new ArrayList<>();
-
-	/**
-	 * Initializes the tile rendering and loads the tile's ressources from the
-	 * RessourceManager
-	 */
-	public static void initTileRendering() {
-		typeIdTextures.add(0, RessourceManager.loadImage("Tile-sheet.png", 0, 0, 32, 32));
-		typeIdTextures.add(1, RessourceManager.loadImage("Tile-sheet.png", 64, 0, 32, 32));
+	private Image getTexture() {
+		return Tile.typeIdTextures.get(typeId);
 	}
 
 }

@@ -27,7 +27,6 @@ public class Player {
 	/* Movement */
 
 	protected Vector2f pos;
-
 	/**
 	 * The movement vector is sent to the server with each tick, while the
 	 * server is the one who transforms this movement to a new position based on
@@ -80,6 +79,13 @@ public class Player {
 
 		collisionBox = new Rectangle(pos.x, pos.y, 32, 32);
 
+	}
+
+	/**
+	 * @return the next free player id to assign
+	 */
+	public static int getNextId() {
+		return nextPlayerId++;
 	}
 
 	/**
@@ -152,51 +158,21 @@ public class Player {
 	}
 
 	/**
-	 * @return the id of the player
-	 */
-	public int getId() {
-		return id;
-	}
-
-	/**
-	 * @return the name of the player
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Assigns a new role to the player, see
-	 * {@link org.javajumper.saboteur.player.Role Role}
+	 * Generates a new PlayerSnapshot for this player, including all snapshot
+	 * fields
 	 * 
-	 * @param role
-	 *            the new role to assign to the player
+	 * @return the generated snapshot
 	 */
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
-	/**
-	 * @return the role of the player
-	 */
-	public Role getRole() {
-		return role;
-	}
-
-	/**
-	 * @param ready
-	 *            true, if the player should be set into ready state and false
-	 *            if he should be set to the state of not being ready
-	 */
-	public void setReadyState(boolean ready) {
-		this.ready = ready;
-	}
-
-	/**
-	 * @return if the player is ready
-	 */
-	public boolean isReady() {
-		return ready;
+	public PlayerSnapshot generateSnapshot() {
+		PlayerSnapshot ps = new PlayerSnapshot();
+		ps.playerId = id;
+		ps.currentWeapon = currentWeapon;
+		ps.lifepoints = lifepoints;
+		ps.lookAngle = lookAngle;
+		ps.x = pos.x;
+		ps.y = pos.y;
+	
+		return ps;
 	}
 
 	/**
@@ -234,38 +210,6 @@ public class Player {
 	}
 
 	/**
-	 * @return the current lifepoints of the player
-	 */
-	public int getLifepoints() {
-		return lifepoints;
-	}
-
-	/**
-	 * Sets which weapon is currently selected/used.
-	 * 
-	 * @param currentWeapon
-	 *            the slot id of the new currently selected weapon
-	 */
-	public void setCurrentWeapon(int currentWeapon) {
-		this.currentWeapon = currentWeapon;
-	}
-
-	/**
-	 * @param d
-	 *            the new death state for this player
-	 */
-	public void setDead(boolean d) {
-		dead = d;
-	}
-
-	/**
-	 * @return the slot id of the currently selected weapon
-	 */
-	public int getCurrentWeapon() {
-		return currentWeapon;
-	}
-
-	/**
 	 * Adds an item to the inventory of the player
 	 * 
 	 * @param item
@@ -289,18 +233,75 @@ public class Player {
 	}
 
 	/**
-	 * @param pos
-	 *            the new position for the player
+	 * Resets the lifepoints of the player to 100
 	 */
-	public void setPos(Vector2f pos) {
-		this.pos = pos;
+	public void resetLifepoints() {
+		this.lifepoints = 100;
 	}
 
 	/**
-	 * @return the position of the player
+	 * @return the current lifepoints of the player
 	 */
-	public Vector2f getPos() {
-		return pos;
+	public int getLifepoints() {
+		return lifepoints;
+	}
+
+	/**
+	 * @return the slot id of the currently selected weapon
+	 */
+	public int getCurrentWeapon() {
+		return currentWeapon;
+	}
+
+	/**
+	 * Sets which weapon is currently selected/used.
+	 * 
+	 * @param currentWeapon
+	 *            the slot id of the new currently selected weapon
+	 */
+	public void setCurrentWeapon(int currentWeapon) {
+		this.currentWeapon = currentWeapon;
+	}
+
+	/**
+	 * @return the name of the player
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @return the id of the player
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * Assigns a new role to the player, see
+	 * {@link org.javajumper.saboteur.player.Role Role}
+	 * 
+	 * @param role
+	 *            the new role to assign to the player
+	 */
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	/**
+	 * @return the role of the player
+	 */
+	public Role getRole() {
+		return role;
+	}
+
+	/**
+	 * See {@link #move movement vector}
+	 * 
+	 * @return the current movement vector
+	 */
+	public Vector2f getMove() {
+		return move;
 	}
 
 	/**
@@ -314,12 +315,70 @@ public class Player {
 	}
 
 	/**
-	 * See {@link #move movement vector}
-	 * 
-	 * @return the current movement vector
+	 * @return the players current inventory
 	 */
-	public Vector2f getMove() {
-		return move;
+	public Item[] getInventory() {
+		return inventory;
+	}
+
+	/**
+	 * @return the collision box of the player
+	 */
+	public Rectangle getCollisionBox() {
+		return collisionBox;
+	}
+
+	/**
+	 * @param d
+	 *            the new death state for this player
+	 */
+	public void setDead(boolean d) {
+		dead = d;
+	}
+
+	/**
+	 * @return if the player is dead
+	 */
+	public boolean isDead() {
+		return dead;
+	}
+
+	/**
+	 * @param ready
+	 *            true, if the player should be set into ready state and false
+	 *            if he should be set to the state of not being ready
+	 */
+	public void setReadyState(boolean ready) {
+		this.ready = ready;
+	}
+
+	/**
+	 * @return if the player is ready
+	 */
+	public boolean isReady() {
+		return ready;
+	}
+
+	/**
+	 * @return the position of the player
+	 */
+	public Vector2f getPos() {
+		return pos;
+	}
+
+	/**
+	 * @param pos
+	 *            the new position for the player
+	 */
+	public void setPos(Vector2f pos) {
+		this.pos = pos;
+	}
+
+	/**
+	 * @return if the player is sprinting
+	 */
+	public boolean isSprinting() {
+		return sprinting;
 	}
 
 	/**
@@ -328,13 +387,6 @@ public class Player {
 	 */
 	public void setSprinting(boolean sprinting) {
 		this.sprinting = sprinting;
-	}
-
-	/**
-	 * @return if the player is sprinting
-	 */
-	public boolean isSprinting() {
-		return sprinting;
 	}
 
 	/**
@@ -352,59 +404,6 @@ public class Player {
 	 */
 	public void setLookAngle(float angle) {
 		this.lookAngle = angle;
-	}
-
-	/**
-	 * @return the players current inventory
-	 */
-	public Item[] getInventory() {
-		return inventory;
-	}
-
-	/**
-	 * @return if the player is dead
-	 */
-	public boolean isDead() {
-		return dead;
-	}
-
-	/**
-	 * @return the collision box of the player
-	 */
-	public Rectangle getCollisionBox() {
-		return collisionBox;
-	}
-
-	/**
-	 * Generates a new PlayerSnapshot for this player, including all snapshot
-	 * fields
-	 * 
-	 * @return the generated snapshot
-	 */
-	public PlayerSnapshot generateSnapshot() {
-		PlayerSnapshot ps = new PlayerSnapshot();
-		ps.playerId = id;
-		ps.currentWeapon = currentWeapon;
-		ps.lifepoints = lifepoints;
-		ps.lookAngle = lookAngle;
-		ps.x = pos.x;
-		ps.y = pos.y;
-
-		return ps;
-	}
-
-	/**
-	 * @return the next free player id to assign
-	 */
-	public static int getNextId() {
-		return nextPlayerId++;
-	}
-
-	/**
-	 * Resets the lifepoints of the player to 100
-	 */
-	public void resetLifepoints() {
-		this.lifepoints = 100;
 	}
 
 }

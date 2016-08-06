@@ -35,7 +35,7 @@ public class Gun extends Item {
 
 		boolean t = true;
 
-		ArrayList<Shape> a = instance.getMap().getCollisionShapes();
+		ArrayList<Shape> a = SaboteurServer.instance.getMap().getCollisionShapes();
 		ArrayList<Player> players = SaboteurServer.instance.getPlayers();
 
 		while (t) {

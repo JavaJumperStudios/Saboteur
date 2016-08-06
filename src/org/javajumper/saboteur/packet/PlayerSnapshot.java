@@ -21,29 +21,6 @@ public class PlayerSnapshot {
 	public int lifepoints;
 
 	/**
-	 * Writes the PlayerSnapshot
-	 * 
-	 * @param bb
-	 */
-	public void writeToByteBuffer(ByteBuffer bb) {
-
-		bb.putInt(playerId);
-		bb.putFloat(x);
-		bb.putFloat(y);
-		bb.putFloat(lookAngle);
-
-		bb.putInt(currentWeapon);
-		bb.putInt(lifepoints);
-	}
-
-	/**
-	 * @return the length in bytes of this snapshot
-	 */
-	public static int getLength() {
-		return Float.BYTES * 3 + Integer.BYTES * 3;
-	}
-
-	/**
 	 * Reads information from a ByteBuffer into a newly created PlayerSnapshot
 	 * 
 	 * @param bb
@@ -62,6 +39,30 @@ public class PlayerSnapshot {
 		p.lifepoints = bb.getInt();
 
 		return p;
+	}
+
+	/**
+	 * @return the length in bytes of this snapshot
+	 */
+	public static int getLength() {
+		return Float.BYTES * 3 + Integer.BYTES * 3;
+	}
+
+	/**
+	 * Writes this PlayerSnapshot to a ByteBuffer
+	 * 
+	 * @param bb
+	 *            the ByteBuffer to write to
+	 */
+	public void writeToByteBuffer(ByteBuffer bb) {
+
+		bb.putInt(playerId);
+		bb.putFloat(x);
+		bb.putFloat(y);
+		bb.putFloat(lookAngle);
+
+		bb.putInt(currentWeapon);
+		bb.putInt(lifepoints);
 	}
 
 }

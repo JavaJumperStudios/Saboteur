@@ -21,6 +21,24 @@ public class Packet02Login extends Packet {
 		super((byte) 2);
 	}
 
+	/**
+	 * Creates a new SPPlayer Object from an Login packet. By default, the
+	 * player is assigned the login packet id, the login packet name, 100
+	 * lifepoints, and spawned with role lobby at position (0, 0) with the
+	 * texture "Fuzzi_Neutral.png"
+	 * 
+	 * @param loginPacket
+	 *            the login packet to create the player from
+	 * @return the created player
+	 */
+	public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
+	
+		SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY, loginPacket.name, 100, new Vector2f(0, 0),
+				"Fuzzi_Neutral.png"); // TODO Filename
+	
+		return p;
+	}
+
 	@Override
 	public void readFromByteBuffer(ByteBuffer bb) {
 		playerId = bb.getInt();
@@ -54,24 +72,6 @@ public class Packet02Login extends Packet {
 	@Override
 	public int getLength() {
 		return super.getLength() + Integer.BYTES + Character.BYTES * 16;
-	}
-
-	/**
-	 * Creates a new SPPlayer Object from an Login packet. By default, the
-	 * player is assigned the login packet id, the login packet name, 100
-	 * lifepoints, and spawned with role lobby at position (0, 0) with the
-	 * texture "Fuzzi_Neutral.png"
-	 * 
-	 * @param loginPacket
-	 *            the login packet to create the player from
-	 * @return the created player
-	 */
-	public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
-
-		SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY, loginPacket.name, 100, new Vector2f(0, 0),
-				"Fuzzi_Neutral.png"); // TODO Filename
-
-		return p;
 	}
 
 }

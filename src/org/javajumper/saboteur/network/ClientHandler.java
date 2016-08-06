@@ -152,6 +152,21 @@ public class ClientHandler implements Runnable {
 	}
 
 	/**
+	 * Closes the connection to the client
+	 */
+	public void close() {
+		try {
+			clientSocket.close();
+		} catch (IOException e) {
+			// TODO Log
+			System.out.println("Could not even close the Socket :( Client sad");
+		}
+		login = false;
+		server.removeClientHandler(this);
+		server.handlePlayerLogout(player);
+	}
+
+	/**
 	 * Sends a client to the client handled by this ClientHandler
 	 * 
 	 * @param packet
@@ -166,21 +181,6 @@ public class ClientHandler implements Runnable {
 			System.out.println("Could not send packet to Client. Closing Connection.");
 			close();
 		}
-	}
-
-	/**
-	 * Closes the connection to the client
-	 */
-	public void close() {
-		try {
-			clientSocket.close();
-		} catch (IOException e) {
-			// TODO Log
-			System.out.println("Could not even close the Socket :( Client sad");
-		}
-		login = false;
-		server.removeClientHandler(this);
-		server.handlePlayerLogout(player);
 	}
 
 	/**

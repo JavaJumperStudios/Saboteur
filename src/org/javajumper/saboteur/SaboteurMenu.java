@@ -30,7 +30,7 @@ public class SaboteurMenu extends BasicGameState {
 	private TextField pwTextField;
 	private TextField nameTextField;
 	private Image background;
-	Music openingMenuMusic;
+	private Music openingMenuMusic;
 
 	// True if music shall be played
 	private boolean playMusic;

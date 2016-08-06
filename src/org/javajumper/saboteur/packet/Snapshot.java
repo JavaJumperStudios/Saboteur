@@ -44,20 +44,6 @@ public class Snapshot {
 	}
 
 	/**
-	 * @return the length of this snapshot in bytes
-	 */
-	public int getLength() {
-		return player.length * PlayerSnapshot.getLength() + Integer.BYTES;
-	}
-
-	/**
-	 * @return the number of players whose information is saved
-	 */
-	public int getSnapshotPlayerCount() {
-		return player.length;
-	}
-
-	/**
 	 * Reads information from a ByteBuffer into this snapshot
 	 * 
 	 * @param bb
@@ -72,6 +58,20 @@ public class Snapshot {
 			player[i] = PlayerSnapshot.readFromByteBuffer(bb);
 		}
 
+	}
+
+	/**
+	 * @return the length of this snapshot in bytes
+	 */
+	public int getLength() {
+		return player.length * PlayerSnapshot.getLength() + Integer.BYTES;
+	}
+
+	/**
+	 * @return the number of players whose information is saved
+	 */
+	public int getSnapshotPlayerCount() {
+		return player.length;
 	}
 
 }

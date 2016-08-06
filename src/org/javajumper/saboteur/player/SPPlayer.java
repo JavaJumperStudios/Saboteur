@@ -87,17 +87,15 @@ public class SPPlayer extends Player {
 		g.drawLine(v.x, v.y, v2.x, v2.y);
 	}
 
-	@Override
-	public void setRole(Role role) {
-		super.setRole(role);
-
-		// TODO Filenames
-		if (role == Role.TRAITOR)
-			this.texture = "Fuzzi_Traitor.png";
-		if (role == Role.INNOCENT)
-			this.texture = "Fuzzi_Innocent.png";
-		if (role == Role.LOBBY)
-			this.texture = "Fuzzi_Neutral.png";
+	/**
+	 * Updates the lifepoints of the player. Used to update the player
+	 * lifepoints to the lifepoints in the snapshot.
+	 * 
+	 * @param lifepoints
+	 *            the new value for the lifepoints of the player
+	 */
+	public void updateLifepoints(int lifepoints) {
+		this.lifepoints = lifepoints;
 	}
 
 	/**
@@ -108,15 +106,17 @@ public class SPPlayer extends Player {
 		return new Vector2f(pos.x + 16, pos.y + 16);
 	}
 
-	/**
-	 * Updates the lifepoints of the player. Used to update the player
-	 * lifepoints to the lifepoints in the snapshot.
-	 * 
-	 * @param lifepoints
-	 *            the new value for the lifepoints of the player
-	 */
-	public void updateLifepoints(int lifepoints) {
-		this.lifepoints = lifepoints;
+	@Override
+	public void setRole(Role role) {
+		super.setRole(role);
+	
+		// TODO Filenames
+		if (role == Role.TRAITOR)
+			this.texture = "Fuzzi_Traitor.png";
+		if (role == Role.INNOCENT)
+			this.texture = "Fuzzi_Innocent.png";
+		if (role == Role.LOBBY)
+			this.texture = "Fuzzi_Neutral.png";
 	}
 
 }

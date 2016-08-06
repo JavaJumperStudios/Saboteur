@@ -49,6 +49,30 @@ public class DeadPlayer {
 	}
 
 	/**
+	 * Renders the body to the screen
+	 */
+	public void draw() {
+		draw(pos.x, pos.y);
+	}
+
+	/**
+	 * Renders the body to the screen
+	 * 
+	 * @param x
+	 *            the x coordinate of this dead player
+	 * @param y
+	 *            the y coordinate of this dead player
+	 */
+	public void draw(float x, float y) {
+
+		if (image == null)
+			image = RessourceManager.loadImage("Fuzzitot.png");
+
+		image.draw(x, y);
+
+	}
+
+	/**
 	 * @return the id of the player who died
 	 */
 	public int getId() {
@@ -88,30 +112,6 @@ public class DeadPlayer {
 	 */
 	public Role getRole() {
 		return role;
-	}
-
-	/**
-	 * Renders the body to the screen
-	 */
-	public void draw() {
-		image.draw(pos.x, pos.y);
-	}
-
-	/**
-	 * Renders the body to the screen
-	 * 
-	 * @param x
-	 *            the x coordinate of this dead player
-	 * @param y
-	 *            the y coordinate of this dead player
-	 */
-	public void drasw(float x, float y) {
-
-		if (image == null)
-			image = RessourceManager.loadImage("Fuzzitot.png");
-
-		image.draw(x, y);
-
 	}
 
 	/**

@@ -40,27 +40,26 @@ public class Button extends MouseOverArea {
 	}
 
 	@Override
-	public void render(GUIContext gameContainer, Graphics g) {
-		super.render(gameContainer, g);
-		g.setColor(Color.black);
-		g.drawString(text, getX() + 20, getY() + 20);
-	}
-
-	/**
-	 * @param string
-	 *            the caption for the button
-	 */
-	public void setText(String string) {
-		this.text = string;
-	}
-
-	@Override
 	public void mouseClicked(int button, int x, int y, int clickCount) {
 		if (active && isMouseOver()) {
 			if (sound != null)
 				sound.play();
 			runAction();
 		}
+	}
+
+	/**
+	 * Runs the action normally performed on click
+	 */
+	public void runAction() {
+		action.run();
+	}
+
+	@Override
+	public void render(GUIContext gameContainer, Graphics g) {
+		super.render(gameContainer, g);
+		g.setColor(Color.black);
+		g.drawString(text, getX() + 20, getY() + 20);
 	}
 
 	/**
@@ -71,6 +70,14 @@ public class Button extends MouseOverArea {
 	}
 
 	/**
+	 * @param string
+	 *            the caption for the button
+	 */
+	public void setText(String string) {
+		this.text = string;
+	}
+
+	/**
 	 * Sets the sound to play on click
 	 * 
 	 * @param sound
@@ -78,13 +85,6 @@ public class Button extends MouseOverArea {
 	 */
 	public void setSound(Sound sound) {
 		this.sound = sound;
-	}
-
-	/**
-	 * Runs the action normally performed on click
-	 */
-	public void runAction() {
-		action.run();
 	}
 
 }

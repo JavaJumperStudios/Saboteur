@@ -1,6 +1,5 @@
 package org.javajumper.saboteur.player.inventory;
 
-import org.javajumper.saboteur.SaboteurServer;
 import org.javajumper.saboteur.player.Player;
 import org.newdawn.slick.Image;
 
@@ -15,7 +14,6 @@ public abstract class Item {
 	private String name;
 	private int id;
 	private int typeId; // 0 = Knife, 1 = Gun TODO Enum?
-	protected SaboteurServer instance;
 
 	/**
 	 * Creates a new item
@@ -36,26 +34,19 @@ public abstract class Item {
 	}
 
 	/**
+	 * @return the next free item id
+	 */
+	public static int nextId() {
+		return currentId++;
+	}
+
+	/**
 	 * Uses the item
 	 * 
 	 * @param p
 	 *            the player who uses the item
 	 */
 	public abstract void use(Player p);
-
-	/**
-	 * @return the typeId of the item (0 = knife, 1 = gun)
-	 */
-	public int getTypeId() {
-		return typeId;
-	}
-
-	/**
-	 * @return the item id
-	 */
-	public int getId() {
-		return id;
-	}
 
 	/**
 	 * Renders the item to the screen
@@ -70,10 +61,17 @@ public abstract class Item {
 	}
 
 	/**
-	 * @return the next free item id
+	 * @return the typeId of the item (0 = knife, 1 = gun)
 	 */
-	public static int nextId() {
-		return currentId++;
+	public int getTypeId() {
+		return typeId;
+	}
+
+	/**
+	 * @return the item id
+	 */
+	public int getId() {
+		return id;
 	}
 
 }

@@ -109,14 +109,6 @@ public class RessourceManager {
 		}
 	}
 
-	/**
-	 * @param index
-	 * @return das gewählte Tile
-	 */
-	public static Image getTile(int index) {
-		return tiles[index];
-	}
-
 	public static Animation[] loadPlayerFeet() {
 		SpriteSheet sprites = new SpriteSheet(loadImage("feet.png"), 64, 64);
 
@@ -160,6 +152,14 @@ public class RessourceManager {
 		sounds.put(name, newSound);
 
 		return newSound;
+	}
+
+	/**
+	 * @param index
+	 * @return das gewählte Tile
+	 */
+	public static Image getTile(int index) {
+		return tiles[index];
 	}
 
 }

@@ -17,16 +17,13 @@ import org.newdawn.slick.geom.Shape;
  */
 public class Map {
 
+	protected String name;
+	protected Tile[][] tiles = new Tile[40][30];
+	protected int width;
+	protected int height;
+
 	private ArrayList<Shape> collisionShapes = new ArrayList<>();
 	private ArrayList<Line> collisionLines = new ArrayList<>();
-
-	/**
-	 * A two-dimensional array of tiles of the map
-	 */
-	protected Tile[][] tiles = new Tile[40][30];
-
-	protected int width, height;
-	protected String name;
 
 	/**
 	 * Creates a new map with a width of 40 and a height of 30
@@ -49,31 +46,29 @@ public class Map {
 	}
 
 	/**
-	 * Returns all collision shapes not including the map borders as a shape
-	 * 
-	 * @return a list of all collision shapes of the map
-	 */
-	public ArrayList<Shape> getCollisionShapes() {
-		return collisionShapes;
-	}
-
-	/**
-	 * @return a list of all lines of the collision-shapes of the map and the
-	 *         borders of the map
-	 */
-	public ArrayList<Line> getCollisionLines() {
-		return collisionLines;
-	}
-
-	/**
-	 * <<<<<<< HEAD Updates the logic of the map based on the time that passed
-	 * since the last update ======= Updates the map >>>>>>> branch 'cleanup' of
-	 * https://github.com/JavaJumperStudios/Saboteur.git
+	 * Updates the logic of the map based on the time that passed since the last
+	 * update
 	 * 
 	 * @param delta
 	 *            time since last update
 	 */
 	public void update(int delta) {
+
+	}
+
+	/**
+	 * Renders the map
+	 * 
+	 * @param g
+	 *            the Graphics context to render to
+	 */
+	public void draw(Graphics g) {
+
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				tiles[i][j].draw(g, i * 32, j * 32);
+			}
+		}
 
 	}
 
@@ -187,6 +182,13 @@ public class Map {
 	}
 
 	/**
+	 * @return the name of the map, that is the filename
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
 	 * @return the width of the map
 	 */
 	public int getWidth() {
@@ -198,13 +200,6 @@ public class Map {
 	 */
 	public int getHeight() {
 		return height;
-	}
-
-	/**
-	 * @return the name of the map, that is the filename
-	 */
-	public String getName() {
-		return name;
 	}
 
 	// TODO add null check
@@ -234,19 +229,20 @@ public class Map {
 	}
 
 	/**
-	 * Renders the map
+	 * Returns all collision shapes not including the map borders as a shape
 	 * 
-	 * @param g
-	 *            the Graphics context to render to
+	 * @return a list of all collision shapes of the map
 	 */
-	public void draw(Graphics g) {
+	public ArrayList<Shape> getCollisionShapes() {
+		return collisionShapes;
+	}
 
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				tiles[i][j].draw(g, i * 32, j * 32);
-			}
-		}
-
+	/**
+	 * @return a list of all lines of the collision-shapes of the map and the
+	 *         borders of the map
+	 */
+	public ArrayList<Line> getCollisionLines() {
+		return collisionLines;
 	}
 
 }
