@@ -2,13 +2,17 @@ package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Sent between client and server to indicate that an item is used
+ */
 public class Packet06UseItem extends Packet {
+
+	/** the id of the used item */
+	public int itemId;
 
 	public Packet06UseItem() {
 		super((byte) 6);
 	}
-
-	public int itemId;
 
 	@Override
 	public void readFromByteBuffer(ByteBuffer bb) {

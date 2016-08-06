@@ -4,6 +4,9 @@ import org.javajumper.saboteur.Saboteur;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
+/**
+ * A class to manually test the Sabouteur client. Invokes the Saboteur class.
+ */
 public class ClientTest {
 
 	public static void main(String[] _args) {

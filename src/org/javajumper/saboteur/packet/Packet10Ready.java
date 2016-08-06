@@ -2,13 +2,18 @@ package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Sent between server and client to indicate that the ready-state of a player
+ * has changed
+ */
 public class Packet10Ready extends Packet {
 
+	/** The id of the player whose ready state has changed */
 	public int playerId;
 	/**
-	 * 0 = false, 1 = true {@link <a href=
-	 * "http://www.stackoverflow.com/questions/18825324/why-bytebuffer-doesnt-provide-method-to-read-write-boolean-data-type">
-	 * Link to Thread</a>}
+	 * if the player is ready or not<br>
+	 * 0 = false,<br>
+	 * 1 = true
 	 */
 	public byte ready;
 

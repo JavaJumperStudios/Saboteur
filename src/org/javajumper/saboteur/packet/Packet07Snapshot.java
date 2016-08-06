@@ -2,9 +2,14 @@ package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
 
+/**
+ * A snapshot containing information (like movement) about all players on the
+ * server which is sent from the server to the client to keep him up-to-date
+ * with the game state
+ */
 public class Packet07Snapshot extends Packet {
 
-	public int snapshotsize;
+	/** the snapshot which is sent containing information about all players */
 	public Snapshot snapshot;
 
 	public Packet07Snapshot() {
@@ -13,12 +18,7 @@ public class Packet07Snapshot extends Packet {
 
 	@Override
 	public void readFromByteBuffer(ByteBuffer bb) {
-
-		snapshotsize = bb.getInt();
-
-		snapshot = new Snapshot();
-		snapshot.readFromByteBuffer(bb, snapshotsize);
-
+		snapshot = new Snapshot(bb);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class Packet07Snapshot extends Packet {
 
 		bb.put(id);
 		bb.putInt(getLength());
-		bb.putInt(snapshot.getSnapshotSize());
+		bb.putInt(snapshot.getSnapshotPlayerCount());
 		snapshot.writeToByteBuffer(bb);
 
 		return bb;

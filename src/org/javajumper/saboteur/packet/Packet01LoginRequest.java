@@ -2,14 +2,19 @@ package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Represent an login attempt by a user/player
+ */
 public class Packet01LoginRequest extends Packet {
+
+	/** The name of the player */
+	public String name;
+	/** The password used */
+	public String password;
 
 	public Packet01LoginRequest() {
 		super((byte) 1);
 	}
-
-	public String name;
-	public String password;
 
 	@Override
 	public void readFromByteBuffer(ByteBuffer bb) {

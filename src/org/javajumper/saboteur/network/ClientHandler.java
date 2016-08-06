@@ -15,6 +15,10 @@ import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
 import org.javajumper.saboteur.packet.Packet15SetMap;
 import org.javajumper.saboteur.player.Player;
 
+/**
+ * A runnable class which connects with one client, and handles communication
+ * between the server and that client
+ */
 public class ClientHandler implements Runnable {
 
 	private Socket clientSocket;
@@ -23,6 +27,14 @@ public class ClientHandler implements Runnable {
 	private SaboteurServer server;
 	private boolean running = true;
 
+	/**
+	 * Create a new Handler for a client
+	 * 
+	 * @param clientSocket
+	 *            the socket of the new client
+	 * @param server
+	 *            an instance of the running server
+	 */
 	public ClientHandler(Socket clientSocket, SaboteurServer server) {
 		this.clientSocket = clientSocket;
 		this.server = server;
@@ -31,7 +43,7 @@ public class ClientHandler implements Runnable {
 	@Override
 	public void run() {
 		byte[] buffer = new byte[524288];
-		System.out.println("Socket geï¿½ffnet");
+		System.out.println("Socket geöffnet");
 		int size;
 
 		try {
@@ -59,7 +71,7 @@ public class ClientHandler implements Runnable {
 						player = server.addNewPlayer(packetLoginRequest.name);
 
 						login = true;
-
+						// TODO log
 						System.out.println("Sending Login Packet.");
 
 						Packet02Login packetLogin = new Packet02Login();
@@ -77,7 +89,7 @@ public class ClientHandler implements Runnable {
 						packetSetMap.height = height;
 						packetSetMap.width = width;
 
-						packetSetMap.map = new Integer[width][height];
+						packetSetMap.map = new int[width][height];
 
 						for (int i = 0; i < width; i++) {
 							for (int j = 0; j < height; j++) {
@@ -97,7 +109,7 @@ public class ClientHandler implements Runnable {
 						Packet06UseItem packet06 = new Packet06UseItem();
 						packet06.readFromByteBuffer(bb);
 
-						player.getInventory()[2].use(player, server);
+						player.getInventory()[2].use(player);
 
 						break;
 					case 9:
@@ -107,13 +119,13 @@ public class ClientHandler implements Runnable {
 						player.getMove().x = packet09.moveX;
 						player.getMove().y = packet09.moveY;
 						player.setCurrentWeapon(packet09.currentItem);
-						player.setSprint(packet09.sprinting != 0);
-						player.setAngle(packet09.lookAngle);
+						player.setSprinting(packet09.sprinting != 0);
+						player.setLookAngle(packet09.lookAngle);
 						break;
 					case 10:
 						Packet10Ready packet10 = new Packet10Ready();
 						packet10.readFromByteBuffer(bb);
-						server.setPlayerReadyState(packet10.playerId, packet10.ready);
+						server.setReadyStateByPlayerId(packet10.playerId, packet10.ready);
 						server.broadcastPacket(packet10);
 						// Server starts the Game now
 						break;
@@ -139,20 +151,14 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
-	public void sendToClient(Packet packet) {
-		try {
-			byte[] data = packet.writeToByteArray();
-			clientSocket.getOutputStream().write(data);
-		} catch (IOException e) {
-			System.out.println("Could not send packet to Client. Closing Connection.");
-			close();
-		}
-	}
-
+	/**
+	 * Closes the connection to the client
+	 */
 	public void close() {
 		try {
 			clientSocket.close();
 		} catch (IOException e) {
+			// TODO Log
 			System.out.println("Could not even close the Socket :( Client sad");
 		}
 		login = false;
@@ -160,6 +166,27 @@ public class ClientHandler implements Runnable {
 		server.handlePlayerLogout(player);
 	}
 
+	/**
+	 * Sends a client to the client handled by this ClientHandler
+	 * 
+	 * @param packet
+	 *            the packet to send
+	 */
+	public void sendToClient(Packet packet) {
+		try {
+			byte[] data = packet.writeToByteArray();
+			clientSocket.getOutputStream().write(data);
+		} catch (IOException e) {
+			// TODO Log
+			System.out.println("Could not send packet to Client. Closing Connection.");
+			close();
+		}
+	}
+
+	/**
+	 * @return if the client already received a LoginRequest package and sent a
+	 *         LoginPacket back and is therefore logged in
+	 */
 	public boolean isLoggedIn() {
 		return login;
 	}

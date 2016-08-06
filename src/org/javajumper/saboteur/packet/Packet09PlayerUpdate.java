@@ -2,17 +2,26 @@ package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Sent from client to server to update the server about the movement intentions
+ * of the player
+ */
 public class Packet09PlayerUpdate extends Packet {
+
+	/** the direction the player is looking in degrees */
+	public float lookAngle;
+	/** the x component of the movement vector of the player */
+	public float moveX;
+	/** the y component of the movement vector of the player */
+	public float moveY;
+	/** the slot id of the currently selected item */
+	public int currentItem;
+	/** true if the player is sprinting */
+	public byte sprinting;
 
 	public Packet09PlayerUpdate() {
 		super((byte) 9);
 	}
-
-	public float lookAngle;
-	public float moveX;
-	public float moveY;
-	public int currentItem;
-	public byte sprinting;
 
 	@Override
 	public void readFromByteBuffer(ByteBuffer bb) {
