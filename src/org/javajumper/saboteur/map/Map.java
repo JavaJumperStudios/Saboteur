@@ -12,40 +12,74 @@ import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;
 
+/**
+ * Represents a map of tiles
+ */
 public class Map {
+
+	protected String name;
+	protected Tile[][] tiles = new Tile[40][30];
+	protected int width;
+	protected int height;
 
 	private ArrayList<Shape> collisionShapes = new ArrayList<>();
 	private ArrayList<Line> collisionLines = new ArrayList<>();
 
-	protected Tile[][] tiles = new Tile[40][30];
-	protected int width;
-	protected int height;
-	protected String name;
-
+	/**
+	 * Creates a new map with a width of 40 and a height of 30
+	 */
 	public Map() {
-
-		width = 40;
-		height = 30;
-
+		this(40, 30);
 	}
 
-	public ArrayList<Shape> getCollisionShapes() {
-		return collisionShapes;
+	/**
+	 * Creates a new map
+	 * 
+	 * @param width
+	 *            the width of the map in tiles
+	 * @param height
+	 *            the height of the map in tiles
+	 */
+	public Map(int width, int height) {
+		this.width = width;
+		this.height = height;
 	}
 
-	public ArrayList<Line> getCollisionLines() {
-		return collisionLines;
-	}
-
+	/**
+	 * Updates the logic of the map based on the time that passed since the last
+	 * update
+	 * 
+	 * @param delta
+	 *            time since last update
+	 */
 	public void update(int delta) {
 
 	}
 
 	/**
-	 * Lädt eine Karte aus dem "maps" Verzeichnis
+	 * Renders the map
+	 * 
+	 * @param g
+	 *            the Graphics context to render to
+	 */
+	public void draw(Graphics g) {
+
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				tiles[i][j].draw(g, i * 32, j * 32);
+			}
+		}
+
+	}
+
+	/**
+	 * Load a map from the "maps" directory
 	 * 
 	 * @param filename
-	 *            Der Name der Karte
+	 *            the filename of the map, including the suffix, e.g. room1.map
+	 * @throws IOException
+	 *             if the file could not be found or an other IOException
+	 *             occured
 	 */
 	public void loadMap(String filename) throws IOException {
 		try (FileReader fr = new FileReader("maps/" + filename); BufferedReader bf = new BufferedReader(fr);) {
@@ -101,16 +135,32 @@ public class Map {
 
 				collisionLines.add(new Line(s.getPoint(0)[0], s.getPoint(0)[1], s.getPoint(s.getPointCount() - 1)[0],
 						s.getPoint(s.getPointCount() - 1)[1]));
-				collisionLines.add(new Line(0, 0, 1280, 0));
-				collisionLines.add(new Line(1280, 0, 1280, 1024));
-				collisionLines.add(new Line(0, 0, 0, 1024));
-				collisionLines.add(new Line(0, 1024, 1280, 1024));
 			}
+
+			collisionLines.add(new Line(0, 0, 1280, 0));
+			collisionLines.add(new Line(1280, 0, 1280, 1024));
+			collisionLines.add(new Line(0, 0, 0, 1024));
+			collisionLines.add(new Line(0, 1024, 1280, 1024));
 
 		}
 	}
 
-	public void saveMap(String mapName, Integer[][] map, int width, int height) throws IOException {
+	// TODO Further explanation of the "map" array
+	/**
+	 * Saves the map downloaded from the server to a local file for future use
+	 * 
+	 * @param mapName
+	 *            the filename to save to
+	 * @param map
+	 *            a two-dimensional array of tile information
+	 * @param width
+	 *            the width of the map to save in tiles
+	 * @param height
+	 *            the height of the map to save in tiles
+	 * @throws IOException
+	 *             if an IOException occured while the file is being saved
+	 */
+	public void saveMap(String mapName, int[][] map, int width, int height) throws IOException {
 
 		FileWriter fw = new FileWriter("maps/" + mapName);
 		BufferedWriter bw = new BufferedWriter(fw);
@@ -131,34 +181,68 @@ public class Map {
 
 	}
 
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
+	/**
+	 * @return the name of the map, that is the filename
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * @return the width of the map
+	 */
+	public int getWidth() {
+		return width;
+	}
+
+	/**
+	 * @return the height of the map
+	 */
+	public int getHeight() {
+		return height;
+	}
+
+	// TODO add null check
+	/**
+	 * Returns a tile at a certain position in tiles
+	 * 
+	 * @param x
+	 *            the x coordinate in tiles
+	 * @param y
+	 *            the y coordinate in tiles
+	 * @return the tile at the position
+	 */
 	public Tile getTile(int x, int y) {
 		return tiles[x][y];
 	}
 
+	// TODO Add bound check
+	/**
+	 * Sets a tile at a specified position
+	 * 
+	 * @param x
+	 * @param y
+	 * @param tile
+	 */
 	public void setTile(int x, int y, Tile tile) {
 		tiles[x][y] = tile;
 	}
 
-	public void draw(Graphics g) {
+	/**
+	 * Returns all collision shapes not including the map borders as a shape
+	 * 
+	 * @return a list of all collision shapes of the map
+	 */
+	public ArrayList<Shape> getCollisionShapes() {
+		return collisionShapes;
+	}
 
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				tiles[i][j].draw(g, i * 32, j * 32);
-			}
-		}
-
+	/**
+	 * @return a list of all lines of the collision-shapes of the map and the
+	 *         borders of the map
+	 */
+	public ArrayList<Line> getCollisionLines() {
+		return collisionLines;
 	}
 
 }

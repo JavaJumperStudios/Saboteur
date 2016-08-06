@@ -2,16 +2,20 @@ package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Sent from server to client, containing the information about the map
+ */
 public class Packet15SetMap extends Packet {
 
+	/** the filename of the map */
 	public String mapName;
+	/** the width of the map */
 	public int width;
+	/** the eight of the map */
 	public int height;
-	public Integer[][] map;
+	/** the map tiles */
+	public int[][] map;
 
-	/**
-	 * @param id
-	 */
 	public Packet15SetMap() {
 		super((byte) 15);
 	}
@@ -28,7 +32,7 @@ public class Packet15SetMap extends Packet {
 		width = bb.getInt();
 		height = bb.getInt();
 
-		map = new Integer[width][height];
+		map = new int[width][height];
 
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {

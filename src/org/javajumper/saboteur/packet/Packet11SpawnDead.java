@@ -2,20 +2,31 @@ package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Sent from server to client to spawn a new dead player
+ */
 public class Packet11SpawnDead extends Packet {
+
+	/** the id of the dead player */
+	public int playerId;
+	/** when the player died */
+	public int timeOfDeath;
+	/** the id of the one who killed the dead player */
+	public int killerId;
+	/** the item with which the player was killed */
+	public int itemId;
+	/** the x position of the dead player */
+	public float posX;
+	/** the y position of the dead player */
+	public float posY;
+	/** the role of the player who died */
+	public int role;
+	/** the name of the player who died */
+	public String name;
 
 	public Packet11SpawnDead() {
 		super((byte) 11);
 	}
-
-	public int playerId;
-	public int timeOfDeath;
-	public int killerId;
-	public int itemId;
-	public float posX;
-	public float posY;
-	public int role;
-	public String name;
 
 	@Override
 	public void readFromByteBuffer(ByteBuffer bb) {

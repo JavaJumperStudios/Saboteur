@@ -1,16 +1,26 @@
 package org.javajumper.saboteur.player.inventory;
 
-import org.javajumper.saboteur.SaboteurServer;
 import org.javajumper.saboteur.player.Player;
 
+/**
+ * A knife ingame item
+ */
 public class Knife extends Item {
 
-	public Knife(SaboteurServer instance, String name, int id, int typeId) {
-		super(instance, name, id, typeId);
+	/**
+	 * Create a new knife
+	 * 
+	 * @param name
+	 *            the name of the knife item
+	 * @param id
+	 *            the item id
+	 */
+	public Knife(String name, int id) {
+		super(name, id, 0);
 	}
 
 	@Override
-	public void use(Player p, SaboteurServer server) {
+	public void use(Player p) {
 
 	}
 

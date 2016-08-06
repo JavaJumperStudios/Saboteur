@@ -2,14 +2,21 @@ package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Sent from server to client to indicate the end of the game
+ */
 public class Packet04EndGame extends Packet {
 
-	public byte endCause;
-	/*
-	 * 0 = Zeit ausgelaufen --> Innocent gewinnen 1 = Alle Traitor tot -->
-	 * Innocent gewinnen 2 = Alle Innocents tot --> Traitor gewinnen 3 = Alle
-	 * tot --> Reset
+	/**
+	 * The reason why the game has ended
+	 * <ul>
+	 * <li>0 = Zeit ausgelaufen --> Innocent gewinnen</li>
+	 * <li>1 = Alle Traitor tot --> Innocent gewinnen</li>
+	 * <li>2 = Alle Innocents tot --> Traitor gewinnen</li>
+	 * <li>3 = Alle tot --> Reset</li>
+	 * </ul>
 	 */
+	public byte endCause;
 
 	public Packet04EndGame() {
 		super((byte) 4);
