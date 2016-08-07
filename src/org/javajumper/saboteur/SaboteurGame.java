@@ -183,12 +183,6 @@ public class SaboteurGame extends BasicGameState {
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 
-		g.clearAlphaMap();
-		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
-		g.setColor(Color.black);
-
-		renderShadows(g);
-
 		if (start && !stop) {
 			renderInGameScreen(g);
 		}
@@ -203,6 +197,14 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	private void renderInGameScreen(Graphics g) {
+		g.clearAlphaMap();
+		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
+		g.setColor(Color.black);
+
+		renderShadows(g);
+
+		g.setDrawMode(Graphics.MODE_ALPHA_BLEND);
+
 		map.draw(g);
 
 		for (SPPlayer p : players) {
@@ -216,6 +218,8 @@ public class SaboteurGame extends BasicGameState {
 
 		// TODO draw the gui in Graphics.MODE_NORMAL after
 		// gui.draw();
+
+		g.setDrawMode(Graphics.MODE_NORMAL);
 
 		g.drawString(stringTimeInSec, 1200, 996);
 
