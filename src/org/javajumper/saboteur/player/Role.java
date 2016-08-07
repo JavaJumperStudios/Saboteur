@@ -20,4 +20,16 @@ public enum Role {
 	 * The of a player in the waiting lobby
 	 */
 	LOBBY;
+
+	/**
+	 * Checks whether the given role has a restricted view, that is if the role
+	 * sees traitors with the texture of an innocent
+	 * 
+	 * @param role
+	 *            the role to check
+	 * @return if the role has restricted view
+	 */
+	public static boolean isRestriced(Role role) {
+		return role == INNOCENT;
+	}
 }
