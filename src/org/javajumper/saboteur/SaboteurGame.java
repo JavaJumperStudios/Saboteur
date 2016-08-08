@@ -221,6 +221,8 @@ public class SaboteurGame extends BasicGameState {
 
 		g.setDrawMode(Graphics.MODE_NORMAL);
 
+		gui.draw();
+
 		g.drawString(stringTimeInSec, 1200, 996);
 
 		if (thePlayer.getRole() == Role.TRAITOR)
