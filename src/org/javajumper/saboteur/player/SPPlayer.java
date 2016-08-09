@@ -58,7 +58,7 @@ public class SPPlayer extends Player {
 	 */
 	public void draw(float x, float y, Graphics g, Role viewerRole) {
 
-		if (Role.isRestriced(viewerRole) && texture == "Fuzzi_Traitor.png") {
+		if (Role.isRestriced(viewerRole) && "Fuzzi_Traitor.png".equals(texture)) {
 			image = RessourceManager.loadImage("Fuzzi_Innocent.png");
 		} else
 			image = RessourceManager.loadImage(texture);

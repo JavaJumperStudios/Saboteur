@@ -17,7 +17,7 @@ public enum Role {
 	 */
 	SPECTATE,
 	/**
-	 * The of a player in the waiting lobby
+	 * The of a player waiting in the lobby
 	 */
 	LOBBY;
 
@@ -30,6 +30,6 @@ public enum Role {
 	 * @return if the role has restricted view
 	 */
 	public static boolean isRestriced(Role role) {
-		return role == INNOCENT;
+		return role != TRAITOR;
 	}
 }
