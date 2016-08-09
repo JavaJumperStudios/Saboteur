@@ -86,53 +86,53 @@ public class SaboteurGame extends BasicGameState {
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-	
+
 		if (thePlayer == null)
 			return;
-	
+
 		Input input = container.getInput();
-	
+
 		if (start && !stop) {
-	
+
 			int timeInSec = 0;
 			timeInSec = timeLeft / 1000;
 			stringTimeInSec = Integer.toString(timeInSec);
-	
+
 			if (thePlayer.isDead()) {
 				return;
 			}
-	
+
 			Vector2f move = new Vector2f();
-	
+
 			if (input.isKeyDown(Input.KEY_UP)) {
 				move.y = -1;
 			} else if (input.isKeyDown(Input.KEY_DOWN)) {
 				move.y = 1;
 			}
-	
+
 			if (input.isKeyDown(Input.KEY_LEFT)) {
 				move.x = -1;
 			} else if (input.isKeyDown(Input.KEY_RIGHT)) {
 				move.x = 1;
 			}
-	
+
 			if (input.isKeyDown(Input.KEY_2)) {
 				thePlayer.setCurrentWeapon(2);
 			}
-	
+
 			if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
 				Packet06UseItem packet06 = new Packet06UseItem();
 				packet06.itemId = 0;
 				serverListener.sendToServer(packet06);
-	
+
 			}
-	
+
 			Vector2f mouse = new Vector2f(input.getMouseX(), input.getMouseY());
 			mouse = mouse.negate();
 			mouse.add(new Vector2f(16, 16).add(thePlayer.getPos()));
 			mouse = mouse.negate();
 			thePlayer.setLookAngle((float) mouse.getTheta());
-	
+
 			if (input.isKeyPressed(Input.KEY_R)) {
 				Packet10Ready packet10 = new Packet10Ready();
 				packet10.playerId = thePlayer.getId();
@@ -141,33 +141,33 @@ public class SaboteurGame extends BasicGameState {
 				serverListener.sendToServer(packet10);
 				System.out.println("I changed ready state to: " + ready);
 			}
-	
+
 			if (input.isKeyPressed(Input.KEY_F10)) {
 				Packet14Reset packet14 = new Packet14Reset();
 				serverListener.sendToServer(packet14);
 			}
-	
+
 			move = move.normalise();
-	
+
 			thePlayer.setMove(move);
-	
+
 			map.update(delta);
-	
+
 			for (SPPlayer p : players) {
 				p.update(delta);
 			}
-	
+
 			Packet09PlayerUpdate packet09 = new Packet09PlayerUpdate();
 			packet09.currentItem = thePlayer.getCurrentWeapon();
 			packet09.lookAngle = thePlayer.getLookAngle();
 			packet09.moveX = thePlayer.getMove().x;
 			packet09.moveY = thePlayer.getMove().y;
 			packet09.sprinting = (byte) (thePlayer.isSprinting() ? 1 : 0);
-	
+
 			serverListener.sendToServer(packet09);
-	
+
 		} else {
-	
+
 			if (input.isKeyPressed(Input.KEY_R)) {
 				Packet10Ready packet10 = new Packet10Ready();
 				packet10.playerId = thePlayer.getId();
@@ -176,13 +176,27 @@ public class SaboteurGame extends BasicGameState {
 				serverListener.sendToServer(packet10);
 				System.out.println("I changed ready state to: " + ready);
 			}
-	
+
 		}
 	}
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 
+		if (start && !stop) {
+			renderInGameScreen(g);
+		}
+
+		if (!start) {
+			renderReadyScreen(g);
+		}
+
+		if (stop) {
+			renderEndScreen(g);
+		}
+	}
+
+	private void renderInGameScreen(Graphics g) {
 		g.clearAlphaMap();
 		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
 		g.setColor(Color.black);
@@ -191,97 +205,92 @@ public class SaboteurGame extends BasicGameState {
 
 		g.setDrawMode(Graphics.MODE_ALPHA_BLEND);
 
-		if (start && !stop) {
-			map.draw(g);
+		map.draw(g);
 
-			for (SPPlayer p : players) {
-				if (!p.isDead())
-					p.draw(p.getPos().x, p.getPos().y, g, thePlayer.getRole());
-			}
-
-			for (DeadPlayer p : deadplayers) {
-				p.draw();
-			}
-
-			// TODO draw the gui in Graphics.MODE_NORMAL after
-			// gui.draw();
-
-			g.drawString(stringTimeInSec, 1200, 996);
-
-			if (thePlayer.getRole() == Role.TRAITOR)
-				g.setColor(Color.red);
-			if (thePlayer.getRole() == Role.INNOCENT)
-				g.setColor(Color.green);
-
-			g.drawString(thePlayer.getRole().toString(), 200, 985);
-
+		for (SPPlayer p : players) {
+			if (!p.isDead())
+				p.draw(p.getPos().x, p.getPos().y, g, thePlayer.getRole());
 		}
 
-		if (!start) {
-
-			int x = 500;
-			int y = 250;
-
-			background.draw();
-
-			for (SPPlayer p : (new ArrayList<>(players))) {
-				if (p.isReady()) {
-					g.setColor(Color.green);
-				} else {
-					g.setColor(Color.red);
-				}
-				g.drawString(p.getName() + "    ID:   " + p.getId(), x, y);
-				g.fillRect(x + 300, y, 32, 32);
-				y += 64;
-			}
-
+		for (DeadPlayer p : deadplayers) {
+			p.draw();
 		}
 
-		if (stop) {
+		// TODO draw the gui in Graphics.MODE_NORMAL after
+		// gui.draw();
 
-			background.draw();
+		g.setDrawMode(Graphics.MODE_NORMAL);
 
-			switch (endCause) {
+		g.drawString(stringTimeInSec, 1200, 996);
 
-			case 0:
+		if (thePlayer.getRole() == Role.TRAITOR)
+			g.setColor(Color.red);
+		if (thePlayer.getRole() == Role.INNOCENT)
+			g.setColor(Color.green);
+
+		g.drawString(thePlayer.getRole().toString(), 200, 985);
+	}
+
+	private void renderReadyScreen(Graphics g) {
+		int x = 500;
+		int y = 250;
+
+		background.draw();
+
+		for (SPPlayer p : (new ArrayList<>(players))) {
+			if (p.isReady()) {
 				g.setColor(Color.green);
-				g.fillRect(300, 250, 700, 256);
-				g.setColor(Color.blue);
-				g.drawString("Innocent gewinnen, weil die Zeit abgelaufen ist.", 360, 350);
-				break;
-			case 1:
-				g.setColor(Color.green);
-				g.fillRect(300, 250, 700, 256);
-				g.setColor(Color.blue);
-				g.drawString("Innocent gewinnen, weil alle Traitor gestorben sind.", 360, 350);
-				break;
-			case 2:
-				g.setColor(Color.red);
-				g.fillRect(300, 250, 700, 256);
-				g.setColor(Color.blue);
-				g.drawString("Traitor gewinnen, weil alle Innocent gestorben sind.", 360, 350);
-				break;
-			case 3:
-				g.setColor(Color.gray);
-				g.fillRect(300, 250, 700, 256);
-				g.setColor(Color.blue);
-				g.drawString("Der Server wurde manuell RESETTET.", 360, 350);
-				break;
-			default:
-				// TODO
-				break;
-			}
-
-			if (thePlayer.isDead()) {
-				for (DeadPlayer dp : deadplayers) {
-					if (dp.getId() == thePlayer.getId()) {
-						g.drawString("Du warst ein " + dp.getRole(), 500, 400);
-					}
-				}
 			} else {
-				g.drawString("Du warst ein " + thePlayer.getRole(), 500, 400);
+				g.setColor(Color.red);
 			}
+			g.drawString(p.getName() + "    ID:   " + p.getId(), x, y);
+			g.fillRect(x + 300, y, 32, 32);
+			y += 64;
+		}
+	}
 
+	private void renderEndScreen(Graphics g) {
+		background.draw();
+
+		switch (endCause) {
+
+		case 0:
+			g.setColor(Color.green);
+			g.fillRect(300, 250, 700, 256);
+			g.setColor(Color.blue);
+			g.drawString("Innocent gewinnen, weil die Zeit abgelaufen ist.", 360, 350);
+			break;
+		case 1:
+			g.setColor(Color.green);
+			g.fillRect(300, 250, 700, 256);
+			g.setColor(Color.blue);
+			g.drawString("Innocent gewinnen, weil alle Traitor gestorben sind.", 360, 350);
+			break;
+		case 2:
+			g.setColor(Color.red);
+			g.fillRect(300, 250, 700, 256);
+			g.setColor(Color.blue);
+			g.drawString("Traitor gewinnen, weil alle Innocent gestorben sind.", 360, 350);
+			break;
+		case 3:
+			g.setColor(Color.gray);
+			g.fillRect(300, 250, 700, 256);
+			g.setColor(Color.blue);
+			g.drawString("Der Server wurde manuell RESETTET.", 360, 350);
+			break;
+		default:
+			// TODO
+			break;
+		}
+
+		if (thePlayer.isDead()) {
+			for (DeadPlayer dp : deadplayers) {
+				if (dp.getId() == thePlayer.getId()) {
+					g.drawString("Du warst ein " + dp.getRole(), 500, 400);
+				}
+			}
+		} else {
+			g.drawString("Du warst ein " + thePlayer.getRole(), 500, 400);
 		}
 	}
 
@@ -565,33 +574,33 @@ public class SaboteurGame extends BasicGameState {
 
 	private void renderShadows(Graphics g) {
 		ArrayList<Vector2f> points = new ArrayList<>();
-	
+
 		ArrayList<Shape> shapes = new ArrayList<>(map.getCollisionShapes());
 		shapes.add(new Rectangle(0, 0, background.getWidth(), background.getHeight()));
-	
+
 		for (Shape s : shapes) {
 			float[] shapePoints = s.getPoints();
-	
+
 			for (int i = 0; i < shapePoints.length; i += 2) {
 				Vector2f poi = new Vector2f(shapePoints[i], shapePoints[i + 1]);
 				Vector2f[] cPoints = getCollisionPoints(g, poi);
-	
+
 				points.addAll(Arrays.asList(cPoints));
 			}
 		}
-	
+
 		ShadowPointComparator spComparator = new ShadowPointComparator();
-	
+
 		points.sort(spComparator);
-	
+
 		points.add(points.get(0));
-	
+
 		for (int i = 0; i < points.size() - 1; i++) {
 			Polygon p = new Polygon();
 			p.addPoint(points.get(i).x, points.get(i).y);
 			p.addPoint(points.get(i + 1).x, points.get(i + 1).y);
 			p.addPoint(thePlayer.getCenter().x, thePlayer.getCenter().y);
-	
+
 			g.fill(p);
 		}
 	}
