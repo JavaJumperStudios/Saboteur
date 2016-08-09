@@ -188,6 +188,20 @@ public class SaboteurGame extends BasicGameState {
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 
+		if (start && !stop) {
+			renderInGameScreen(g);
+		}
+
+		if (!start) {
+			renderReadyScreen(g);
+		}
+
+		if (stop) {
+			renderEndScreen(g);
+		}
+	}
+
+	private void renderInGameScreen(Graphics g) {
 		g.clearAlphaMap();
 		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
 		g.setColor(Color.black);
@@ -196,100 +210,95 @@ public class SaboteurGame extends BasicGameState {
 
 		g.setDrawMode(Graphics.MODE_ALPHA_BLEND);
 
-		if (start && !stop) {
-			map.draw(g);
+		map.draw(g);
 
-			for (SPPlayer p : players) {
-				if (!p.isDead())
-					p.draw(p.getPos().x, p.getPos().y, g, thePlayer.getRole());
-			}
-
-			for (DeadPlayer p : deadplayers) {
-				p.draw();
-			}
-
-			// TODO draw the gui in Graphics.MODE_NORMAL after
-			// gui.draw();
-
-			g.drawString(stringTimeInSec, 1200, 996);
-
-			if (thePlayer.getRole() == Role.TRAITOR)
-				g.setColor(Color.red);
-			if (thePlayer.getRole() == Role.INNOCENT)
-				g.setColor(Color.green);
-
-			g.drawString(thePlayer.getRole().toString(), 200, 985);
-
+		for (SPPlayer p : players) {
+			if (!p.isDead())
+				p.draw(p.getPos().x, p.getPos().y, g, thePlayer.getRole());
 		}
 
-		if (!start) {
-
-			int x = 500;
-			int y = 250;
-
-			background.draw();
-
-			for (SPPlayer p : (new ArrayList<>(players))) {
-				if (p.isReady()) {
-					g.setColor(Color.green);
-				} else {
-					g.setColor(Color.red);
-				}
-				g.drawString(p.getName() + "    ID:   " + p.getId(), x, y);
-				g.fillRect(x + 300, y, 32, 32);
-				y += 64;
-			}
-
+		for (DeadPlayer p : deadplayers) {
+			p.draw();
 		}
 
-		if (stop) {
+		// TODO draw the gui in Graphics.MODE_NORMAL after
+		// gui.draw();
 
-			background.draw();
+		g.setDrawMode(Graphics.MODE_NORMAL);
 
-			switch (endCause) {
+		g.drawString(stringTimeInSec, 1200, 996);
 
-			case SaboteurServer.TIME_RAN_OUT:
+		if (thePlayer.getRole() == Role.TRAITOR)
+			g.setColor(Color.red);
+		if (thePlayer.getRole() == Role.INNOCENT)
+			g.setColor(Color.green);
+
+		g.drawString(thePlayer.getRole().toString(), 200, 985);
+	}
+
+	private void renderReadyScreen(Graphics g) {
+		int x = 500;
+		int y = 250;
+
+		background.draw();
+
+		for (SPPlayer p : (new ArrayList<>(players))) {
+			if (p.isReady()) {
 				g.setColor(Color.green);
-				g.fillRect(300, 250, 700, 256);
-				g.setColor(Color.blue);
-				g.drawString("Innocent gewinnen, weil die Zeit abgelaufen ist.", 360, 350);
-				break;
-			case SaboteurServer.NO_TRAITORS_LEFT:
-				g.setColor(Color.green);
-				g.fillRect(300, 250, 700, 256);
-				g.setColor(Color.blue);
-				g.drawString("Innocent gewinnen, weil alle Traitor gestorben sind.", 360, 350);
-				break;
-			case SaboteurServer.NO_INNOCENTS_LEFT:
-				g.setColor(Color.red);
-				g.fillRect(300, 250, 700, 256);
-				g.setColor(Color.blue);
-				g.drawString("Traitor gewinnen, weil alle Innocent gestorben sind.", 360, 350);
-				break;
-			case SaboteurServer.NO_PLAYERS_LEFT:
-				g.setColor(Color.gray);
-				g.fillRect(300, 250, 700, 256);
-				g.setColor(Color.blue);
-				g.drawString("Der Server wurde manuell RESETTET.", 360, 350);
-				break;
-			default:
-				g.setColor(Color.red);
-				g.fillRect(300, 250, 700, 256);
-				g.setColor(Color.blue);
-				g.drawString("Das Spiel wurde aufgrund einer unbekannten Ursache beendet.", 360, 350);
-				break;
-			}
-
-			if (thePlayer.isDead()) {
-				for (DeadPlayer dp : deadplayers) {
-					if (dp.getId() == thePlayer.getId()) {
-						g.drawString("Du warst ein " + dp.getRole(), 500, 400);
-					}
-				}
 			} else {
-				g.drawString("Du warst ein " + thePlayer.getRole(), 500, 400);
+				g.setColor(Color.red);
 			}
+			g.drawString(p.getName() + "    ID:   " + p.getId(), x, y);
+			g.fillRect(x + 300, y, 32, 32);
+			y += 64;
+		}
+	}
 
+	private void renderEndScreen(Graphics g) {
+		background.draw();
+
+		switch (endCause) {
+
+		case SaboteurServer.TIME_RAN_OUT:
+			g.setColor(Color.green);
+			g.fillRect(300, 250, 700, 256);
+			g.setColor(Color.blue);
+			g.drawString("Innocent gewinnen, weil die Zeit abgelaufen ist.", 360, 350);
+			break;
+		case SaboteurServer.NO_TRAITORS_LEFT:
+			g.setColor(Color.green);
+			g.fillRect(300, 250, 700, 256);
+			g.setColor(Color.blue);
+			g.drawString("Innocent gewinnen, weil alle Traitor gestorben sind.", 360, 350);
+			break;
+		case SaboteurServer.NO_INNOCENTS_LEFT:
+			g.setColor(Color.red);
+			g.fillRect(300, 250, 700, 256);
+			g.setColor(Color.blue);
+			g.drawString("Traitor gewinnen, weil alle Innocent gestorben sind.", 360, 350);
+			break;
+		case SaboteurServer.NO_PLAYERS_LEFT:
+			g.setColor(Color.gray);
+			g.fillRect(300, 250, 700, 256);
+			g.setColor(Color.blue);
+			g.drawString("Der Server wurde manuell RESETTET.", 360, 350);
+			break;
+		default:
+			g.setColor(Color.red);
+			g.fillRect(300, 250, 700, 256);
+			g.setColor(Color.blue);
+			g.drawString("Das Spiel wurde aufgrund einer unbekannten Ursache beendet.", 360, 350);
+			break;
+		}
+
+		if (thePlayer.isDead()) {
+			for (DeadPlayer dp : deadplayers) {
+				if (dp.getId() == thePlayer.getId()) {
+					g.drawString("Du warst ein " + dp.getRole(), 500, 400);
+				}
+			}
+		} else {
+			g.drawString("Du warst ein " + thePlayer.getRole(), 500, 400);
 		}
 	}
 
