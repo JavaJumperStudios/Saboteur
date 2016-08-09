@@ -58,16 +58,10 @@ public class SPPlayer extends Player {
 	 */
 	public void draw(float x, float y, Graphics g, Role viewerRole) {
 
-		if (image == null) {
-			image = RessourceManager.loadImage(texture);
-		}
-		if (viewerRole == Role.INNOCENT && (texture == "Fuzzi_Traitor.png" || texture == "Fuzzi_Innocent.png")) {
+		if (Role.isRestriced(viewerRole) && "Fuzzi_Traitor.png".equals(texture)) {
 			image = RessourceManager.loadImage("Fuzzi_Innocent.png");
-			texture = "Fuzzi_Neutral.png";
-		} else if (viewerRole == Role.TRAITOR && (texture == "Fuzzi_Traitor.png" || texture == "Fuzzi_Innocent.png")) {
+		} else
 			image = RessourceManager.loadImage(texture);
-			texture = "Fuzzi_Neutral.png";
-		}
 
 		image.rotate(lookAngle - image.getRotation() + 90);
 		image.draw(x, y);
