@@ -109,8 +109,7 @@ public class SPPlayer extends Player {
 	@Override
 	public void setRole(Role role) {
 		super.setRole(role);
-	
-		// TODO Filenames
+
 		if (role == Role.TRAITOR)
 			this.texture = "Fuzzi_Traitor.png";
 		if (role == Role.INNOCENT)

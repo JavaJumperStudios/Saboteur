@@ -8,12 +8,16 @@ import org.newdawn.slick.Image;
  */
 public abstract class Item {
 
+	public static final int WEAPON_KNIFE = 0;
+	public static final int WEAPON_GUN = 1;
+
 	private static int currentId = 0;
 
 	private Image image;
 	private String name;
 	private int id;
-	private int typeId; // 0 = Knife, 1 = Gun TODO Enum?
+	/** The weapon type e.g. {@link #WEAPON_KNIFE} or {@link #WEAPON_GUN} */
+	private int typeId;
 
 	/**
 	 * Creates a new item

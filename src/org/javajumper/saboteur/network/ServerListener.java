@@ -184,8 +184,13 @@ public class ServerListener implements Runnable {
 					case 15:
 						Packet15SetMap packet15 = new Packet15SetMap();
 						packet15.readFromByteBuffer(bb);
-						instance.getMap().saveMap(packet15.mapName, packet15.map, packet15.width, packet15.height);
-						instance.loadMap(packet15.mapName);
+						try {
+							instance.getMap().saveMap(packet15.mapName, packet15.map, packet15.width, packet15.height);
+							instance.loadMap(packet15.mapName);
+						} catch (IOException e) {
+							// TODO log, map could not be saved
+							e.printStackTrace();
+						}
 						break;
 					/*
 					 * TODO What is this? case 3: Packet03NewPlayer
@@ -218,7 +223,7 @@ public class ServerListener implements Runnable {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// TODO LOG something went wrong with the socket
 			e.printStackTrace();
 		}
 	}
@@ -245,7 +250,7 @@ public class ServerListener implements Runnable {
 		try {
 			socket.getOutputStream().write(p.writeToByteArray());
 		} catch (IOException e) {
-			instance.exitGame();
+			instance.scheduleGameExit();
 			System.out.println("Server not reachable. Closing.");
 			System.exit(0);
 		}

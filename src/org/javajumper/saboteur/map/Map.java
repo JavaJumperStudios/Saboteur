@@ -145,14 +145,15 @@ public class Map {
 		}
 	}
 
-	// TODO Further explanation of the "map" array
 	/**
 	 * Saves the map downloaded from the server to a local file for future use
 	 * 
 	 * @param mapName
 	 *            the filename to save to
 	 * @param map
-	 *            a two-dimensional array of tile information
+	 *            a two-dimensional array of tile information. Each element of
+	 *            the array represents the typeId of one tile, see
+	 *            {@link Tile#typeId}
 	 * @param width
 	 *            the width of the map to save in tiles
 	 * @param height
@@ -202,7 +203,6 @@ public class Map {
 		return height;
 	}
 
-	// TODO add null check
 	/**
 	 * Returns a tile at a certain position in tiles
 	 * 
@@ -210,21 +210,36 @@ public class Map {
 	 *            the x coordinate in tiles
 	 * @param y
 	 *            the y coordinate in tiles
-	 * @return the tile at the position
+	 * @return the tile at the position or null if the coordinates are not
+	 *         inside of the map
 	 */
 	public Tile getTile(int x, int y) {
-		return tiles[x][y];
+		if (x < width && y < height && x >= 0 && y >= 0)
+			return tiles[x][y];
+		else {
+			// TODO log warning
+			return null;
+		}
 	}
 
-	// TODO Add bound check
 	/**
 	 * Sets a tile at a specified position
 	 * 
 	 * @param x
+	 *            the x coordinate of the tile to set. Has to be between 0 and
+	 *            width - 1 inclusively
 	 * @param y
+	 *            the x coordinate of the tile to set. Has to be between 0 and
+	 *            height - 1 inclusively
 	 * @param tile
+	 *            the tile to set
 	 */
 	public void setTile(int x, int y, Tile tile) {
+		if (x >= width || y >= height || x < 0 || y < 0 || tile == null) {
+			// TODO log warning
+			return;
+		}
+
 		tiles[x][y] = tile;
 	}
 

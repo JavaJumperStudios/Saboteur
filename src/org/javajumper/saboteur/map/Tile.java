@@ -14,6 +14,10 @@ public class Tile {
 	// Static
 
 	private static ArrayList<Image> typeIdTextures = new ArrayList<>();
+	/**
+	 * The identifier of the tiletype like stone or grass and therefore position
+	 * on the tilesheet
+	 */
 	private int typeId;
 	private boolean solid;
 
@@ -21,7 +25,7 @@ public class Tile {
 	 * Creates a new tile
 	 * 
 	 * @param typeId
-	 *            the type Id of the new tile TODO explanation
+	 *            the type Id of the new tile, see {@link #typeId}
 	 * @param solid
 	 *            if the tile is solid or not
 	 */
@@ -54,7 +58,7 @@ public class Tile {
 	}
 
 	/**
-	 * @return the typeId of the tile TODO explain
+	 * @return the typeId of the tile, see {@link #typeId}
 	 */
 	public int getTypeId() {
 		return typeId;

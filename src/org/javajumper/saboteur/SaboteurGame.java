@@ -59,6 +59,8 @@ public class SaboteurGame extends BasicGameState {
 	private String stringTimeInSec;
 	private int endCause;
 
+	private boolean exitGameNextUpdate = false;
+
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		instance = this;
@@ -68,7 +70,7 @@ public class SaboteurGame extends BasicGameState {
 		timeLeft = 0;
 		start = false;
 		stringTimeInSec = "";
-		endCause = 0;
+		endCause = SaboteurServer.TIME_RAN_OUT;
 		stop = false;
 
 		gui = RessourceManager.loadImage("gui.png");
@@ -86,53 +88,56 @@ public class SaboteurGame extends BasicGameState {
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-	
+
+		if (exitGameNextUpdate)
+			container.exit();
+
 		if (thePlayer == null)
 			return;
-	
+
 		Input input = container.getInput();
-	
+
 		if (start && !stop) {
-	
+
 			int timeInSec = 0;
 			timeInSec = timeLeft / 1000;
 			stringTimeInSec = Integer.toString(timeInSec);
-	
+
 			if (thePlayer.isDead()) {
 				return;
 			}
-	
+
 			Vector2f move = new Vector2f();
-	
+
 			if (input.isKeyDown(Input.KEY_UP)) {
 				move.y = -1;
 			} else if (input.isKeyDown(Input.KEY_DOWN)) {
 				move.y = 1;
 			}
-	
+
 			if (input.isKeyDown(Input.KEY_LEFT)) {
 				move.x = -1;
 			} else if (input.isKeyDown(Input.KEY_RIGHT)) {
 				move.x = 1;
 			}
-	
+
 			if (input.isKeyDown(Input.KEY_2)) {
 				thePlayer.setCurrentWeapon(2);
 			}
-	
+
 			if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
 				Packet06UseItem packet06 = new Packet06UseItem();
 				packet06.itemId = 0;
 				serverListener.sendToServer(packet06);
-	
+
 			}
-	
+
 			Vector2f mouse = new Vector2f(input.getMouseX(), input.getMouseY());
 			mouse = mouse.negate();
 			mouse.add(new Vector2f(16, 16).add(thePlayer.getPos()));
 			mouse = mouse.negate();
 			thePlayer.setLookAngle((float) mouse.getTheta());
-	
+
 			if (input.isKeyPressed(Input.KEY_R)) {
 				Packet10Ready packet10 = new Packet10Ready();
 				packet10.playerId = thePlayer.getId();
@@ -141,33 +146,33 @@ public class SaboteurGame extends BasicGameState {
 				serverListener.sendToServer(packet10);
 				System.out.println("I changed ready state to: " + ready);
 			}
-	
+
 			if (input.isKeyPressed(Input.KEY_F10)) {
 				Packet14Reset packet14 = new Packet14Reset();
 				serverListener.sendToServer(packet14);
 			}
-	
+
 			move = move.normalise();
-	
+
 			thePlayer.setMove(move);
-	
+
 			map.update(delta);
-	
+
 			for (SPPlayer p : players) {
 				p.update(delta);
 			}
-	
+
 			Packet09PlayerUpdate packet09 = new Packet09PlayerUpdate();
 			packet09.currentItem = thePlayer.getCurrentWeapon();
 			packet09.lookAngle = thePlayer.getLookAngle();
 			packet09.moveX = thePlayer.getMove().x;
 			packet09.moveY = thePlayer.getMove().y;
 			packet09.sprinting = (byte) (thePlayer.isSprinting() ? 1 : 0);
-	
+
 			serverListener.sendToServer(packet09);
-	
+
 		} else {
-	
+
 			if (input.isKeyPressed(Input.KEY_R)) {
 				Packet10Ready packet10 = new Packet10Ready();
 				packet10.playerId = thePlayer.getId();
@@ -176,7 +181,7 @@ public class SaboteurGame extends BasicGameState {
 				serverListener.sendToServer(packet10);
 				System.out.println("I changed ready state to: " + ready);
 			}
-	
+
 		}
 	}
 
@@ -243,32 +248,35 @@ public class SaboteurGame extends BasicGameState {
 
 			switch (endCause) {
 
-			case 0:
+			case SaboteurServer.TIME_RAN_OUT:
 				g.setColor(Color.green);
 				g.fillRect(300, 250, 700, 256);
 				g.setColor(Color.blue);
 				g.drawString("Innocent gewinnen, weil die Zeit abgelaufen ist.", 360, 350);
 				break;
-			case 1:
+			case SaboteurServer.NO_TRAITORS_LEFT:
 				g.setColor(Color.green);
 				g.fillRect(300, 250, 700, 256);
 				g.setColor(Color.blue);
 				g.drawString("Innocent gewinnen, weil alle Traitor gestorben sind.", 360, 350);
 				break;
-			case 2:
+			case SaboteurServer.NO_INNOCENTS_LEFT:
 				g.setColor(Color.red);
 				g.fillRect(300, 250, 700, 256);
 				g.setColor(Color.blue);
 				g.drawString("Traitor gewinnen, weil alle Innocent gestorben sind.", 360, 350);
 				break;
-			case 3:
+			case SaboteurServer.NO_PLAYERS_LEFT:
 				g.setColor(Color.gray);
 				g.fillRect(300, 250, 700, 256);
 				g.setColor(Color.blue);
 				g.drawString("Der Server wurde manuell RESETTET.", 360, 350);
 				break;
 			default:
-				// TODO
+				g.setColor(Color.red);
+				g.fillRect(300, 250, 700, 256);
+				g.setColor(Color.blue);
+				g.drawString("Das Spiel wurde aufgrund einer unbekannten Ursache beendet.", 360, 350);
 				break;
 			}
 
@@ -293,7 +301,7 @@ public class SaboteurGame extends BasicGameState {
 
 		start = false;
 		stop = false;
-		endCause = 0;
+		endCause = SaboteurServer.TIME_RAN_OUT;
 
 		for (SPPlayer p : new ArrayList<>(players)) {
 
@@ -310,17 +318,24 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	/**
-	 * Exits the game
+	 * Exits the game on the next update. The game can only be ended with the
+	 * GameContainer, which is only available during the logic update
 	 */
-	public void exitGame() {
-		// TODO implement
-		System.out.println("I should end the Game now");
+	public void scheduleGameExit() {
+		exitGameNextUpdate = true;
 	}
 
-	// TODO make the endcause an enum
 	/**
 	 * @param e
 	 *            the endcause to set
+	 *            <ul>
+	 *            <li>{@link SaboteurServer#TIME_RAN_OUT} = Zeit abgelaufen</li>
+	 *            <li>{@link SaboteurServer#NO_TRAITORS_LEFT} = Alle Traitor
+	 *            tot</li>
+	 *            <li>{@link SaboteurServer#NO_INNOCENTS_LEFT} = Alle Innocents
+	 *            tot</li>
+	 *            <li>{@link SaboteurServer#NO_PLAYERS_LEFT} = Alle tot</li>
+	 *            </ul>
 	 */
 	public void setEndCause(int e) {
 		this.endCause = e;
@@ -404,14 +419,15 @@ public class SaboteurGame extends BasicGameState {
 		}
 	}
 
-	// TODO Further explanation of the "map" array
 	/**
 	 * Saves the map downloaded from the server to a local file for future use
 	 * 
 	 * @param mapName
 	 *            the filename to save to
 	 * @param mapInfo
-	 *            a two-dimensional array of tile information
+	 *            a two-dimensional array of tile information. Each element of
+	 *            the array represents the typeId of one tile, see
+	 *            {@link Tile#typeId}
 	 * @param width
 	 *            the width of the map to save in tiles
 	 * @param height
@@ -565,33 +581,33 @@ public class SaboteurGame extends BasicGameState {
 
 	private void renderShadows(Graphics g) {
 		ArrayList<Vector2f> points = new ArrayList<>();
-	
+
 		ArrayList<Shape> shapes = new ArrayList<>(map.getCollisionShapes());
 		shapes.add(new Rectangle(0, 0, background.getWidth(), background.getHeight()));
-	
+
 		for (Shape s : shapes) {
 			float[] shapePoints = s.getPoints();
-	
+
 			for (int i = 0; i < shapePoints.length; i += 2) {
 				Vector2f poi = new Vector2f(shapePoints[i], shapePoints[i + 1]);
 				Vector2f[] cPoints = getCollisionPoints(g, poi);
-	
+
 				points.addAll(Arrays.asList(cPoints));
 			}
 		}
-	
+
 		ShadowPointComparator spComparator = new ShadowPointComparator();
-	
+
 		points.sort(spComparator);
-	
+
 		points.add(points.get(0));
-	
+
 		for (int i = 0; i < points.size() - 1; i++) {
 			Polygon p = new Polygon();
 			p.addPoint(points.get(i).x, points.get(i).y);
 			p.addPoint(points.get(i + 1).x, points.get(i + 1).y);
 			p.addPoint(thePlayer.getCenter().x, thePlayer.getCenter().y);
-	
+
 			g.fill(p);
 		}
 	}

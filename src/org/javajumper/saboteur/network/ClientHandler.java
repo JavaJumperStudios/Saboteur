@@ -130,7 +130,6 @@ public class ClientHandler implements Runnable {
 						// Server starts the Game now
 						break;
 					case 14:
-						// TODO Malformed package error? Bitte überprüfen
 						server.resetServer();
 						break;
 					default:
