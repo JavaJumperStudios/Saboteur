@@ -40,6 +40,11 @@ public class SaboteurServer {
 	/** The main Logger for the server */
 	public final static Logger LOGGER = Logger.getLogger(SaboteurServer.class.getName());
 
+	public static final int TIME_RAN_OUT = 0;
+	public static final int NO_TRAITORS_LEFT = 1;
+	public static final int NO_INNOCENTS_LEFT = 2;
+	public static final int NO_PLAYERS_LEFT = 3;
+
 	/* Optionen */
 
 	// Dauer eines Spiels in Millisekunden
@@ -90,12 +95,12 @@ public class SaboteurServer {
 	}
 
 	private void initGameStats() {
-	
+
 		for (Player p : players) {
 			p.setPos(getFreeSpawnPosition());
 			p.setRole(Role.INNOCENT);
 		}
-	
+
 		Player[] pl = new Player[players.size()];
 		players.toArray(pl);
 		Random r = new Random();
@@ -107,20 +112,20 @@ public class SaboteurServer {
 			// Falls es 2 mal den gleichen Player treffen sollte, gibt es eben
 			// nur 1 Traitor.
 		}
-	
+
 		for (Player p : players) {
 			Packet13Role packet13 = new Packet13Role();
 			packet13.playerId = p.getId();
 			packet13.role = p.getRole().ordinal();
 			broadcastPacket(packet13);
 		}
-	
+
 	}
 
 	private void loadProperties() {
 		Properties propertyFile = new Properties();
 		FileInputStream fis = null;
-	
+
 		try {
 			fis = new FileInputStream("saboteur-server.properties");
 			propertyFile.load(fis);
@@ -131,7 +136,7 @@ public class SaboteurServer {
 				fis.close();
 			} catch (IOException | NullPointerException e) {}
 		}
-	
+
 		gameDuration = Integer.parseInt(propertyFile.getProperty("game_duration", "600000"));
 		minPlayerCount = Integer.parseInt(propertyFile.getProperty("min_player_count", "2"));
 	}
@@ -160,48 +165,48 @@ public class SaboteurServer {
 	}
 
 	private void update(int delta) {
-	
+
 		if (running) {
-	
+
 			if (!pause) {
 				map.update(delta);
-	
+
 				timeLeft -= delta;
-	
+
 				Packet07Snapshot packet = new Packet07Snapshot();
 				packet.snapshot = generateSnapshot();
-	
+
 				if (!removeList.isEmpty()) {
 					for (ClientHandler c : removeList) {
 						clientHandler.remove(c);
 					}
 					removeList.clear();
 				}
-	
+
 				for (ClientHandler c : clientHandler) {
 					if (c != null) {
 						c.sendToClient(packet);
 					}
 				}
-	
+
 				for (Player p : players) {
 					p.update(delta);
 				}
-	
+
 				checkWinConditions();
 			}
 		} else {
-	
+
 			if (players.size() < minPlayerCount)
 				return;
-	
+
 			boolean allReady = true;
-	
+
 			for (Player p : new ArrayList<>(players)) {
 				if (!p.isReady())
 					allReady = false;
 			}
-	
+
 			if (allReady) {
 				Packet03StartGame packet03 = new Packet03StartGame();
 				broadcastPacket(packet03);
@@ -210,9 +215,9 @@ public class SaboteurServer {
 				initGameStats();
 				System.out.println("Alle bereit");
 			}
-	
+
 		}
-	
+
 	}
 
 	/**
@@ -235,17 +240,17 @@ public class SaboteurServer {
 	 * Checks if win conditions are met and ends the game if so
 	 */
 	public void checkWinConditions() {
-	
+
 		if (timeLeft <= 0) {
 			// Innocents gewinnen durch Zeit
-	
+
 			sendEndPacket(0);
-	
+
 		} else {
-	
+
 			boolean innoAlive = false;
 			boolean traitorAlive = false;
-	
+
 			for (Player p : players) {
 				if (!p.isDead() && p.getRole() == Role.INNOCENT) {
 					innoAlive = true;
@@ -253,11 +258,11 @@ public class SaboteurServer {
 					traitorAlive = true;
 				}
 			}
-	
+
 			// TODO if debug...
 			if (true) // To avoid dead code error
 				return;
-	
+
 			if (!innoAlive && !traitorAlive) {
 				// Unentschieden
 				sendEndPacket(3);
@@ -268,7 +273,7 @@ public class SaboteurServer {
 				// Traitor gewonnen
 				sendEndPacket(2);
 			}
-	
+
 		}
 	}
 
@@ -276,21 +281,22 @@ public class SaboteurServer {
 	 * Sends a packet to the clients that the game has ended
 	 * 
 	 * @param endCause
-	 *            why the game has ended
+	 *            why the game has ended. Use one of {@link #TIME_RAN_OUT},
+	 *            {@link #NO_TRAITORS_LEFT}, {@link #NO_INNOCENTS_LEFT},
+	 *            {@value #NO_PLAYERS_LEFT}
 	 */
-	// TODO add end causes
 	public void sendEndPacket(int endCause) {
 		Packet04EndGame packet04 = new Packet04EndGame();
 		packet04.endCause = (byte) endCause;
 		broadcastPacket(packet04);
 		pause = true;
-	
+
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	
+
 		resetServer();
 	}
 
@@ -362,13 +368,13 @@ public class SaboteurServer {
 	public Player addNewPlayer(String name) {
 		// TODO LOG
 		System.out.println("New Player added: " + name);
-	
+
 		Player p = new Player(Player.getNextId(), Role.LOBBY, name, 100, new Vector2f(0, 0));
 		p.addItem(new Gun("TestGun", Item.nextId()));
 		players.add(p);
-	
+
 		Packet12PlayerSpawned packet12 = new Packet12PlayerSpawned();
-	
+
 		packet12.name = name;
 		packet12.playerId = p.getId();
 		packet12.role = Role.LOBBY.ordinal();

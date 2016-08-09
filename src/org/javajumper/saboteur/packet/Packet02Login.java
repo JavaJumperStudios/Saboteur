@@ -32,10 +32,10 @@ public class Packet02Login extends Packet {
 	 * @return the created player
 	 */
 	public static SPPlayer createPlayerFromLoginPacket(Packet02Login loginPacket) {
-	
+
 		SPPlayer p = new SPPlayer(loginPacket.playerId, Role.LOBBY, loginPacket.name, 100, new Vector2f(0, 0),
-				"Fuzzi_Neutral.png"); // TODO Filename
-	
+				"Fuzzi_Neutral.png");
+
 		return p;
 	}
 

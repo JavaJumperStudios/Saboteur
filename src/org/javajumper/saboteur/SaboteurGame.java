@@ -59,6 +59,8 @@ public class SaboteurGame extends BasicGameState {
 	private String stringTimeInSec;
 	private int endCause;
 
+	private boolean exitGameNextUpdate = false;
+
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		instance = this;
@@ -68,7 +70,7 @@ public class SaboteurGame extends BasicGameState {
 		timeLeft = 0;
 		start = false;
 		stringTimeInSec = "";
-		endCause = 0;
+		endCause = SaboteurServer.TIME_RAN_OUT;
 		stop = false;
 
 		gui = RessourceManager.loadImage("gui.png");
@@ -86,6 +88,9 @@ public class SaboteurGame extends BasicGameState {
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
+
+		if (exitGameNextUpdate)
+			container.exit();
 
 		if (thePlayer == null)
 			return;
@@ -254,32 +259,35 @@ public class SaboteurGame extends BasicGameState {
 
 		switch (endCause) {
 
-		case 0:
+		case SaboteurServer.TIME_RAN_OUT:
 			g.setColor(Color.green);
 			g.fillRect(300, 250, 700, 256);
 			g.setColor(Color.blue);
 			g.drawString("Innocent gewinnen, weil die Zeit abgelaufen ist.", 360, 350);
 			break;
-		case 1:
+		case SaboteurServer.NO_TRAITORS_LEFT:
 			g.setColor(Color.green);
 			g.fillRect(300, 250, 700, 256);
 			g.setColor(Color.blue);
 			g.drawString("Innocent gewinnen, weil alle Traitor gestorben sind.", 360, 350);
 			break;
-		case 2:
+		case SaboteurServer.NO_INNOCENTS_LEFT:
 			g.setColor(Color.red);
 			g.fillRect(300, 250, 700, 256);
 			g.setColor(Color.blue);
 			g.drawString("Traitor gewinnen, weil alle Innocent gestorben sind.", 360, 350);
 			break;
-		case 3:
+		case SaboteurServer.NO_PLAYERS_LEFT:
 			g.setColor(Color.gray);
 			g.fillRect(300, 250, 700, 256);
 			g.setColor(Color.blue);
 			g.drawString("Der Server wurde manuell RESETTET.", 360, 350);
 			break;
 		default:
-			// TODO
+			g.setColor(Color.red);
+			g.fillRect(300, 250, 700, 256);
+			g.setColor(Color.blue);
+			g.drawString("Das Spiel wurde aufgrund einer unbekannten Ursache beendet.", 360, 350);
 			break;
 		}
 
@@ -302,7 +310,7 @@ public class SaboteurGame extends BasicGameState {
 
 		start = false;
 		stop = false;
-		endCause = 0;
+		endCause = SaboteurServer.TIME_RAN_OUT;
 
 		for (SPPlayer p : new ArrayList<>(players)) {
 
@@ -319,17 +327,24 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	/**
-	 * Exits the game
+	 * Exits the game on the next update. The game can only be ended with the
+	 * GameContainer, which is only available during the logic update
 	 */
-	public void exitGame() {
-		// TODO implement
-		System.out.println("I should end the Game now");
+	public void scheduleGameExit() {
+		exitGameNextUpdate = true;
 	}
 
-	// TODO make the endcause an enum
 	/**
 	 * @param e
 	 *            the endcause to set
+	 *            <ul>
+	 *            <li>{@link SaboteurServer#TIME_RAN_OUT} = Zeit abgelaufen</li>
+	 *            <li>{@link SaboteurServer#NO_TRAITORS_LEFT} = Alle Traitor
+	 *            tot</li>
+	 *            <li>{@link SaboteurServer#NO_INNOCENTS_LEFT} = Alle Innocents
+	 *            tot</li>
+	 *            <li>{@link SaboteurServer#NO_PLAYERS_LEFT} = Alle tot</li>
+	 *            </ul>
 	 */
 	public void setEndCause(int e) {
 		this.endCause = e;
@@ -413,14 +428,15 @@ public class SaboteurGame extends BasicGameState {
 		}
 	}
 
-	// TODO Further explanation of the "map" array
 	/**
 	 * Saves the map downloaded from the server to a local file for future use
 	 * 
 	 * @param mapName
 	 *            the filename to save to
 	 * @param mapInfo
-	 *            a two-dimensional array of tile information
+	 *            a two-dimensional array of tile information. Each element of
+	 *            the array represents the typeId of one tile, see
+	 *            {@link Tile#typeId}
 	 * @param width
 	 *            the width of the map to save in tiles
 	 * @param height
