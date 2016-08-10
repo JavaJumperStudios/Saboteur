@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
 import org.javajumper.saboteur.map.Map;
@@ -40,9 +41,14 @@ public class SaboteurServer {
 	/** The main Logger for the server */
 	public final static Logger LOGGER = Logger.getLogger(SaboteurServer.class.getName());
 
+	/* Enum for the reason why the game ended */
+	/** Time ran out */
 	public static final int TIME_RAN_OUT = 0;
+	/** No Traitors left, innocent win */
 	public static final int NO_TRAITORS_LEFT = 1;
+	/** No innocent left, traitors win */
 	public static final int NO_INNOCENTS_LEFT = 2;
+	/** No players left, server resets */
 	public static final int NO_PLAYERS_LEFT = 3;
 
 	private Properties properties;
@@ -64,7 +70,7 @@ public class SaboteurServer {
 	private ArrayList<DeadPlayer> deadplayers = new ArrayList<>();
 	private Map map;
 
-	private Thread acceptor;
+	private ClientAcceptor acceptor;
 
 	/**
 	 * Initializes the server
@@ -84,8 +90,8 @@ public class SaboteurServer {
 			System.out.println("Karte konnte nicht geladen werden");
 		}
 
-		acceptor = new Thread(new ClientAcceptor(this));
-		acceptor.start();
+		acceptor = new ClientAcceptor(this);
+		new Thread(acceptor).start();
 	}
 
 	private void initGameStats() {
@@ -144,6 +150,29 @@ public class SaboteurServer {
 		int delta;
 		long lastTimeMillis = System.currentTimeMillis();
 
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				Scanner scan = new Scanner(System.in);
+				String input;
+				System.out.println("starting");
+				while (true) {
+					input = scan.nextLine();
+
+					if ("stop".equals(input))
+						break;
+
+					// Commands ...
+				}
+
+				scan.close();
+				SaboteurServer.instance.stop();
+
+			}
+
+		}).start();
+
 		while (!stop) {
 			delta = (int) (System.currentTimeMillis() - lastTimeMillis);
 			if (delta < 10) {
@@ -158,6 +187,15 @@ public class SaboteurServer {
 			update(delta);
 		}
 
+		LOGGER.info("Server has been stopped. Shutting down...");
+		acceptor.shutDown();
+		for (ClientHandler ch : clientHandler) {
+			ch.close();
+		}
+	}
+
+	private void stop() {
+		stop = true;
 	}
 
 	private void update(int delta) {
