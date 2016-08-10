@@ -45,13 +45,7 @@ public class SaboteurServer {
 	public static final int NO_INNOCENTS_LEFT = 2;
 	public static final int NO_PLAYERS_LEFT = 3;
 
-	/* Optionen */
-
-	// Dauer eines Spiels in Millisekunden
-	private int gameDuration;
-
-	// Minimale Anzahl von Spielern
-	private int minPlayerCount;
+	private Properties properties;
 
 	/* Gamestate */
 
@@ -78,7 +72,7 @@ public class SaboteurServer {
 	public void init() {
 		loadProperties();
 
-		timeLeft = gameDuration;
+		timeLeft = Integer.parseInt(properties.getProperty("game_duration"));
 		running = false;
 		map = new Map();
 		for (int j = 0; j <= 4; j++) {
@@ -123,12 +117,17 @@ public class SaboteurServer {
 	}
 
 	private void loadProperties() {
-		Properties propertyFile = new Properties();
+		Properties defaults = new Properties();
+		defaults.setProperty("game_duration", "600000");
+		defaults.setProperty("min_player_count", "3");
+		defaults.setProperty("debug_dont_end_game", "false");
+
+		properties = new Properties(defaults);
 		FileInputStream fis = null;
 
 		try {
 			fis = new FileInputStream("saboteur-server.properties");
-			propertyFile.load(fis);
+			properties.load(fis);
 		} catch (IOException e) {
 			// Do nothing, we have default fallbacks
 		} finally {
@@ -136,9 +135,6 @@ public class SaboteurServer {
 				fis.close();
 			} catch (IOException | NullPointerException e) {}
 		}
-
-		gameDuration = Integer.parseInt(propertyFile.getProperty("game_duration", "600000"));
-		minPlayerCount = Integer.parseInt(propertyFile.getProperty("min_player_count", "2"));
 	}
 
 	/**
@@ -197,24 +193,7 @@ public class SaboteurServer {
 			}
 		} else {
 
-			if (players.size() < minPlayerCount)
-				return;
-
-			boolean allReady = true;
-
-			for (Player p : new ArrayList<>(players)) {
-				if (!p.isReady())
-					allReady = false;
-			}
-
-			if (allReady) {
-				Packet03StartGame packet03 = new Packet03StartGame();
-				broadcastPacket(packet03);
-				running = true;
-				unpause();
-				initGameStats();
-				System.out.println("Alle bereit");
-			}
+			checkReadyStates();
 
 		}
 
@@ -237,14 +216,36 @@ public class SaboteurServer {
 	}
 
 	/**
+	 * Checks if all players are ready and starts the game if so
+	 */
+	public void checkReadyStates() {
+		if (players.size() < getMinPlayerCount())
+			return;
+
+		boolean allReady = players.stream().allMatch((Player p) -> p.isReady());
+
+		if (allReady) {
+			Packet03StartGame packet03 = new Packet03StartGame();
+			broadcastPacket(packet03);
+			running = true;
+			unpause();
+			initGameStats();
+			System.out.println("Alle bereit");
+		}
+	}
+
+	/**
 	 * Checks if win conditions are met and ends the game if so
 	 */
 	public void checkWinConditions() {
 
+		if (!running | Boolean.parseBoolean(properties.getProperty("debug_dont_end_game")))
+			return;
+
 		if (timeLeft <= 0) {
 			// Innocents gewinnen durch Zeit
 
-			sendEndPacket(0);
+			sendEndPacket(SaboteurServer.TIME_RAN_OUT);
 
 		} else {
 
@@ -259,19 +260,15 @@ public class SaboteurServer {
 				}
 			}
 
-			// TODO if debug...
-			if (true) // To avoid dead code error
-				return;
-
 			if (!innoAlive && !traitorAlive) {
 				// Unentschieden
-				sendEndPacket(3);
+				sendEndPacket(SaboteurServer.NO_PLAYERS_LEFT);
 			} else if (innoAlive && !traitorAlive) {
 				// Inno gewonnen
-				sendEndPacket(1);
+				sendEndPacket(SaboteurServer.NO_TRAITORS_LEFT);
 			} else if (!innoAlive && traitorAlive) {
 				// Traitor gewonnen
-				sendEndPacket(2);
+				sendEndPacket(SaboteurServer.NO_INNOCENTS_LEFT);
 			}
 
 		}
@@ -307,7 +304,7 @@ public class SaboteurServer {
 
 		running = false;
 
-		timeLeft = gameDuration;
+		timeLeft = getGameDuration();
 		map = new MapServer();
 		for (int j = 0; j <= 4; j++) {
 			blockedSpawnPositions[j] = false;
@@ -355,6 +352,8 @@ public class SaboteurServer {
 				}
 			}
 		}
+
+		checkReadyStates();
 
 	}
 
@@ -474,11 +473,22 @@ public class SaboteurServer {
 	/**
 	 * Handles the logout of a player
 	 * 
+	 * @param playerId
+	 *            the id of the player who is being logged out
+	 */
+	public void handlePlayerLogout(int playerId) {
+		handlePlayerLogout(getPlayerById(playerId));
+	}
+
+	/**
+	 * Handles the logout of a player and closes the connection to the client
+	 * 
 	 * @param player
-	 *            the player is being logged out
+	 *            the player who is being logged out
 	 */
 	public void handlePlayerLogout(Player player) {
-		System.out.println("Player " + player.getName() + " logged out.");
+		LOGGER.info("Player " + player.getName() + " logged out.");
+
 		if (players.contains(player)) {
 			players.remove(player);
 		}
@@ -488,10 +498,49 @@ public class SaboteurServer {
 			}
 		}
 
+		for (ClientHandler ch : clientHandler) {
+			if (ch.isLoggedIn() && player.equals(ch.getPlayer())) {
+				ch.close();
+				removeClientHandler(ch);
+				break;
+			}
+		}
+
 		Packet05Logout packet05 = new Packet05Logout();
 		packet05.playerId = player.getId();
 		broadcastPacket(packet05);
 
+		checkWinConditions();
+		checkReadyStates();
+	}
+
+	/**
+	 * @return the minimum player count to start a round
+	 */
+	public int getMinPlayerCount() {
+		return Integer.parseInt(properties.getProperty("min_player_count"));
+	}
+
+	/**
+	 * @return the duration of one round
+	 */
+	public int getGameDuration() {
+		return Integer.parseInt(properties.getProperty("game_duration"));
+	}
+
+	/**
+	 * Return a player based on his id
+	 * 
+	 * @param playerId
+	 *            the id of the player
+	 * @return the player with the given id or null if no player has that id
+	 */
+	public Player getPlayerById(int playerId) {
+		for (Player p : getPlayers()) {
+			if (p.getId() == playerId)
+				return p;
+		}
+		return null;
 	}
 
 	/**

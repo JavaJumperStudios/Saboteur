@@ -1,5 +1,6 @@
 package org.javajumper.saboteur.test;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.javajumper.saboteur.SaboteurServer;
@@ -17,6 +18,7 @@ public class ServerTest {
 	 */
 	public static void main(String[] _args) {
 		SaboteurServer server = new SaboteurServer();
+		SaboteurServer.LOGGER.setLevel(Level.ALL);
 		SaboteurServer.instance = server;
 		Logger.getLogger(SaboteurServer.class.getName()).info("Server wird gestartet.");
 		server.init();

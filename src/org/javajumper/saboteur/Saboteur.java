@@ -23,4 +23,11 @@ public class Saboteur extends StateBasedGame {
 		addState(new SaboteurGame());
 	}
 
+	@Override
+	public boolean closeRequested() {
+		if (SaboteurGame.instance != null) {
+			SaboteurGame.instance.closeConnection();
+		}
+		return true;
+	}
 }

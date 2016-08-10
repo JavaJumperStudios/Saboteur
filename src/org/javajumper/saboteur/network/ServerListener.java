@@ -192,26 +192,6 @@ public class ServerListener implements Runnable {
 							e.printStackTrace();
 						}
 						break;
-					/*
-					 * TODO What is this? case 3: Packet03NewPlayer
-					 * newPlayerPacket = new Packet03NewPlayer();
-					 * newPlayerPacket.readFromByteBuffer(bb); Player p =
-					 * createPlayer(newPlayerPacket); instance.addPlayer(p);
-					 * System.out.println("NewPlayer logged in: " +
-					 * p.getName()); break; case 6: Packet06PlayerSpawn
-					 * spawnpacket = new Packet06PlayerSpawn();
-					 * spawnpacket.readFromByteBuffer(bb); System.out.println(
-					 * "Spawnpacket received ID: " + spawnpacket.playerId);
-					 * instance.spawn(instance.getPlayer(spawnpacket.playerId),
-					 * spawnpacket.posX, spawnpacket.posY); break; case 8:
-					 * Packet08PlayerDespawn packet08 = new
-					 * Packet08PlayerDespawn(); packet08.readFromByteBuffer(bb);
-					 * 
-					 * instance.theMap.despawn(instance.theMap
-					 * .getPlayer(packet08.playerid));
-					 * 
-					 * break;
-					 */
 					default:
 						System.out.println("Unknown Package");
 						System.out.println("ID:" + id);
@@ -223,7 +203,8 @@ public class ServerListener implements Runnable {
 				}
 			}
 		} catch (IOException e) {
-			// TODO LOG something went wrong with the socket
+			// TODO LOG something went wrong with the socket this also happens
+			// if the socket is closed
 			e.printStackTrace();
 		}
 	}
