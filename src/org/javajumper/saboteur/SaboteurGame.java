@@ -8,6 +8,7 @@ import java.util.Arrays;
 import org.javajumper.saboteur.map.Map;
 import org.javajumper.saboteur.map.Tile;
 import org.javajumper.saboteur.network.ServerListener;
+import org.javajumper.saboteur.packet.Packet05Logout;
 import org.javajumper.saboteur.packet.Packet06UseItem;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
@@ -15,6 +16,7 @@ import org.javajumper.saboteur.packet.Packet14Reset;
 import org.javajumper.saboteur.packet.PlayerSnapshot;
 import org.javajumper.saboteur.packet.Snapshot;
 import org.javajumper.saboteur.player.DeadPlayer;
+import org.javajumper.saboteur.player.Player;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
 import org.javajumper.saboteur.render.ShadowPointComparator;
@@ -515,6 +517,13 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	/**
+	 * @return the main player
+	 */
+	public Player getMainPlayer() {
+		return thePlayer;
+	}
+
+	/**
 	 * @param p
 	 *            the player who should be the main player
 	 */
@@ -641,6 +650,17 @@ public class SaboteurGame extends BasicGameState {
 		}
 
 		return point;
+	}
+
+	/**
+	 * Sends a logout package to the server and closes the connection
+	 */
+	public void closeConnection() {
+		// TODO Log
+		Packet05Logout packet = new Packet05Logout();
+		packet.playerId = thePlayer.getId();
+		serverListener.sendToServer(packet);
+		serverListener.close();
 	}
 
 }

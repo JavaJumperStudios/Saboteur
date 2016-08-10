@@ -171,7 +171,7 @@ public class Player {
 		ps.lookAngle = lookAngle;
 		ps.x = pos.x;
 		ps.y = pos.y;
-	
+
 		return ps;
 	}
 
@@ -207,6 +207,7 @@ public class Player {
 				new DeadPlayer(id, name, role, SaboteurServer.instance.getTimeLeft(), murderer.getId(), itemId, pos);
 		dead = true;
 		SaboteurServer.instance.addDeadPlayer(dp);
+		SaboteurServer.instance.checkWinConditions();
 	}
 
 	/**

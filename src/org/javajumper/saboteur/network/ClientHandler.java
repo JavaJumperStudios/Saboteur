@@ -8,6 +8,7 @@ import org.javajumper.saboteur.SaboteurServer;
 import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
+import org.javajumper.saboteur.packet.Packet05Logout;
 import org.javajumper.saboteur.packet.Packet06UseItem;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
@@ -62,6 +63,9 @@ public class ClientHandler implements Runnable {
 					int packetId = bb.get();
 					int length = bb.getInt();
 
+					if (packetId != 9)
+						System.out.println("Packet with id " + packetId + " received.");
+
 					switch (packetId) {
 					case 1:
 						System.out.println("Login Request received.");
@@ -104,7 +108,12 @@ public class ClientHandler implements Runnable {
 						}
 
 						break;
+					case 5:
+						Packet05Logout packet05 = new Packet05Logout();
+						packet05.readFromByteBuffer(bb);
+						server.handlePlayerLogout(packet05.playerId);
 
+						break;
 					case 6:
 						Packet06UseItem packet06 = new Packet06UseItem();
 						packet06.readFromByteBuffer(bb);
@@ -146,7 +155,11 @@ public class ClientHandler implements Runnable {
 			}
 		} catch (IOException e) {
 			System.out.println("Player " + player.getName() + " has closed the Connection.");
-			close();
+
+			if (login) {
+				server.handlePlayerLogout(player);
+				server.removeClientHandler(this);
+			}
 		}
 	}
 
@@ -154,15 +167,13 @@ public class ClientHandler implements Runnable {
 	 * Closes the connection to the client
 	 */
 	public void close() {
+		login = false;
 		try {
 			clientSocket.close();
 		} catch (IOException e) {
 			// TODO Log
 			System.out.println("Could not even close the Socket :( Client sad");
 		}
-		login = false;
-		server.removeClientHandler(this);
-		server.handlePlayerLogout(player);
 	}
 
 	/**
@@ -188,6 +199,14 @@ public class ClientHandler implements Runnable {
 	 */
 	public boolean isLoggedIn() {
 		return login;
+	}
+
+	/**
+	 * @return the player of the client this client handler handles, null before
+	 *         the player is logged in
+	 */
+	public Player getPlayer() {
+		return player;
 	}
 
 }
