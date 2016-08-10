@@ -167,6 +167,7 @@ public class ClientHandler implements Runnable {
 	 * Closes the connection to the client
 	 */
 	public void close() {
+		running = false;
 		login = false;
 		try {
 			clientSocket.close();
