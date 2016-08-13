@@ -33,6 +33,11 @@ import org.newdawn.slick.geom.Vector2f;
 /**
  * The server class for the saboteur game.
  */
+/**
+ *
+ *
+ * @author tobi
+ */
 public class SaboteurServer {
 
 	/** The main instance of the server made public for convenience */
@@ -59,6 +64,7 @@ public class SaboteurServer {
 	private boolean pause = true;
 	private int timeLeft;
 	private boolean running;
+	private String password;
 
 	/* Clients */
 
@@ -79,6 +85,7 @@ public class SaboteurServer {
 		loadProperties();
 
 		timeLeft = Integer.parseInt(properties.getProperty("game_duration"));
+		password = deleteUnderscores(properties.getProperty("password"));
 		running = false;
 		map = new Map();
 		for (int j = 0; j <= 4; j++) {
@@ -127,6 +134,7 @@ public class SaboteurServer {
 		defaults.setProperty("game_duration", "600000");
 		defaults.setProperty("min_player_count", "3");
 		defaults.setProperty("debug_dont_end_game", "false");
+		defaults.setProperty("password", "");
 
 		properties = new Properties(defaults);
 		FileInputStream fis = null;
@@ -662,6 +670,27 @@ public class SaboteurServer {
 	 */
 	public Map getMap() {
 		return map;
+	}
+
+	/**
+	 * checks if a new player is allowed to connect to the server
+	 * @return true if the player is allowed to connect, false otherwise
+	 */
+	public boolean confirmNewLogin(String password) {
+		// TODO: Add other Conditions like Playerslots etc.
+
+		if (!this.password.equals(deleteUnderscores(password)))
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Deletes all underscores ('_') from a given text
+	 * @param text
+	 * @return the given text without underscores
+	 */
+	public String deleteUnderscores(String text) {
+		return text.replaceAll("_", "");
 	}
 
 }

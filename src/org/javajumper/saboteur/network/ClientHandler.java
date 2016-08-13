@@ -10,6 +10,7 @@ import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
 import org.javajumper.saboteur.packet.Packet05Logout;
 import org.javajumper.saboteur.packet.Packet06UseItem;
+import org.javajumper.saboteur.packet.Packet08RejectLogin;
 import org.javajumper.saboteur.packet.Packet09PlayerUpdate;
 import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
@@ -71,41 +72,53 @@ public class ClientHandler implements Runnable {
 						System.out.println("Login Request received.");
 						Packet01LoginRequest packetLoginRequest = new Packet01LoginRequest();
 						packetLoginRequest.readFromByteBuffer(bb);
-						Packet12PlayerSpawned[] spawnPackets = server.getPlayerSpawnPackets();
-						player = server.addNewPlayer(packetLoginRequest.name);
-
-						login = true;
-						// TODO log
-						System.out.println("Sending Login Packet.");
-
-						Packet02Login packetLogin = new Packet02Login();
-						packetLogin.name = packetLoginRequest.name;
-						packetLogin.playerId = player.getId();
-
-						sendToClient(packetLogin);
-
-						Packet15SetMap packetSetMap = new Packet15SetMap();
-						packetSetMap.mapName = server.getMap().getName();
-
-						int height = server.getMap().getHeight();
-						int width = server.getMap().getWidth();
-
-						packetSetMap.height = height;
-						packetSetMap.width = width;
-
-						packetSetMap.map = new int[width][height];
-
-						for (int i = 0; i < width; i++) {
-							for (int j = 0; j < height; j++) {
-								packetSetMap.map[i][j] = server.getMap().getTile(i, j).getTypeId();
+						
+						if(server.confirmNewLogin(packetLoginRequest.password)) {
+							Packet12PlayerSpawned[] spawnPackets = server.getPlayerSpawnPackets();
+							player = server.addNewPlayer(packetLoginRequest.name);
+	
+							login = true;
+							// TODO log
+							System.out.println("Sending Login Packet.");
+	
+							Packet02Login packetLogin = new Packet02Login();
+							packetLogin.name = packetLoginRequest.name;
+							packetLogin.playerId = player.getId();
+	
+							sendToClient(packetLogin);
+	
+							Packet15SetMap packetSetMap = new Packet15SetMap();
+							packetSetMap.mapName = server.getMap().getName();
+	
+							int height = server.getMap().getHeight();
+							int width = server.getMap().getWidth();
+	
+							packetSetMap.height = height;
+							packetSetMap.width = width;
+	
+							packetSetMap.map = new int[width][height];
+	
+							for (int i = 0; i < width; i++) {
+								for (int j = 0; j < height; j++) {
+									packetSetMap.map[i][j] = server.getMap().getTile(i, j).getTypeId();
+								}
 							}
+	
+							sendToClient(packetSetMap);
+	
+							for (Packet p : spawnPackets) {
+								sendToClient(p);
+							}
+	
+							break;
 						}
-
-						sendToClient(packetSetMap);
-
-						for (Packet p : spawnPackets) {
-							sendToClient(p);
-						}
+						
+						Packet08RejectLogin rejectLogin = new Packet08RejectLogin();
+						rejectLogin.rejectionCause = 0;
+						sendToClient(rejectLogin);
+						
+						server.removeClientHandler(this);
+						this.close();
 
 						break;
 					case 5:

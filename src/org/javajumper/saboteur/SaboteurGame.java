@@ -111,15 +111,15 @@ public class SaboteurGame extends BasicGameState {
 
 			Vector2f move = new Vector2f();
 
-			if (input.isKeyDown(Input.KEY_UP)) {
+			if (input.isKeyDown(Input.KEY_UP) || input.isKeyDown(Input.KEY_W)) {
 				move.y = -1;
-			} else if (input.isKeyDown(Input.KEY_DOWN)) {
+			} else if (input.isKeyDown(Input.KEY_DOWN) || input.isKeyDown(Input.KEY_S)) {
 				move.y = 1;
 			}
 
-			if (input.isKeyDown(Input.KEY_LEFT)) {
+			if (input.isKeyDown(Input.KEY_LEFT) || input.isKeyDown(Input.KEY_A)) {
 				move.x = -1;
-			} else if (input.isKeyDown(Input.KEY_RIGHT)) {
+			} else if (input.isKeyDown(Input.KEY_RIGHT) || input.isKeyDown(Input.KEY_D)) {
 				move.x = 1;
 			}
 

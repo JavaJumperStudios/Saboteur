@@ -6,12 +6,14 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import org.javajumper.saboteur.SaboteurGame;
+import org.javajumper.saboteur.StateManager;
 import org.javajumper.saboteur.packet.Packet;
 import org.javajumper.saboteur.packet.Packet01LoginRequest;
 import org.javajumper.saboteur.packet.Packet02Login;
 import org.javajumper.saboteur.packet.Packet04EndGame;
 import org.javajumper.saboteur.packet.Packet05Logout;
 import org.javajumper.saboteur.packet.Packet07Snapshot;
+import org.javajumper.saboteur.packet.Packet08RejectLogin;
 import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet11SpawnDead;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
@@ -20,7 +22,10 @@ import org.javajumper.saboteur.packet.Packet15SetMap;
 import org.javajumper.saboteur.player.DeadPlayer;
 import org.javajumper.saboteur.player.Role;
 import org.javajumper.saboteur.player.SPPlayer;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
 
 /**
  * Handles the connection to the server, sends and receives packets.
@@ -70,7 +75,7 @@ public class ServerListener implements Runnable {
 		} else {
 			packet.name = name;
 		}
-		packet.password = "";
+		packet.password = password;
 
 		// Noch nicht benutzt
 		// TODO packet.password = password;
@@ -145,6 +150,13 @@ public class ServerListener implements Runnable {
 						packet07Snapshot.readFromByteBuffer(bb);
 						instance.setSnapshot(packet07Snapshot.snapshot);
 						instance.setTime(packet07Snapshot.snapshot.time);
+						break;
+					case 8:
+						System.out.println("Login got rejected");
+						Packet08RejectLogin packet08RejectLogin = new Packet08RejectLogin();
+						packet08RejectLogin.readFromByteBuffer(bb);
+						StateManager.changeState(0, new FadeOutTransition(Color.black, 1000),
+								new FadeInTransition(Color.black, 1000));
 						break;
 					case 10:
 						System.out.println("Player ready packet erhalten");

@@ -76,7 +76,7 @@ public class SaboteurMenu extends BasicGameState {
 				new TextField(container, new TrueTypeFont(new Font("Verdana", Font.BOLD, 16), false), 64, 96, 300, 25);
 		pwTextField.setTextColor(Color.black);
 		pwTextField.setBackgroundColor(Color.white);
-		pwTextField.setText("Passwort (noch nicht genutzt)"); // Ungenutzt
+		pwTextField.setText("");
 		pwTextField.deactivate();
 
 		nameTextField =
