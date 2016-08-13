@@ -33,6 +33,8 @@ import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
 
 /**
  * The gamestate when the player is in the ready-up, playing or game-over state
@@ -182,6 +184,12 @@ public class SaboteurGame extends BasicGameState {
 				ready = !ready;
 				serverListener.sendToServer(packet10);
 				System.out.println("I changed ready state to: " + ready);
+			}
+			
+			if (input.isKeyPressed(Input.KEY_ESCAPE)) {
+				closeConnection();
+				StateManager.changeState(0, new FadeOutTransition(Color.black, 1000),
+						new FadeInTransition(Color.black, 1000));
 			}
 
 		}

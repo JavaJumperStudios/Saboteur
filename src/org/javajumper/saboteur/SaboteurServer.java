@@ -132,7 +132,7 @@ public class SaboteurServer {
 	private void loadProperties() {
 		Properties defaults = new Properties();
 		defaults.setProperty("game_duration", "600000");
-		defaults.setProperty("min_player_count", "3");
+		defaults.setProperty("min_player_count", "2");
 		defaults.setProperty("debug_dont_end_game", "false");
 		defaults.setProperty("password", "");
 
