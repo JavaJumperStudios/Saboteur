@@ -1,6 +1,10 @@
 package org.javajumper.saboteur.packet;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+
+import org.newdawn.slick.geom.Polygon;
+import org.newdawn.slick.geom.Shape;
 
 /**
  * Sent from server to client, containing the information about the map
@@ -15,6 +19,11 @@ public class Packet15SetMap extends Packet {
 	public int height;
 	/** the map tiles */
 	public int[][] map;
+	/** the collision shapes */
+	public ArrayList<Shape> collisionShapes;
+	
+	private int pointCount;
+	private int shapeCount;
 
 	public Packet15SetMap() {
 		super((byte) 15);
@@ -39,13 +48,42 @@ public class Packet15SetMap extends Packet {
 				map[i][j] = bb.getInt();
 			}
 		}
-
+		
+		Polygon collisionElement = new Polygon();
+		
+		while (bb.remaining() > 0) {
+			
+			if (bb.getChar() != '_') {
+				float x = bb.getFloat();
+				float y = bb.getFloat();
+				
+				collisionElement.addPoint(x, y);
+			} else {
+				
+				collisionShapes.add(collisionElement);
+				
+			}
+		}
 	}
 
 	@Override
 	public ByteBuffer writeToByteBuffer() {
 		ByteBuffer bb = ByteBuffer.allocate(getLength());
+		
+		pointCount = 0;
+		shapeCount = 0;
+		
+		for (Shape s : collisionShapes) {
+			for (int i = 0; i < s.getPointCount(); i++) {
+				pointCount++;
+				System.out.println("PC: " + pointCount);
+			}
+			shapeCount++;
+			System.out.println("SC: " + shapeCount);
+		}
 
+		System.out.println("Länge: " + getLength());
+		
 		bb.put(id);
 		bb.putInt(getLength());
 
@@ -53,7 +91,7 @@ public class Packet15SetMap extends Packet {
 			if (i < mapName.length())
 				bb.putChar(mapName.charAt(i));
 			else
-				bb.putChar(' ');
+				bb.putChar('_');
 		}
 
 		bb.putInt(width);
@@ -64,13 +102,26 @@ public class Packet15SetMap extends Packet {
 				bb.putInt(map[i][j]);
 			}
 		}
+		
+
+		
+		for (Shape s : collisionShapes) {
+			for (int i = 0; i < s.getPointCount(); i++) {
+				System.out.println("Putting in Point..");
+				bb.putChar(' ');
+				bb.putFloat(s.getPoint(i)[0]);
+				bb.putFloat(s.getPoint(i)[1]);
+			}
+			bb.putChar('_');
+		}
 
 		return bb;
 	}
 
 	@Override
 	public int getLength() {
-		return super.getLength() + Character.BYTES * 16 + Integer.BYTES * 2 + Integer.BYTES * (width * height);
+		return super.getLength() + Character.BYTES * 16 + Integer.BYTES * 2 + Integer.BYTES * (width * height)
+				+ pointCount * (Float.BYTES * 2 + Character.BYTES) + shapeCount * Character.BYTES;
 	}
 
 }

@@ -452,9 +452,9 @@ public class SaboteurGame extends BasicGameState {
 	 * @param height
 	 *            the height of the map to save in tiles
 	 */
-	public void saveMap(String mapName, int[][] mapInfo, int width, int height) {
+	public void saveMap(String mapName, int[][] mapInfo, int width, int height, ArrayList<Shape> collisionShapes) {
 		try {
-			map.saveMap(mapName, mapInfo, width, height);
+			map.saveMap(mapName, mapInfo, width, height, collisionShapes);
 		} catch (IOException e) {
 			// TODO log
 			System.out.println("Karte konnte nicht gespeichert werden.");
@@ -669,6 +669,15 @@ public class SaboteurGame extends BasicGameState {
 		packet.playerId = thePlayer.getId();
 		serverListener.sendToServer(packet);
 		serverListener.close();
+	}
+	
+	/**
+	 * Deletes all underscores ('_') from a given text
+	 * @param text
+	 * @return the given text without underscores
+	 */
+	public String deleteUnderscores(String text) {
+		return text.replaceAll("_", "");
 	}
 
 }
