@@ -66,6 +66,7 @@ public class Map {
 
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
+				System.out.println("Zeiche Tile: " + i + " " + j);
 				tiles[i][j].draw(g, i * 32, j * 32);
 			}
 		}
@@ -116,8 +117,8 @@ public class Map {
 				for (String element : elements) {
 					String[] coords = element.split(";");
 					assert coords.length == 2;
-					int x = Integer.parseInt(coords[0]);
-					int y = Integer.parseInt(coords[1]);
+					float x = Float.parseFloat(coords[0]);
+					float y = Float.parseFloat(coords[1]);
 
 					collisionElement.addPoint(x, y);
 				}

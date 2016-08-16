@@ -48,8 +48,8 @@ public class Packet15SetMap extends Packet {
 				map[i][j] = bb.getInt();
 			}
 		}
-		
 		Polygon collisionElement = new Polygon();
+		collisionShapes = new ArrayList<Shape>();
 		
 		while (bb.remaining() > 0) {
 			
@@ -61,6 +61,7 @@ public class Packet15SetMap extends Packet {
 			} else {
 				
 				collisionShapes.add(collisionElement);
+				collisionElement = new Polygon();
 				
 			}
 		}
@@ -68,8 +69,6 @@ public class Packet15SetMap extends Packet {
 
 	@Override
 	public ByteBuffer writeToByteBuffer() {
-		ByteBuffer bb = ByteBuffer.allocate(getLength());
-		
 		pointCount = 0;
 		shapeCount = 0;
 		
@@ -81,6 +80,8 @@ public class Packet15SetMap extends Packet {
 			shapeCount++;
 			System.out.println("SC: " + shapeCount);
 		}
+		
+		ByteBuffer bb = ByteBuffer.allocate(getLength());
 
 		System.out.println("Länge: " + getLength());
 		
