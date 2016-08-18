@@ -66,7 +66,6 @@ public class Map {
 
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				System.out.println("Zeiche Tile: " + i + " " + j);
 				tiles[i][j].draw(g, i * 32, j * 32);
 			}
 		}
