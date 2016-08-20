@@ -116,8 +116,8 @@ public class Map {
 				for (String element : elements) {
 					String[] coords = element.split(";");
 					assert coords.length == 2;
-					int x = Integer.parseInt(coords[0]);
-					int y = Integer.parseInt(coords[1]);
+					float x = Float.parseFloat(coords[0]);
+					float y = Float.parseFloat(coords[1]);
 
 					collisionElement.addPoint(x, y);
 				}
@@ -161,7 +161,7 @@ public class Map {
 	 * @throws IOException
 	 *             if an IOException occured while the file is being saved
 	 */
-	public void saveMap(String mapName, int[][] map, int width, int height) throws IOException {
+	public void saveMap(String mapName, int[][] map, int width, int height, ArrayList<Shape> collisionShapes) throws IOException {
 
 		FileWriter fw = new FileWriter("maps/" + mapName);
 		BufferedWriter bw = new BufferedWriter(fw);
@@ -174,6 +174,16 @@ public class Map {
 			bw.newLine();
 			for (int j = 0; j < width; j++) {
 				bw.write(Integer.toString(map[j][i]));
+				bw.write(' ');
+			}
+		}
+		
+		for (Shape s : collisionShapes) {
+			bw.newLine();
+			for (int i = 0; i < s.getPointCount(); i++) {
+				bw.write(Float.toString(s.getPoint(i)[0]));
+				bw.write(';');
+				bw.write(Float.toString(s.getPoint(i)[1]));
 				bw.write(' ');
 			}
 		}

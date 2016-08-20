@@ -3,6 +3,7 @@ package org.javajumper.saboteur.network;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import org.javajumper.saboteur.SaboteurServer;
 import org.javajumper.saboteur.packet.Packet;
@@ -16,6 +17,7 @@ import org.javajumper.saboteur.packet.Packet10Ready;
 import org.javajumper.saboteur.packet.Packet12PlayerSpawned;
 import org.javajumper.saboteur.packet.Packet15SetMap;
 import org.javajumper.saboteur.player.Player;
+import org.newdawn.slick.geom.Shape;
 
 /**
  * A runnable class which connects with one client, and handles communication
@@ -103,6 +105,10 @@ public class ClientHandler implements Runnable {
 									packetSetMap.map[i][j] = server.getMap().getTile(i, j).getTypeId();
 								}
 							}
+							
+							packetSetMap.collisionShapes = server.getMap().getCollisionShapes();
+							
+							
 	
 							sendToClient(packetSetMap);
 	

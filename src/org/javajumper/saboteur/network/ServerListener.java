@@ -197,8 +197,8 @@ public class ServerListener implements Runnable {
 						Packet15SetMap packet15 = new Packet15SetMap();
 						packet15.readFromByteBuffer(bb);
 						try {
-							instance.getMap().saveMap(packet15.mapName, packet15.map, packet15.width, packet15.height);
-							instance.loadMap(packet15.mapName);
+							instance.getMap().saveMap(instance.deleteUnderscores(packet15.mapName), packet15.map, packet15.width, packet15.height, packet15.collisionShapes);
+							instance.loadMap(instance.deleteUnderscores(packet15.mapName));
 						} catch (IOException e) {
 							// TODO log, map could not be saved
 							e.printStackTrace();
