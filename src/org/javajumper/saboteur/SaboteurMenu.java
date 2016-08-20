@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.javajumper.saboteur.gui.Button;
+import org.javajumper.saboteurengine.RessourceManager;
+import org.javajumper.saboteurengine.StateManager;
+import org.javajumper.saboteurengine.gui.Button;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
