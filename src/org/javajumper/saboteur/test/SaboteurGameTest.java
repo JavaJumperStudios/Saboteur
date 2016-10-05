@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.javajumper.saboteur.SaboteurGame;
 import org.javajumper.saboteur.player.Role;
-import org.javajumper.saboteur.player.SPPlayer;
+import org.javajumper.saboteurengine.player.SPPlayer;
 import org.junit.Before;
 import org.junit.Test;
 import org.newdawn.slick.geom.Vector2f;

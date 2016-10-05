@@ -1,6 +1,7 @@
 package org.javajumper.saboteur.player.inventory;
 
-import org.javajumper.saboteur.player.Player;
+import org.javajumper.saboteurengine.item.Item;
+import org.javajumper.saboteurengine.player.Player;
 
 /**
  * A knife ingame item

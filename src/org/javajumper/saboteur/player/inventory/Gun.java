@@ -3,7 +3,8 @@ package org.javajumper.saboteur.player.inventory;
 import java.util.ArrayList;
 
 import org.javajumper.saboteur.SaboteurServer;
-import org.javajumper.saboteur.player.Player;
+import org.javajumper.saboteurengine.item.Item;
+import org.javajumper.saboteurengine.player.Player;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
