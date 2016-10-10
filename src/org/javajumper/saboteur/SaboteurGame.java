@@ -61,6 +61,7 @@ public class SaboteurGame extends BasicGameState {
 	private boolean ready = false;
 
 	private Image background;
+	private Image backgroundImage;
 	private ServerListener serverListener;
 	private int timeLeft;
 	private String stringTimeInSec;
@@ -86,6 +87,10 @@ public class SaboteurGame extends BasicGameState {
 		Tile.initTileRendering();
 
 		mapImage = new Image(background.getWidth(), background.getHeight());
+
+		// Areas in the shadows should be a little bit visible
+		backgroundImage = new Image(background.getWidth(), background.getHeight());
+		backgroundImage.setImageColor(0.4f, 0.4f, 0.4f);
 	}
 
 	/**
@@ -218,7 +223,9 @@ public class SaboteurGame extends BasicGameState {
 
 	private void renderMap(Graphics g) {
 		map.draw(g);
+	}
 
+	private void renderPlayers(Graphics g) {
 		for (SPPlayer p : players) {
 			if (!p.isDead())
 				p.draw(p.getPos().x, p.getPos().y, g, thePlayer.getRole());
@@ -230,6 +237,15 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	private void renderInGameScreen(Graphics g) throws SlickException {
+		Graphics mapImgG = mapImage.getGraphics();
+
+		// Rendering the map to an image to prevent mixing up transparency of
+		// objects and the shadow
+		renderMap(mapImgG);
+		renderPlayers(mapImgG);
+		renderMap(backgroundImage.getGraphics());
+		g.drawImage(backgroundImage, 0, 0);
+
 		g.clearAlphaMap();
 		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
 		g.setColor(Color.black);
@@ -237,12 +253,6 @@ public class SaboteurGame extends BasicGameState {
 		renderShadows(g);
 
 		g.setDrawMode(Graphics.MODE_ALPHA_BLEND);
-
-		Graphics mapImgG = mapImage.getGraphics();
-
-		// Rendering the map to an image to prevent mixing up transparency of
-		// objects and the shadow
-		renderMap(mapImgG);
 
 		g.drawImage(mapImage, 0, 0);
 
