@@ -483,14 +483,16 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	/**
-	 * Calculates the angle from the player-center to a given point
+	 * Calculates the angle between two points
 	 * 
-	 * @param v
-	 *            the given point
+	 * @param origin
+	 *            the origin of the line whose arc shall be calculated
+	 * @param point 
+	 * 	          the point to which the angle shall be calculated
 	 * @return the angle from the center of the player to the given point
 	 */
-	public double getAngleToPlayer(Vector2f v) {
-		return v.copy().sub(thePlayer.getCenter()).getTheta();
+	public double getAngle(Vector2f origin, Vector2f point) {
+		return point.copy().sub(origin).getTheta();
 	}
 
 	/**
@@ -624,7 +626,7 @@ public class SaboteurGame extends BasicGameState {
 			}
 		}
 
-		ShadowPointComparator spComparator = new ShadowPointComparator();
+		ShadowPointComparator spComparator = new ShadowPointComparator(thePlayer.getCenter());
 
 		points.sort(spComparator);
 
