@@ -53,6 +53,7 @@ public class SaboteurGame extends BasicGameState {
 	private Map map;
 	private SPPlayer thePlayer;
 	private Image gui;
+	private Image mapImage;
 
 	private ArrayList<SPPlayer> players = new ArrayList<>();
 	private ArrayList<DeadPlayer> deadplayers = new ArrayList<>();
@@ -60,6 +61,7 @@ public class SaboteurGame extends BasicGameState {
 	private boolean ready = false;
 
 	private Image background;
+	private Image backgroundImage;
 	private ServerListener serverListener;
 	private int timeLeft;
 	private String stringTimeInSec;
@@ -83,6 +85,12 @@ public class SaboteurGame extends BasicGameState {
 
 		background = RessourceManager.loadImage("background.png");
 		Tile.initTileRendering();
+
+		mapImage = new Image(background.getWidth(), background.getHeight());
+
+		// Areas in the shadows should be a little bit visible
+		backgroundImage = new Image(background.getWidth(), background.getHeight());
+		backgroundImage.setImageColor(0.4f, 0.4f, 0.4f);
 	}
 
 	/**
@@ -187,7 +195,7 @@ public class SaboteurGame extends BasicGameState {
 				serverListener.sendToServer(packet10);
 				System.out.println("I changed ready state to: " + ready);
 			}
-			
+
 			if (input.isKeyPressed(Input.KEY_ESCAPE)) {
 				closeConnection();
 				StateManager.changeState(0, new FadeOutTransition(Color.black, 1000),
@@ -213,17 +221,11 @@ public class SaboteurGame extends BasicGameState {
 		}
 	}
 
-	private void renderInGameScreen(Graphics g) {
-		g.clearAlphaMap();
-		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
-		g.setColor(Color.black);
-
-		renderShadows(g);
-
-		g.setDrawMode(Graphics.MODE_ALPHA_BLEND);
-
+	private void renderMap(Graphics g) {
 		map.draw(g);
+	}
 
+	private void renderPlayers(Graphics g) {
 		for (SPPlayer p : players) {
 			if (!p.isDead())
 				p.draw(p.getPos().x, p.getPos().y, g, thePlayer.getRole());
@@ -232,6 +234,27 @@ public class SaboteurGame extends BasicGameState {
 		for (DeadPlayer p : deadplayers) {
 			p.draw();
 		}
+	}
+
+	private void renderInGameScreen(Graphics g) throws SlickException {
+		Graphics mapImgG = mapImage.getGraphics();
+
+		// Rendering the map to an image to prevent mixing up transparency of
+		// objects and the shadow
+		renderMap(mapImgG);
+		renderPlayers(mapImgG);
+		renderMap(backgroundImage.getGraphics());
+		g.drawImage(backgroundImage, 0, 0);
+
+		g.clearAlphaMap();
+		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
+		g.setColor(Color.black);
+
+		renderShadows(g);
+
+		g.setDrawMode(Graphics.MODE_ALPHA_BLEND);
+
+		g.drawImage(mapImage, 0, 0);
 
 		// TODO draw the gui in Graphics.MODE_NORMAL after
 		// gui.draw();
@@ -351,8 +374,8 @@ public class SaboteurGame extends BasicGameState {
 	 *            the endcause to set
 	 *            <ul>
 	 *            <li>{@link SaboteurServer#TIME_RAN_OUT} = Zeit abgelaufen</li>
-	 *            <li>{@link SaboteurServer#NO_TRAITORS_LEFT} = Alle Traitor
-	 *            tot</li>
+	 *            <li>{@link SaboteurServer#NO_TRAITORS_LEFT} = Alle Traitor tot
+	 *            </li>
 	 *            <li>{@link SaboteurServer#NO_INNOCENTS_LEFT} = Alle Innocents
 	 *            tot</li>
 	 *            <li>{@link SaboteurServer#NO_PLAYERS_LEFT} = Alle tot</li>
@@ -483,14 +506,16 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	/**
-	 * Calculates the angle from the player-center to a given point
+	 * Calculates the angle between two points
 	 * 
-	 * @param v
-	 *            the given point
+	 * @param origin
+	 *            the origin of the line whose arc shall be calculated
+	 * @param point
+	 *            the point to which the angle shall be calculated
 	 * @return the angle from the center of the player to the given point
 	 */
-	public double getAngleToPlayer(Vector2f v) {
-		return v.copy().sub(thePlayer.getCenter()).getTheta();
+	public double getAngle(Vector2f origin, Vector2f point) {
+		return point.copy().sub(origin).getTheta();
 	}
 
 	/**
@@ -624,7 +649,7 @@ public class SaboteurGame extends BasicGameState {
 			}
 		}
 
-		ShadowPointComparator spComparator = new ShadowPointComparator();
+		ShadowPointComparator spComparator = new ShadowPointComparator(thePlayer.getCenter());
 
 		points.sort(spComparator);
 
@@ -672,9 +697,10 @@ public class SaboteurGame extends BasicGameState {
 		serverListener.sendToServer(packet);
 		serverListener.close();
 	}
-	
+
 	/**
 	 * Deletes all underscores ('_') from a given text
+	 * 
 	 * @param text
 	 * @return the given text without underscores
 	 */
