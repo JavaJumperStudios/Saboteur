@@ -14,7 +14,7 @@ public class Packet02Login extends Packet {
 
 	/** The assigned id for the client */
 	public int playerId;
-	/** The assigned id for the client */
+	/** The assigned name for the client */
 	public String name;
 
 	public Packet02Login() {
