@@ -21,7 +21,7 @@ public class Packet15SetMap extends Packet {
 	public int[][] map;
 	/** the collision shapes */
 	public ArrayList<Shape> collisionShapes;
-	
+
 	private int pointCount;
 	private int shapeCount;
 
@@ -50,20 +50,19 @@ public class Packet15SetMap extends Packet {
 		}
 		Polygon collisionElement = new Polygon();
 		collisionShapes = new ArrayList<Shape>();
-		
-		while (bb.remaining() > 0) {
-			
-			if (bb.getChar() != '_') {
+
+		// bb.getInt retrieves the legnth of the map here
+		for (int i = bb.getInt(); i > 0; i--) {
+
+			while (bb.getChar() != '_') {
 				float x = bb.getFloat();
 				float y = bb.getFloat();
-				
+
 				collisionElement.addPoint(x, y);
-			} else {
-				
-				collisionShapes.add(collisionElement);
-				collisionElement = new Polygon();
-				
 			}
+
+			collisionShapes.add(collisionElement);
+			collisionElement = new Polygon();
 		}
 	}
 
@@ -71,7 +70,7 @@ public class Packet15SetMap extends Packet {
 	public ByteBuffer writeToByteBuffer() {
 		pointCount = 0;
 		shapeCount = 0;
-		
+
 		for (Shape s : collisionShapes) {
 			for (int i = 0; i < s.getPointCount(); i++) {
 				pointCount++;
@@ -80,11 +79,11 @@ public class Packet15SetMap extends Packet {
 			shapeCount++;
 			System.out.println("SC: " + shapeCount);
 		}
-		
+
 		ByteBuffer bb = ByteBuffer.allocate(getLength());
 
 		System.out.println("Länge: " + getLength());
-		
+
 		bb.put(id);
 		bb.putInt(getLength());
 
@@ -103,9 +102,10 @@ public class Packet15SetMap extends Packet {
 				bb.putInt(map[i][j]);
 			}
 		}
-		
 
-		
+		// Saving the count of shapes to read the right amount of data later
+		bb.putInt(collisionShapes.size());
+
 		for (Shape s : collisionShapes) {
 			for (int i = 0; i < s.getPointCount(); i++) {
 				System.out.println("Putting in Point..");
@@ -121,7 +121,7 @@ public class Packet15SetMap extends Packet {
 
 	@Override
 	public int getLength() {
-		return super.getLength() + Character.BYTES * 16 + Integer.BYTES * 2 + Integer.BYTES * (width * height)
+		return super.getLength() + Character.BYTES * 16 + Integer.BYTES * 3 + Integer.BYTES * (width * height)
 				+ pointCount * (Float.BYTES * 2 + Character.BYTES) + shapeCount * Character.BYTES;
 	}
 

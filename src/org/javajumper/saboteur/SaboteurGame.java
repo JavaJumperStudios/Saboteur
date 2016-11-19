@@ -226,7 +226,7 @@ public class SaboteurGame extends BasicGameState {
 	}
 
 	private void renderPlayers(Graphics g) {
-		for (SPPlayer p : players) {
+		for (SPPlayer p : new ArrayList<SPPlayer>(players)) {
 			if (!p.isDead())
 				p.draw(p.getPos().x, p.getPos().y, g, thePlayer.getRole());
 		}

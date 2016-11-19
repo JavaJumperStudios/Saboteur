@@ -33,11 +33,6 @@ import org.newdawn.slick.geom.Vector2f;
 /**
  * The server class for the saboteur game.
  */
-/**
- *
- *
- * @author tobi
- */
 public class SaboteurServer {
 
 	/** The main instance of the server made public for convenience */
@@ -168,8 +163,13 @@ public class SaboteurServer {
 				while (true) {
 					input = scan.nextLine();
 
-					if ("stop".equals(input))
+					if ("stop".equals(input)) {
 						break;
+					}
+
+					if ("printsettings".equals(input)) {
+						System.out.println(instance.properties.toString());
+					}
 
 					// Commands ...
 				}
@@ -674,6 +674,7 @@ public class SaboteurServer {
 
 	/**
 	 * checks if a new player is allowed to connect to the server
+	 * 
 	 * @return true if the player is allowed to connect, false otherwise
 	 */
 	public boolean confirmNewLogin(String password) {
@@ -683,9 +684,10 @@ public class SaboteurServer {
 			return false;
 		return true;
 	}
-	
+
 	/**
 	 * Deletes all underscores ('_') from a given text
+	 * 
 	 * @param text
 	 * @return the given text without underscores
 	 */
